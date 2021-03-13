@@ -1,11 +1,12 @@
+import 'package:blue_demo/ui/data/store/main_store.dart';
 import 'package:blue_demo/ui/page/home/home_page.dart';
-import 'package:blue_demo/ui/page/home/home_store.dart';
+import 'package:blue_demo/ui/page/search/search_page.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await homeStore.init();
+  await mainStore.init();
   runApp(MyApp());
 }
 
@@ -19,9 +20,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomePage(),
       navigatorObservers: [BotToastNavigatorObserver()],
       builder: BotToastInit(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomePage(),
+        '/search': (context) => SearchPage()
+      },
     );
   }
 }

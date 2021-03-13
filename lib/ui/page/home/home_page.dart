@@ -1,25 +1,34 @@
+import 'package:blue_demo/ui/data/store/main_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_circle_color_picker/flutter_circle_color_picker.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:like_button/like_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'home_store.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      floatingActionButton: buildFloatingActionButton(),
+      floatingActionButton: buildFloatingActionButton(context),
       body: buildBody(),
     );
   }
 
-  FloatingActionButton buildFloatingActionButton() {
-    return FloatingActionButton(
-      child: Icon(Icons.send),
-      onPressed: () {},
-    );
+  Widget buildFloatingActionButton(BuildContext context) {
+    return Observer(builder: (_) {
+      if (mainStore.connectedDevice != null) {
+        return FloatingActionButton(
+          child: Icon(Icons.send),
+          onPressed: () {},
+        );
+      }
+      return FloatingActionButton(
+        child: Icon(Icons.bluetooth_disabled_outlined),
+        onPressed: () {
+          Navigator.of(context).pushNamed('/search');
+        },
+      );
+    });
   }
 
   Widget buildBody() {
@@ -43,50 +52,6 @@ class HomePage extends StatelessWidget {
   AppBar buildAppBar() {
     return AppBar(
       title: Text('Color Controller'),
-      actions: [
-        Observer(
-          builder: (_) {
-            return Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: homeStore.isScanning
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 5),
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            backgroundColor: Colors.white,
-                            strokeWidth: 2.2,
-                          ),
-                        ),
-                      ),
-                    )
-                  : LikeButton(
-                      padding: EdgeInsets.zero,
-                      size: 24,
-                      circleColor: CircleColor(
-                          start: Color(0xff00ddff), end: Color(0xff0099cc)),
-                      bubblesColor: BubblesColor(
-                        dotPrimaryColor: Colors.white,
-                        dotSecondaryColor: Colors.white,
-                      ),
-                      isLiked: homeStore.isConnect,
-                      onTap: (value) async {
-                        return homeStore.connectDevice();
-                      },
-                      likeBuilder: (bool isLink) {
-                        return Icon(
-                          isLink ? Icons.bluetooth : Icons.block,
-                          color: Colors.white,
-                          size: 24,
-                        );
-                      },
-                    ),
-            );
-          },
-        ),
-      ],
     );
   }
 
@@ -251,11 +216,11 @@ class HomePage extends StatelessWidget {
   Row buildColorRow() {
     return Row(
       children: [
-        buildColorCard(Color(0XFFFF4615), 'R', homeStore.selectColor?.red ?? 0),
+        buildColorCard(Color(0XFFFF4615), 'R', mainStore.selectColor?.red ?? 0),
         buildColorCard(
-            Color(0XFF00D648), 'G', homeStore.selectColor?.green ?? 0),
+            Color(0XFF00D648), 'G', mainStore.selectColor?.green ?? 0),
         buildColorCard(
-            Color(0XFF158cFF), 'B', homeStore.selectColor?.blue ?? 0),
+            Color(0XFF158cFF), 'B', mainStore.selectColor?.blue ?? 0),
       ],
     );
   }
@@ -265,11 +230,11 @@ class HomePage extends StatelessWidget {
       child: Center(
         child: Center(
           child: CircleColorPicker(
-            initialColor: homeStore.selectColor,
+            initialColor: mainStore.selectColor,
             onChanged: (color) async {
               final pref = await SharedPreferences.getInstance();
               pref.setInt('color', color.value);
-              homeStore.setColor(color);
+              mainStore.setColor(color);
             },
             size: const Size(300, 300),
             strokeWidth: 4,
