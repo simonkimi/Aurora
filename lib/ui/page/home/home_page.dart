@@ -1,9 +1,7 @@
 import 'package:blue_demo/ui/data/store/main_store.dart';
-import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_circle_color_picker/flutter_circle_color_picker.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -46,6 +44,7 @@ class HomePage extends StatelessWidget {
             SizedBox(height: 50),
             buildCmykRow(),
             buildColorRow(),
+            const SizedBox(height: 50),
             buildColorCircle()
           ],
         ),
@@ -231,16 +230,14 @@ class HomePage extends StatelessWidget {
 
   Expanded buildColorCircle() {
     return Expanded(
-      child: Center(
-        child: ColorPicker(
-          color: mainStore.selectColor,
-          onColorChanged: (Color color) {
-            mainStore.setColor(color);
-          },
-          pickersEnabled: const <ColorPickerType, bool>{
-            ColorPickerType.wheel: true,
-          },
-        ),
+      child: ColorPicker(
+        pickerColor: mainStore.selectColor,
+        onColorChanged: mainStore.setColor,
+        pickerAreaHeightPercent: 0.8,
+        enableAlpha: false,
+        displayThumbColor: true,
+        showLabel: false,
+        pickerAreaBorderRadius: BorderRadius.all(Radius.circular(5)),
       ),
     );
   }

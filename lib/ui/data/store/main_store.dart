@@ -35,8 +35,11 @@ abstract class MainStoreBase with Store {
   Future<void> init() async {
     final pref = await SharedPreferences.getInstance();
     final color = pref.getInt('color') ?? Colors.blue.value;
-    selectColor = Color(color);
-    cmykw = RGB_CMYG(Rgb2CMYG(rgb: [selectColor.red, selectColor.green, selectColor.blue], TS: 300)).data;
+    selectColor = Color(color | 0xFF000000);
+    cmykw = RGB_CMYG(Rgb2CMYG(
+            rgb: [selectColor.red, selectColor.green, selectColor.blue],
+            TS: 300))
+        .data;
     Stream.periodic(Duration(seconds: 2)).listen((event) async {
       final pref = await SharedPreferences.getInstance();
       pref.setInt('color', selectColor.value);
@@ -46,7 +49,9 @@ abstract class MainStoreBase with Store {
   @action
   Future<void> setColor(Color color) async {
     selectColor = color;
-    cmykw = RGB_CMYG(Rgb2CMYG(rgb: [color.red, color.green, color.blue], TS: 300)).data;
+    cmykw =
+        RGB_CMYG(Rgb2CMYG(rgb: [color.red, color.green, color.blue], TS: 300))
+            .data;
   }
 
   @action

@@ -197,13 +197,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.10.11"
-  flex_color_picker:
-    dependency: "direct main"
-    description:
-      name: flex_color_picker
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.1.5"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -216,13 +209,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.7.3"
-  flutter_circle_color_picker:
+  flutter_colorpicker:
     dependency: "direct main"
     description:
-      name: flutter_circle_color_picker
+      name: flutter_colorpicker
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.2.0"
+    version: "0.3.5"
   flutter_mobx:
     dependency: "direct main"
     description:
