@@ -1,4 +1,5 @@
 import 'package:blue_demo/ui/data/store/main_store.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_circle_color_picker/flutter_circle_color_picker.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -146,13 +147,13 @@ class HomePage extends StatelessWidget {
               ),
               SizedBox(height: 10),
               buildMotorItem(
-                background: Color(0XFFFFFF2C),
+                background: Color(0XFFFF2CD9),
                 leading: 'Front Motor 2:',
                 value: '0000 → 0000',
               ),
               SizedBox(height: 10),
               buildMotorItem(
-                background: Color(0XFFFF2CD9),
+                background: Color(0XFFFFFF2C),
                 leading: 'Front Motor 3:',
                 value: '0000 → 0000',
               ),
@@ -207,11 +208,11 @@ class HomePage extends StatelessWidget {
   Row buildCmykRow() {
     return Row(
       children: [
-        buildCmyk(Color(0XFF22F5FF), 0, Colors.black),
-        buildCmyk(Color(0XFFFFFF2C), 0, Colors.black),
-        buildCmyk(Color(0XFFFF2CD9), 0, Colors.black),
-        buildCmyk(Color(0XFF3A3A3A), 0, Colors.white),
-        buildCmyk(Color(0XFFEFF3FF), 0, Colors.black),
+        buildCmyk(Color(0XFF22F5FF), mainStore.cmykw[0], Colors.black),
+        buildCmyk(Color(0XFFFF2CD9), mainStore.cmykw[1], Colors.black),
+        buildCmyk(Color(0XFFFFFF2C), mainStore.cmykw[2], Colors.black),
+        buildCmyk(Color(0XFF3A3A3A), mainStore.cmykw[3], Colors.white),
+        buildCmyk(Color(0XFFEFF3FF), mainStore.cmykw[4], Colors.black),
       ],
     );
   }
@@ -231,18 +232,14 @@ class HomePage extends StatelessWidget {
   Expanded buildColorCircle() {
     return Expanded(
       child: Center(
-        child: Center(
-          child: CircleColorPicker(
-            initialColor: mainStore.selectColor,
-            onChanged: (color) async {
-              final pref = await SharedPreferences.getInstance();
-              pref.setInt('color', color.value);
-              mainStore.setColor(color);
-            },
-            size: const Size(300, 300),
-            strokeWidth: 4,
-            thumbSize: 36,
-          ),
+        child: ColorPicker(
+          color: mainStore.selectColor,
+          onColorChanged: (Color color) {
+            mainStore.setColor(color);
+          },
+          pickersEnabled: const <ColorPickerType, bool>{
+            ColorPickerType.wheel: true,
+          },
         ),
       ),
     );

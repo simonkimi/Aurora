@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constant.dart';
+import 'get_cmykw.dart';
 
 part 'main_store.g.dart';
 
@@ -26,18 +28,25 @@ abstract class MainStoreBase with Store {
   @observable
   BluetoothCharacteristic characteristic;
 
+  @observable
+  List<int> cmykw = [0, 0, 0, 0, 0];
+
   @action
   Future<void> init() async {
     final pref = await SharedPreferences.getInstance();
     final color = pref.getInt('color') ?? Colors.blue.value;
     selectColor = Color(color);
+    cmykw = RGB_CMYG(Rgb2CMYG(rgb: [selectColor.red, selectColor.green, selectColor.blue], TS: 300)).data;
+    Stream.periodic(Duration(seconds: 2)).listen((event) async {
+      final pref = await SharedPreferences.getInstance();
+      pref.setInt('color', selectColor.value);
+    });
   }
 
   @action
   Future<void> setColor(Color color) async {
     selectColor = color;
-    final pref = await SharedPreferences.getInstance();
-    pref.setInt('color', color.value);
+    cmykw = RGB_CMYG(Rgb2CMYG(rgb: [color.red, color.green, color.blue], TS: 300)).data;
   }
 
   @action
