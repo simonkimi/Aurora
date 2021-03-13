@@ -7,6 +7,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  bool _showNoName = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,12 +97,29 @@ class _SearchPageState extends State<SearchPage> {
             Padding(
               padding: const EdgeInsets.only(top: 20, left: 4),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const Text(
                     '可用设备',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                  )
+                  ),
+                  const Expanded(child: SizedBox()),
+                  SizedBox(
+                    child: IconButton(
+                      icon: Icon(_showNoName
+                          ? Icons.filter_alt_outlined
+                          : Icons.filter_alt),
+                      onPressed: () {
+                        setState(() {
+                          _showNoName = !_showNoName;
+                        });
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          duration: Duration(seconds: 1),
+                          content: Text(_showNoName ? '显示所有设备' : '隐藏匿名设备'),
+                        ));
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -110,7 +128,9 @@ class _SearchPageState extends State<SearchPage> {
               stream: FlutterBlue.instance.scanResults,
               builder: (_, snapshot) {
                 return Column(
-                  children: snapshot.data?.map((e) {
+                  children: snapshot.data?.where((e) {
+                        return e.device.name.isNotEmpty || _showNoName;
+                      })?.map((e) {
                         return Card(
                           child: ListTile(
                             leading: Icon(Icons.bluetooth),
