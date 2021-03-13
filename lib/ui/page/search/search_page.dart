@@ -1,3 +1,7 @@
+import 'dart:ui';
+
+import 'package:blue_demo/ui/data/store/main_store.dart';
+import 'package:blue_demo/ui/page/device/device_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -8,11 +12,27 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   bool _showNoName = false;
+  bool _isConnecting = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      body: buildBody(),
+      body: Stack(
+        children: [
+          IgnorePointer(
+            ignoring: _isConnecting,
+            child: buildBody(),
+          ),
+          if (_isConnecting)
+            Center(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: CircularProgressIndicator(),
+              ),
+            )
+        ],
+      ),
       floatingActionButton: buildActionButton(),
     );
   }
@@ -82,7 +102,9 @@ class _SearchPageState extends State<SearchPage> {
                                 if (state.data ==
                                     BluetoothDeviceState.connected) {
                                   return IconButton(
-                                      icon: Icon(Icons.send), onPressed: () {});
+                                    icon: Icon(Icons.send),
+                                    onPressed: () {},
+                                  );
                                 }
                                 return SizedBox();
                               },
@@ -134,9 +156,33 @@ class _SearchPageState extends State<SearchPage> {
                         return Card(
                           child: ListTile(
                             leading: Icon(Icons.bluetooth),
-                            title: Text(e.device.name.isNotEmpty
-                                ? e.device.name
-                                : e.device.id.id),
+                            title: Text(
+                              e.device.name.isNotEmpty
+                                  ? e.device.name
+                                  : e.device.id.id,
+                            ),
+                            onTap: () async {
+                              setState(() {
+                                _isConnecting = true;
+                              });
+                              final result =
+                                  await mainStore.connectDevice(e.device);
+                              setState(() {
+                                _isConnecting = false;
+                              });
+                              if (!result) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('连接失败')));
+                                return;
+                              }
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => DevicePage(
+                                    device: e.device,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         );
                       })?.toList() ??
