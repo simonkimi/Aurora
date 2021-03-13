@@ -19,7 +19,10 @@ class HomePage extends StatelessWidget {
       if (mainStore.connectedDevice != null) {
         return FloatingActionButton(
           child: Icon(Icons.send),
-          onPressed: () {},
+          onPressed: () async {
+            final color = mainStore.selectColor;
+            await mainStore.sendData([color.red, color.green, color.blue]);
+          },
         );
       }
       return FloatingActionButton(

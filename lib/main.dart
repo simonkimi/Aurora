@@ -1,5 +1,4 @@
 import 'package:blue_demo/ui/data/store/main_store.dart';
-import 'package:blue_demo/ui/page/device/device_page.dart';
 import 'package:blue_demo/ui/page/home/home_page.dart';
 import 'package:blue_demo/ui/page/search/search_page.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -27,7 +26,6 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => HomePage(),
         '/search': (context) => SearchPage(),
-        '/device': (context) => DevicePage()
       },
     );
   }

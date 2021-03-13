@@ -1,7 +1,5 @@
 import 'dart:ui';
-
 import 'package:blue_demo/ui/data/store/main_store.dart';
-import 'package:blue_demo/ui/page/device/device_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -13,6 +11,12 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   bool _showNoName = false;
   bool _isConnecting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    FlutterBlue.instance.startScan(timeout: Duration(seconds: 10));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +107,22 @@ class _SearchPageState extends State<SearchPage> {
                                     BluetoothDeviceState.connected) {
                                   return IconButton(
                                     icon: Icon(Icons.send),
-                                    onPressed: () {},
+                                    onPressed: () async {
+                                    setState(() {
+                                      _isConnecting = true;
+                                    });
+                                    try {
+                                      await mainStore.connectDevice(e, true);
+                                      Navigator.of(context).pop();
+                                    } on Exception catch(e) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('连接失败: $e')));
+                                    } finally {
+                                      setState(() {
+                                        _isConnecting = false;
+                                      });
+                                    }
+                                  },
                                   );
                                 }
                                 return SizedBox();
@@ -165,23 +184,17 @@ class _SearchPageState extends State<SearchPage> {
                               setState(() {
                                 _isConnecting = true;
                               });
-                              final result =
-                                  await mainStore.connectDevice(e.device);
-                              setState(() {
-                                _isConnecting = false;
-                              });
-                              if (!result) {
+                              try {
+                                await mainStore.connectDevice(e.device);
+                                Navigator.of(context).pop();
+                              } on Exception catch(e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('连接失败')));
-                                return;
+                                    SnackBar(content: Text('连接失败: $e')));
+                              } finally {
+                                setState(() {
+                                  _isConnecting = false;
+                                });
                               }
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => DevicePage(
-                                    device: e.device,
-                                  ),
-                                ),
-                              );
                             },
                           ),
                         );
