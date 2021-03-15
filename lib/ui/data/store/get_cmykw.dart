@@ -1,6 +1,17 @@
 import 'dart:math';
+import '';
 
 //ignore_for_file: non_constant_identifier_names
+
+class CMYKW {
+  const CMYKW({this.c, this.m, this.y, this.k, this.w});
+
+  final int c;
+  final int m;
+  final int y;
+  final int k;
+  final int w;
+}
 
 bool isAll0(List<dynamic> param1) {
   if (param1[0] is List) param1 = param1[0];
@@ -169,11 +180,10 @@ class CMYGResult {
   const CMYGResult(this.data);
 }
 
-CMYGResult RGB_CMYG(Rgb2CMYG data) {
+CMYKW RGB_CMYG(Rgb2CMYG data) {
   var _rgb = data.rgb;
   var _TS = data.TS;
 
-  var _cmykw = [0, 0, 0, 0, 0];
   var C_0 = (255 - _rgb[0]) / 255;
   var M_0 = (255 - _rgb[1]) / 255;
   var Y_0 = (255 - _rgb[2]) / 255;
@@ -211,12 +221,12 @@ CMYGResult RGB_CMYG(Rgb2CMYG data) {
     W = _TS * K_g * (kw[0] / (1 + kw[1]));
     BK = _TS * K_g - W;
   }
-  _cmykw[3] = BK.round();
-  _cmykw[4] = W.round();
 
   final dd = F3_cmy([C_1, M_1, Y_1, _TS * (1 - K_g)]);
-  _cmykw[0] = dd[0].round();
-  _cmykw[1] = dd[1].round();
-  _cmykw[2] = dd[2].round();
-  return CMYGResult(_cmykw);
+  return CMYKW(
+      c: dd[0].round(),
+      m: dd[1].round(),
+      y: dd[2].round(),
+      k: BK.round(),
+      w: W.round());
 }

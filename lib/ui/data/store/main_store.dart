@@ -29,7 +29,7 @@ abstract class MainStoreBase with Store {
   BluetoothCharacteristic characteristic;
 
   @observable
-  List<int> cmykw = [0, 0, 0, 0, 0];
+  var cmykw = CMYKW();
 
   @action
   Future<void> init() async {
@@ -37,9 +37,7 @@ abstract class MainStoreBase with Store {
     final color = pref.getInt('color') ?? Colors.blue.value;
     selectColor = Color(color | 0xFF000000);
     cmykw = RGB_CMYG(Rgb2CMYG(
-            rgb: [selectColor.red, selectColor.green, selectColor.blue],
-            TS: 300))
-        .data;
+        rgb: [selectColor.red, selectColor.green, selectColor.blue], TS: 200));
     Stream.periodic(Duration(seconds: 2)).listen((event) async {
       final pref = await SharedPreferences.getInstance();
       pref.setInt('color', selectColor.value);
@@ -50,8 +48,7 @@ abstract class MainStoreBase with Store {
   Future<void> setColor(Color color) async {
     selectColor = color;
     cmykw =
-        RGB_CMYG(Rgb2CMYG(rgb: [color.red, color.green, color.blue], TS: 300))
-            .data;
+        RGB_CMYG(Rgb2CMYG(rgb: [color.red, color.green, color.blue], TS: 200));
   }
 
   @action

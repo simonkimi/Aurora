@@ -207,11 +207,11 @@ class HomePage extends StatelessWidget {
   Row buildCmykRow() {
     return Row(
       children: [
-        buildCmyk(Color(0XFF22F5FF), mainStore.cmykw[0], Colors.black),
-        buildCmyk(Color(0XFFFF2CD9), mainStore.cmykw[1], Colors.black),
-        buildCmyk(Color(0XFFFFFF2C), mainStore.cmykw[2], Colors.black),
-        buildCmyk(Color(0XFF3A3A3A), mainStore.cmykw[3], Colors.white),
-        buildCmyk(Color(0XFFEFF3FF), mainStore.cmykw[4], Colors.black),
+        buildCmyk(Color(0XFF22F5FF), mainStore.cmykw.c, Colors.black),
+        buildCmyk(Color(0XFFFFFF2C), mainStore.cmykw.y, Colors.black),
+        buildCmyk(Color(0XFFFF2CD9), mainStore.cmykw.m, Colors.black),
+        buildCmyk(Color(0XFF3A3A3A), mainStore.cmykw.k, Colors.white),
+        buildCmyk(Color(0XFFEFF3FF), mainStore.cmykw.w, Colors.black),
       ],
     );
   }
