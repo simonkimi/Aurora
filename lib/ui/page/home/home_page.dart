@@ -1,3 +1,4 @@
+import 'package:animated_float_action_button/animated_floating_action_button.dart';
 import 'package:blue_demo/ui/data/store/main_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -17,16 +18,44 @@ class HomePage extends StatelessWidget {
   Widget buildFloatingActionButton(BuildContext context) {
     return Observer(builder: (_) {
       if (mainStore.connectedDevice != null) {
-        return FloatingActionButton(
-          child: Icon(Icons.send),
-          onPressed: () async {
-            await mainStore.sendData();
-            ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('已发送'),
-              duration: Duration(seconds: 1),
-            ));
-          },
+        return AnimatedFloatingActionButton(
+          animatedIconData: AnimatedIcons.menu_close,
+          colorStartAnimation: Colors.blue,
+          colorEndAnimation: Colors.red,
+          fabButtons: [
+            FloatActionButtonText(
+              icon: Icons.stop,
+              text: 'Stop',
+              onPressed: () {},
+            ),
+            FloatActionButtonText(
+              icon: Icons.play_arrow,
+              text: 'Start',
+              onPressed: () {},
+            ),
+            FloatActionButtonText(
+              icon: Icons.input,
+              text: 'Push',
+              onPressed: () {},
+            ),
+            FloatActionButtonText(
+              icon: Icons.open_in_new,
+              text: 'Pop',
+              onPressed: () {},
+            ),
+            FloatActionButtonText(
+              icon: Icons.send,
+              text: 'Send',
+              onPressed: () async {
+                await mainStore.sendData();
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('已发送'),
+                  duration: Duration(seconds: 1),
+                ));
+              },
+            ),
+          ],
         );
       }
       return FloatingActionButton(
@@ -60,6 +89,9 @@ class HomePage extends StatelessWidget {
   AppBar buildAppBar() {
     return AppBar(
       title: Text('Color Controller'),
+      actions: [
+        IconButton(icon: Icon(Icons.stop), onPressed: () {}),
+      ],
     );
   }
 
