@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mobx/mobx.dart';
@@ -29,7 +28,10 @@ abstract class MainStoreBase with Store {
   BluetoothCharacteristic characteristic;
 
   @observable
-  var cmykw = CMYKW();
+  var cmykw = CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0);
+
+  @observable
+  var nowCmykw = CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0);
 
   @action
   Future<void> init() async {
@@ -37,7 +39,8 @@ abstract class MainStoreBase with Store {
     final color = pref.getInt('color') ?? Colors.blue.value;
     selectColor = Color(color | 0xFF000000);
     cmykw = RGB_CMYG(Rgb2CMYG(
-        rgb: [selectColor.red, selectColor.green, selectColor.blue], TS: 200));
+        rgb: [selectColor.red, selectColor.green, selectColor.blue], TS: M_TS));
+
     Stream.periodic(Duration(seconds: 2)).listen((event) async {
       final pref = await SharedPreferences.getInstance();
       pref.setInt('color', selectColor.value);
@@ -48,13 +51,28 @@ abstract class MainStoreBase with Store {
   Future<void> setColor(Color color) async {
     selectColor = color;
     cmykw =
-        RGB_CMYG(Rgb2CMYG(rgb: [color.red, color.green, color.blue], TS: 200));
+        RGB_CMYG(Rgb2CMYG(rgb: [color.red, color.green, color.blue], TS: M_TS));
   }
 
   @action
-  Future<void> sendData(List<int> data) async {
+  Future<void> sendData() async {
     if (connectedDevice != null && characteristic != null) {
+      final data = [
+        cmykw.c,
+        cmykw.y,
+        cmykw.m,
+        cmykw.k,
+        cmykw.w,
+        0x40,
+        0x40,
+        0x0d,
+        0x0a
+      ];
       await characteristic.write(data, withoutResponse: false);
+      print(
+          '发送数据: ${data.map((e) => e.toRadixString(16)).map((e) => e.length == 1 ? '0$e' : e).join(' ')}');
+      print('发送数据: ${data.map((e) => e.toString()).join(' ')}');
+      nowCmykw = cmykw;
       return;
     }
     throw Exception('设备未初始化');
@@ -63,7 +81,7 @@ abstract class MainStoreBase with Store {
   Future<void> setBleListen() async {
     await characteristic.setNotifyValue(true);
     characteristic.value.listen((event) {
-      print('Received Data: $event');
+      print('收到数据: $event');
     });
   }
 
@@ -85,10 +103,10 @@ abstract class MainStoreBase with Store {
           });
         }
       });
-      setBleListen();
       if (characteristic == null) {
         throw Exception('没有找到蓝牙对应的服务!');
       }
+      setBleListen();
     } on TimeoutException {
       throw Exception('蓝牙连接超时');
     }

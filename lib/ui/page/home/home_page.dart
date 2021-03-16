@@ -2,6 +2,7 @@ import 'package:blue_demo/ui/data/store/main_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:blue_demo/utils/utils.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -19,8 +20,12 @@ class HomePage extends StatelessWidget {
         return FloatingActionButton(
           child: Icon(Icons.send),
           onPressed: () async {
-            final color = mainStore.selectColor;
-            await mainStore.sendData([color.red, color.green, color.blue]);
+            await mainStore.sendData();
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('已发送'),
+              duration: Duration(seconds: 1),
+            ));
           },
         );
       }
@@ -67,7 +72,7 @@ class HomePage extends StatelessWidget {
           color: color,
           child: Center(
             child: Text(
-              num.toString(),
+              num.toP,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: textColor,
@@ -142,31 +147,32 @@ class HomePage extends StatelessWidget {
               buildMotorItem(
                 background: Color(0XFF22F5FF),
                 leading: 'Front Motor 1:',
-                value: '0000 → 0000',
+                value: '${(mainStore.nowCmykw.c * 3 / 2).round().to3()} → 000',
               ),
               SizedBox(height: 10),
               buildMotorItem(
                 background: Color(0XFFFF2CD9),
                 leading: 'Front Motor 2:',
-                value: '0000 → 0000',
+                value: '${(mainStore.nowCmykw.y * 3 / 2).round().to3()} → 000',
               ),
               SizedBox(height: 10),
               buildMotorItem(
                 background: Color(0XFFFFFF2C),
                 leading: 'Front Motor 3:',
-                value: '0000 → 0000',
+                value: '${(mainStore.nowCmykw.m * 3 / 2).round().to3()} → 000',
               ),
               SizedBox(height: 10),
               buildMotorItem(
                   background: Color(0XFF3A3A3A),
                   leading: 'Back Motor 1:',
-                  value: '0000 → 0000',
+                  value:
+                      '${(mainStore.nowCmykw.k * 3 / 2).round().to3()} → 000',
                   color: Colors.white),
               SizedBox(height: 10),
               buildMotorItem(
                 background: Color(0XFFEFF3FF),
                 leading: 'Back Motor 2:',
-                value: '0000 → 0000',
+                value: '${(mainStore.nowCmykw.w * 3 / 2).round().to3()} → 000',
               ),
             ],
           ),

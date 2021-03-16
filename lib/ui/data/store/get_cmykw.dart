@@ -1,5 +1,4 @@
 import 'dart:math';
-import '';
 
 //ignore_for_file: non_constant_identifier_names
 
@@ -110,10 +109,16 @@ double fkg(List<double> _kg) {
   double k_g;
   if (isAll0(_kg)) {
     k_g = 1;
+  } else if (_kg[3] < 0.02) {
+    k_g = 1 - _kg[4];
   } else {
-    k_g = _kg[3] / _kg.reduce((value, element) => value + element);
+    k_g = _kg[3] / (_kg[0] + _kg[1] + _kg[2] + _kg[3]);
   }
   return k_g;
+}
+
+double avg(List<dynamic> kg) {
+  return kg[3] / kg.reduce((value, element) => value + element);
 }
 
 List<double> F3_cmy(List<double> _cmy) {
@@ -133,7 +138,7 @@ List<double> F3_cmy(List<double> _cmy) {
     dynamic K_cmy;
     if (isAllz(XY_my)) {
       K_cmy = XY_my[0];
-      final K_g = fkg([_cmy[0], _cmy[1], _cmy[2], _cmy[0]]);
+      final K_g = avg([_cmy[0], _cmy[1], _cmy[2], _cmy[0]]);
       _cmykw_3[0] = _cmy[3] * K_g / 3;
       _cmykw_3[1] = _cmy[3] * K_g / 3 +
           _cmy[3] * (1 - K_g) * (K_cmy[0] / (K_cmy[0] + K_cmy[1]));
@@ -141,7 +146,7 @@ List<double> F3_cmy(List<double> _cmy) {
           _cmy[3] * (1 - K_g) * (K_cmy[1] / (K_cmy[0] + K_cmy[1]));
     } else if (isAllz(XY_cy)) {
       K_cmy = XY_cy[0];
-      var K_g = fkg([_cmy[0], _cmy[1], _cmy[2], _cmy[1]]);
+      var K_g = avg([_cmy[0], _cmy[1], _cmy[2], _cmy[1]]);
       _cmykw_3[0] = _cmy[3] * K_g / 3 +
           _cmy[3] * (1 - K_g) * (K_cmy[0] / (K_cmy[0] + K_cmy[1]));
       _cmykw_3[1] = _cmy[3] * K_g / 3;
@@ -150,7 +155,7 @@ List<double> F3_cmy(List<double> _cmy) {
     } else {
       var XY_cm = marMul(XY_e, marInv([XY_cmy[0], XY_cmy[1]]));
       K_cmy = XY_cm[0];
-      var K_g = fkg([_cmy[0], _cmy[1], _cmy[2], _cmy[2]]);
+      var K_g = avg([_cmy[0], _cmy[1], _cmy[2], _cmy[2]]);
       _cmykw_3[0] = _cmy[3] * K_g / 3 +
           _cmy[3] * (1 - K_g) * (K_cmy[0] / (K_cmy[0] + K_cmy[1]));
       _cmykw_3[1] = _cmy[3] * K_g / 3 +
@@ -192,9 +197,10 @@ CMYKW RGB_CMYG(Rgb2CMYG data) {
   var L = max(C_0, max(M_0, Y_0));
 
   var N = 15;
+  var SA = L - S;
   var M = 0.02;
   double G;
-  if (L - S < M) {
+  if (SA < M) {
     C_0 = (C_0 + M_0 + Y_0) / 3;
     M_0 = C_0;
     Y_0 = C_0;
@@ -211,7 +217,8 @@ CMYKW RGB_CMYG(Rgb2CMYG data) {
   var C_1 = C_0 - G;
   var M_1 = M_0 - G;
   var Y_1 = Y_0 - G;
-  var K_g = fkg([C_1, M_1, Y_1, G]);
+  var K_g = fkg([C_1, M_1, Y_1, G, SA]);
+
   double BK, W;
 
   if (kw[1] == 1) {
@@ -222,11 +229,18 @@ CMYKW RGB_CMYG(Rgb2CMYG data) {
     BK = _TS * K_g - W;
   }
 
-  final dd = F3_cmy([C_1, M_1, Y_1, _TS * (1 - K_g)]);
+  List<double> dd;
+  if (K_g != 1) {
+    dd = F3_cmy([C_1, M_1, Y_1, _TS * (1 - K_g)]);
+  } else {
+    dd = [0.0, 0.0, 0.0];
+  }
+
   return CMYKW(
-      c: dd[0].round(),
-      m: dd[1].round(),
-      y: dd[2].round(),
-      k: BK.round(),
-      w: W.round());
+    c: !dd[0].isFinite ? 0 : dd[0].round(),
+    m: !dd[1].isFinite ? 0 : dd[1].round(),
+    y: !dd[2].isFinite ? 0 : dd[2].round(),
+    k: BK.round(),
+    w: W.round(),
+  );
 }
