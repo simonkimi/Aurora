@@ -55,6 +55,8 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
               child: buildHeaderHint(),
             ),
           ),
+          SizedBox(height: 10),
+          Text(mainStore.stateHint, style: TextStyle(color: Colors.white),),
           SizedBox(height: 20),
           Container(
             height: 100,

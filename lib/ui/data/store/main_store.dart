@@ -25,6 +25,9 @@ abstract class MainStoreBase with Store {
   bool isScanning = false;
 
   @observable
+  String stateHint = '点击蓝牙图标开始连接';
+
+  @observable
   BluetoothDevice connectedDevice;
 
   @observable
@@ -124,35 +127,41 @@ abstract class MainStoreBase with Store {
 
   @action
   Future<void> findAndConnect() async {
-    final adapter = FlutterBlue.instance;
-    final connectedData = await adapter.connectedDevices;
-    final data = connectedData.where((element) => element.id.id == HC08_MAC).toList();
-    if (data.isNotEmpty) {
-      await connectDevice(data[0], true);
-    } else {
-      adapter.startScan(timeout: Duration(seconds: 10));
-      var deviceCompleter = Completer<BluetoothDevice>();
-      adapter.scanResults.listen((event) {
-        event.forEach((element) {
-          if (element.device.id.id == HC08_MAC) {
-            print(element.device.id.id);
-            if (!deviceCompleter.isCompleted) {
-              deviceCompleter.complete(element.device);
+    try {
+      stateHint = '连接中, 请稍后...';
+      final adapter = FlutterBlue.instance;
+      final connectedData = await adapter.connectedDevices;
+      final data = connectedData.where((element) => element.id.id == HC08_MAC).toList();
+      if (data.isNotEmpty) {
+        await connectDevice(data[0], true);
+      } else {
+        adapter.startScan(timeout: Duration(seconds: 10));
+        var deviceCompleter = Completer<BluetoothDevice>();
+        adapter.scanResults.listen((event) {
+          event.forEach((element) {
+            if (element.device.id.id == HC08_MAC) {
+              print(element.device.id.id);
+              if (!deviceCompleter.isCompleted) {
+                deviceCompleter.complete(element.device);
+              }
             }
+          });
+        }, onDone: () {
+          if (!deviceCompleter.isCompleted) {
+            deviceCompleter.completeError(Exception('没有找到设备'));
+          }
+
+        }, onError: (_) {
+          if (!deviceCompleter.isCompleted) {
+            deviceCompleter.completeError(Exception('寻找设备出错!'));
           }
         });
-      }, onDone: () {
-        if (!deviceCompleter.isCompleted) {
-          deviceCompleter.completeError(Exception('没有找到设备'));
-        }
-
-      }, onError: (_) {
-        if (!deviceCompleter.isCompleted) {
-          deviceCompleter.completeError(Exception('寻找设备出错!'));
-        }
-      });
-      var device = await deviceCompleter.future;
-      await connectDevice(device);
+        var device = await deviceCompleter.future;
+        await connectDevice(device);
+      }
+    } on Exception catch(e) {
+      stateHint = e.toString();
+      rethrow;
     }
   }
 
@@ -175,11 +184,14 @@ abstract class MainStoreBase with Store {
         }
       });
       await FlutterBlue.instance.stopScan();
+      stateHint = '连接成功!';
       if (characteristic == null) {
+        stateHint = '没有找到蓝牙对应的服务!';
         throw Exception('没有找到蓝牙对应的服务!');
       }
       setBleListen();
     } on TimeoutException {
+      stateHint = '蓝牙连接超时!';
       throw Exception('蓝牙连接超时');
     }
   }

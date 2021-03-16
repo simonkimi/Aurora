@@ -3,6 +3,7 @@ import 'package:blue_demo/ui/data/store/main_store.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:blue_demo/utils/utils.dart';
@@ -30,95 +31,126 @@ class _ControllerPageState extends State<ControllerPage> {
   }
 
   Widget buildFloatingActionButton(BuildContext context) {
-    return Observer(builder: (_) {
-      if (mainStore.connectedDevice != null) {
-        return AnimatedFloatingActionButton(
-          animatedIconData: AnimatedIcons.menu_close,
-          colorStartAnimation: Colors.blue,
-          colorEndAnimation: Colors.red,
-          fabButtons: [
-            FloatActionButtonText(
-              icon: Icons.play_arrow,
-              text: 'Start',
-              onPressed: () async {
-                try {
-                  await mainStore.sendStart();
-                  setState(() {
-                    auroraState = '运行';
-                  });
-                  showMessage(context, '已发送');
-                } on Exception catch (e) {
-                  showMessage(context, '出现错误: ${e.toString()}');
-                }
+    return Observer(
+      builder: (_) {
+        if (mainStore.connectedDevice != null) {
+          return AnimatedFloatingActionButton(
+            animatedIconData: AnimatedIcons.menu_close,
+            colorStartAnimation: Colors.blue,
+            colorEndAnimation: Colors.red,
+            fabButtons: [
+              FloatActionButtonText(
+                icon: Icons.play_arrow,
+                text: 'Start',
+                onPressed: () async {
+                  try {
+                    await mainStore.sendStart();
+                    setState(() {
+                      auroraState = '运行';
+                    });
+                    showMessage(context, '已发送');
+                  } on Exception catch (e) {
+                    showMessage(context, '出现错误: ${e.toString()}');
+                  }
+                },
+              ),
+              FloatActionButtonText(
+                icon: Icons.stop,
+                text: 'Pause',
+                onPressed: () async {
+                  try {
+                    await mainStore.sendPause();
+                    setState(() {
+                      auroraState = '停止';
+                    });
+                    showMessage(context, '已发送');
+                  } on Exception catch (e) {
+                    showMessage(context, '出现错误: ${e.toString()}');
+                  }
+                },
+              ),
+              FloatActionButtonText(
+                icon: Icons.input,
+                text: 'Push',
+                onPressed: () async {
+                  try {
+                    await mainStore.sendPush();
+                    setState(() {
+                      auroraState = '送料';
+                    });
+                    showMessage(context, '已发送');
+                  } on Exception catch (e) {
+                    showMessage(context, '出现错误: ${e.toString()}');
+                  }
+                },
+              ),
+              FloatActionButtonText(
+                icon: Icons.open_in_new,
+                text: 'Pop',
+                onPressed: () async {
+                  try {
+                    await mainStore.sendPop();
+                    setState(() {
+                      auroraState = '回抽';
+                    });
+                    showMessage(context, '已发送');
+                  } on Exception catch (e) {
+                    showMessage(context, '出现错误: ${e.toString()}');
+                  }
+                },
+              ),
+              FloatActionButtonText(
+                icon: Icons.send,
+                text: 'Send',
+                onPressed: () async {
+                  try {
+                    await mainStore.sendColor();
+                    showMessage(context, '已发送');
+                  } on Exception catch (e) {
+                    showMessage(context, '出现错误: ${e.toString()}');
+                  }
+                },
+              ),
+            ],
+          );
+        }
+        return StreamBuilder<bool>(
+          stream: FlutterBlue.instance.isScanning,
+          initialData: false,
+          builder: (_, snapshot) {
+            return AnimatedSwitcher(
+              duration: Duration(milliseconds: 200),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return ScaleTransition(child: child, scale: animation);
               },
-            ),
-            FloatActionButtonText(
-              icon: Icons.stop,
-              text: 'Pause',
-              onPressed: () async {
-                try {
-                  await mainStore.sendPause();
-                  setState(() {
-                    auroraState = '停止';
-                  });
-                  showMessage(context, '已发送');
-                } on Exception catch (e) {
-                  showMessage(context, '出现错误: ${e.toString()}');
-                }
-              },
-            ),
-            FloatActionButtonText(
-              icon: Icons.input,
-              text: 'Push',
-              onPressed: () async {
-                try {
-                  await mainStore.sendPush();
-                  setState(() {
-                    auroraState = '送料';
-                  });
-                  showMessage(context, '已发送');
-                } on Exception catch (e) {
-                  showMessage(context, '出现错误: ${e.toString()}');
-                }
-              },
-            ),
-            FloatActionButtonText(
-              icon: Icons.open_in_new,
-              text: 'Pop',
-              onPressed: () async {
-                try {
-                  await mainStore.sendPop();
-                  setState(() {
-                    auroraState = '回抽';
-                  });
-                  showMessage(context, '已发送');
-                } on Exception catch (e) {
-                  showMessage(context, '出现错误: ${e.toString()}');
-                }
-              },
-            ),
-            FloatActionButtonText(
-              icon: Icons.send,
-              text: 'Send',
-              onPressed: () async {
-                try {
-                  await mainStore.sendColor();
-                  showMessage(context, '已发送');
-                } on Exception catch (e) {
-                  showMessage(context, '出现错误: ${e.toString()}');
-                }
-              },
-            ),
-          ],
+              child: snapshot.data
+                  ? FloatingActionButton(
+                      key: ValueKey('stop'),
+                      onPressed: FlutterBlue.instance.stopScan,
+                      backgroundColor: Colors.red,
+                      child: SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.red,
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                          strokeWidth: 3,
+                        ),
+                      ),
+                    )
+                  : FloatingActionButton(
+                      key: ValueKey('scan'),
+                      child: const Icon(Icons.search),
+                      onPressed: () {
+                        FlutterBlue.instance
+                            .startScan(timeout: Duration(seconds: 60));
+                      },
+                    ),
+            );
+          },
         );
-      }
-      return FloatingActionButton(
-        child: Icon(Icons.bluetooth_disabled_outlined),
-        onPressed: () {
-          Navigator.of(context).pushNamed('/search');
-        },
-      );
-    });
+      },
+    );
   }
 
   void showMessage(BuildContext context, String data) {
@@ -139,7 +171,7 @@ class _ControllerPageState extends State<ControllerPage> {
             clipBehavior: Clip.none,
             children: [
               Container(
-                height: 200,
+                height: 230,
                 color: Colors.blue,
               ),
               Positioned(
@@ -182,7 +214,7 @@ class _ControllerPageState extends State<ControllerPage> {
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Container(
-                            color: mainStore.selectColor,
+                            color: mainStore.nowColor,
                             width: 100,
                             child: Text(''),
                           ),
@@ -193,13 +225,13 @@ class _ControllerPageState extends State<ControllerPage> {
                 ),
               ),
               Positioned(
-                left: 30,
-                bottom: -40,
+                left: 5,
+                bottom: -45,
                 child: Container(
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.all(Radius.circular(20))),
-                  width: 350,
+                  width: 400,
                   height: 120,
                   padding: EdgeInsets.all(10),
                   child: Column(
@@ -240,7 +272,7 @@ class _ControllerPageState extends State<ControllerPage> {
               ),
             ],
           ),
-          SizedBox(height: 40),
+          SizedBox(height: 50),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Text(
@@ -410,7 +442,9 @@ class _ControllerPageState extends State<ControllerPage> {
 
   void selectColorByRGB() {
     final validator = (String value) =>
-        0 <= int.tryParse(value) && int.tryParse(value) <= 255 ? null : '资源错误';
+        0 <= int.tryParse(value) && int.tryParse(value) <= 255
+            ? null
+            : '数值超出范围';
 
     final rController = TextEditingController();
     final gController = TextEditingController();
@@ -477,11 +511,13 @@ class _ControllerPageState extends State<ControllerPage> {
                 onPressed: () {
                   if (_formKey.currentState.validate()) {
                     setState(() {
-                      mainStore.setColor(Color.fromARGB(
-                          0,
-                          int.parse(rController.value.text),
-                          int.parse(gController.value.text),
-                          int.parse(bController.value.text)));
+                      mainStore.setColor(
+                        Color.fromARGB(
+                            0xFF,
+                            int.parse(rController.value.text),
+                            int.parse(gController.value.text),
+                            int.parse(bController.value.text)),
+                      );
                     });
                     Navigator.of(context).pop();
                   }

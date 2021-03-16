@@ -70,8 +70,7 @@ class _SearchPageState extends State<SearchPage> {
                   key: ValueKey('scan'),
                   child: const Icon(Icons.search),
                   onPressed: () {
-                    FlutterBlue.instance
-                        .startScan(timeout: Duration(seconds: 60));
+                    mainStore.findAndConnect();
                   },
                 ),
         );
