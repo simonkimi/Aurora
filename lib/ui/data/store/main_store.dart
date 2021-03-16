@@ -160,7 +160,6 @@ abstract class MainStoreBase with Store {
         await connectDevice(device);
       }
     } on Exception catch(e) {
-      stateHint = e.toString();
       rethrow;
     }
   }

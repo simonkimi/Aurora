@@ -41,7 +41,7 @@ class _ControllerPageState extends State<ControllerPage> {
             fabButtons: [
               FloatActionButtonText(
                 icon: Icons.play_arrow,
-                text: 'Start',
+                text: '开始',
                 onPressed: () async {
                   try {
                     await mainStore.sendStart();
@@ -55,8 +55,8 @@ class _ControllerPageState extends State<ControllerPage> {
                 },
               ),
               FloatActionButtonText(
-                icon: Icons.stop,
-                text: 'Pause',
+                icon: Icons.pause,
+                text: '暂停',
                 onPressed: () async {
                   try {
                     await mainStore.sendPause();
@@ -71,7 +71,7 @@ class _ControllerPageState extends State<ControllerPage> {
               ),
               FloatActionButtonText(
                 icon: Icons.input,
-                text: 'Push',
+                text: '送料',
                 onPressed: () async {
                   try {
                     await mainStore.sendPush();
@@ -86,7 +86,7 @@ class _ControllerPageState extends State<ControllerPage> {
               ),
               FloatActionButtonText(
                 icon: Icons.open_in_new,
-                text: 'Pop',
+                text: '回抽',
                 onPressed: () async {
                   try {
                     await mainStore.sendPop();
@@ -101,7 +101,7 @@ class _ControllerPageState extends State<ControllerPage> {
               ),
               FloatActionButtonText(
                 icon: Icons.send,
-                text: 'Send',
+                text: '发送',
                 onPressed: () async {
                   try {
                     await mainStore.sendColor();
