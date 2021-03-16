@@ -1,12 +1,15 @@
 import 'package:blue_demo/ui/components/dash_line.dart';
 import 'package:blue_demo/ui/data/store/main_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
+import 'package:blue_demo/utils/utils.dart';
 
 class StatePage extends StatefulWidget {
   const StatePage({Key key}) : super(key: key);
+
   @override
   _StatePageState createState() => _StatePageState();
 }
@@ -34,7 +37,9 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      body: buildBody(),
+      body: Observer(
+        builder: (_) => buildBody(),
+      ),
     );
   }
 
@@ -47,14 +52,7 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
           Container(
             height: 50,
             child: Center(
-              child: SizedBox(
-                height: 50,
-                width: 50,
-                child: Lottie.asset(
-                  'assets/lottie/bluetooth.json',
-                  controller: _controller,
-                ),
-              ),
+              child: buildHeaderHint(),
             ),
           ),
           SizedBox(height: 20),
@@ -101,7 +99,7 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
                       ),
                       Expanded(child: SizedBox()),
                       Text(
-                        '未连接',
+                        mainStore.connectedDevice != null ? '已连接' : '未连接',
                         style: TextStyle(color: Colors.white),
                       ),
                     ],
@@ -138,7 +136,7 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
                           ),
                         ),
                         title: Text('前置电机1'),
-                        subtitle: Text('转速 000'),
+                        subtitle: Text('转速 ${mainStore.nowCmykw.c.to3()}'),
                       ),
                     ),
                     Card(
@@ -151,7 +149,7 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
                           ),
                         ),
                         title: Text('前置电机2'),
-                        subtitle: Text('转速 000'),
+                        subtitle: Text('转速 ${mainStore.nowCmykw.y.to3()}'),
                       ),
                     ),
                     Card(
@@ -165,7 +163,7 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
                           ),
                         ),
                         title: Text('前置电机3'),
-                        subtitle: Text('转速 000'),
+                        subtitle: Text('转速 ${mainStore.nowCmykw.m.to3()}'),
                       ),
                     ),
                     Card(
@@ -176,7 +174,7 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
                               width: 26, color: Colors.white),
                         ),
                         title: Text('后置电机1'),
-                        subtitle: Text('转速 000'),
+                        subtitle: Text('转速 ${mainStore.nowCmykw.k.to3()}'),
                       ),
                     ),
                     Card(
@@ -189,7 +187,7 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
                           ),
                         ),
                         title: Text('后置电机2'),
-                        subtitle: Text('转速 000'),
+                        subtitle: Text('转速 ${mainStore.nowCmykw.w.to3()}'),
                       ),
                     ),
                   ],
@@ -199,6 +197,49 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
           )
         ],
       ),
+    );
+  }
+
+  Widget buildHeaderHint() {
+    if (mainStore.connectedDevice != null) {
+      return IconButton(
+        padding: EdgeInsets.zero,
+        icon: Icon(
+          Icons.bluetooth_audio,
+          color: Colors.white,
+          size: 50,
+        ),
+        onPressed: () {},
+      );
+    }
+
+    return StreamBuilder<bool>(
+      initialData: false,
+      stream: FlutterBlue.instance.isScanning,
+      builder: (c, snapshot) {
+        if (snapshot.data) {
+          return SizedBox(
+            height: 50,
+            width: 50,
+            child: Lottie.asset(
+              'assets/lottie/bluetooth.json',
+              controller: _controller,
+            ),
+          );
+        } else {
+          return IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              Icons.bluetooth_disabled,
+              color: Colors.white,
+              size: 50,
+            ),
+            onPressed: () {
+              mainStore.findAndConnect();
+            },
+          );
+        }
+      },
     );
   }
 

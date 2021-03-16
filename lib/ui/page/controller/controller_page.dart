@@ -17,6 +17,8 @@ class ControllerPage extends StatefulWidget {
 class _ControllerPageState extends State<ControllerPage> {
   var _currentColor = mainStore.selectColor;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  var auroraState = '停机';
+  var motorState = '送料';
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +43,9 @@ class _ControllerPageState extends State<ControllerPage> {
               onPressed: () async {
                 try {
                   await mainStore.sendStart();
+                  setState(() {
+                    auroraState = '运行';
+                  });
                   showMessage(context, '已发送');
                 } on Exception catch (e) {
                   showMessage(context, '出现错误: ${e.toString()}');
@@ -53,6 +58,9 @@ class _ControllerPageState extends State<ControllerPage> {
               onPressed: () async {
                 try {
                   await mainStore.sendPause();
+                  setState(() {
+                    auroraState = '停止';
+                  });
                   showMessage(context, '已发送');
                 } on Exception catch (e) {
                   showMessage(context, '出现错误: ${e.toString()}');
@@ -65,6 +73,9 @@ class _ControllerPageState extends State<ControllerPage> {
               onPressed: () async {
                 try {
                   await mainStore.sendPush();
+                  setState(() {
+                    auroraState = '送料';
+                  });
                   showMessage(context, '已发送');
                 } on Exception catch (e) {
                   showMessage(context, '出现错误: ${e.toString()}');
@@ -77,6 +88,9 @@ class _ControllerPageState extends State<ControllerPage> {
               onPressed: () async {
                 try {
                   await mainStore.sendPop();
+                  setState(() {
+                    auroraState = '回抽';
+                  });
                   showMessage(context, '已发送');
                 } on Exception catch (e) {
                   showMessage(context, '出现错误: ${e.toString()}');
@@ -125,7 +139,7 @@ class _ControllerPageState extends State<ControllerPage> {
             clipBehavior: Clip.none,
             children: [
               Container(
-                height: 175,
+                height: 200,
                 color: Colors.blue,
               ),
               Positioned(
@@ -133,10 +147,32 @@ class _ControllerPageState extends State<ControllerPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('当前设备 : Aurora',
+                    Text(
+                        '当前设备 : ' +
+                            (mainStore.connectedDevice != null
+                                ? "Aurora"
+                                : "未连接"),
                         style: TextStyle(color: Colors.white, fontSize: 16)),
-                    Text('设备状态 : 停机',
+                    Text('设备状态 : $auroraState',
                         style: TextStyle(color: Colors.white, fontSize: 16)),
+                    Text('出料状态 : $motorState',
+                        style: TextStyle(color: Colors.white, fontSize: 16)),
+                    Row(
+                      children: [
+                        Text(
+                          '设定颜色: ',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Container(
+                            color: mainStore.selectColor,
+                            width: 100,
+                            child: Text(''),
+                          ),
+                        )
+                      ],
+                    ),
                     Row(
                       children: [
                         Text(
@@ -152,7 +188,7 @@ class _ControllerPageState extends State<ControllerPage> {
                           ),
                         )
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),

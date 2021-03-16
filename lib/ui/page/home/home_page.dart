@@ -216,32 +216,32 @@ class HomePage extends StatelessWidget {
               buildMotorItem(
                 background: Color(0XFF22F5FF),
                 leading: 'Front Motor 1:',
-                value: '${(mainStore.nowCmykw.c * 3 / 2).round().to3()} → 000',
+                value: '${mainStore.nowCmykw.c.to3()} → 000',
               ),
               SizedBox(height: 10),
               buildMotorItem(
                 background: Color(0XFFFF2CD9),
                 leading: 'Front Motor 2:',
-                value: '${(mainStore.nowCmykw.y * 3 / 2).round().to3()} → 000',
+                value: '${mainStore.nowCmykw.y.to3()} → 000',
               ),
               SizedBox(height: 10),
               buildMotorItem(
                 background: Color(0XFFFFFF2C),
                 leading: 'Front Motor 3:',
-                value: '${(mainStore.nowCmykw.m * 3 / 2).round().to3()} → 000',
+                value: '${mainStore.nowCmykw.m.to3()} → 000',
               ),
               SizedBox(height: 10),
               buildMotorItem(
                   background: Color(0XFF3A3A3A),
                   leading: 'Back Motor 1:',
                   value:
-                      '${(mainStore.nowCmykw.k * 3 / 2).round().to3()} → 000',
+                      '${mainStore.nowCmykw.k.to3()} → 000',
                   color: Colors.white),
               SizedBox(height: 10),
               buildMotorItem(
                 background: Color(0XFFEFF3FF),
                 leading: 'Back Motor 2:',
-                value: '${(mainStore.nowCmykw.w * 3 / 2).round().to3()} → 000',
+                value: '${mainStore.nowCmykw.w.to3()} → 000',
               ),
             ],
           ),

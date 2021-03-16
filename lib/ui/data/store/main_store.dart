@@ -19,6 +19,9 @@ abstract class MainStoreBase with Store {
   Color selectColor;
 
   @observable
+  Color nowColor;
+
+  @observable
   bool isScanning = false;
 
   @observable
@@ -38,6 +41,7 @@ abstract class MainStoreBase with Store {
     final pref = await SharedPreferences.getInstance();
     final color = pref.getInt('color') ?? Colors.blue.value;
     selectColor = Color(color | 0xFF000000);
+    nowColor = selectColor;
     cmykw = RGB_CMYG(Rgb2CMYG(
         rgb: [selectColor.red, selectColor.green, selectColor.blue], TS: M_TS));
 
@@ -71,6 +75,7 @@ abstract class MainStoreBase with Store {
         0x0a
       ];
       await sendData(data);
+      nowColor = selectColor;
     }
   }
 
@@ -118,6 +123,40 @@ abstract class MainStoreBase with Store {
   }
 
   @action
+  Future<void> findAndConnect() async {
+    final adapter = FlutterBlue.instance;
+    final connectedData = await adapter.connectedDevices;
+    final data = connectedData.where((element) => element.id.id == HC08_MAC).toList();
+    if (data.isNotEmpty) {
+      await connectDevice(data[0], true);
+    } else {
+      adapter.startScan(timeout: Duration(seconds: 10));
+      var deviceCompleter = Completer<BluetoothDevice>();
+      adapter.scanResults.listen((event) {
+        event.forEach((element) {
+          if (element.device.id.id == HC08_MAC) {
+            print(element.device.id.id);
+            if (!deviceCompleter.isCompleted) {
+              deviceCompleter.complete(element.device);
+            }
+          }
+        });
+      }, onDone: () {
+        if (!deviceCompleter.isCompleted) {
+          deviceCompleter.completeError(Exception('没有找到设备'));
+        }
+
+      }, onError: (_) {
+        if (!deviceCompleter.isCompleted) {
+          deviceCompleter.completeError(Exception('寻找设备出错!'));
+        }
+      });
+      var device = await deviceCompleter.future;
+      await connectDevice(device);
+    }
+  }
+
+  @action
   Future<void> connectDevice(BluetoothDevice device,
       [bool isConnect = false]) async {
     try {
@@ -135,6 +174,7 @@ abstract class MainStoreBase with Store {
           });
         }
       });
+      await FlutterBlue.instance.stopScan();
       if (characteristic == null) {
         throw Exception('没有找到蓝牙对应的服务!');
       }

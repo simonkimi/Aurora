@@ -180,6 +180,7 @@ class _SearchPageState extends State<SearchPage> {
                                   ? e.device.name
                                   : e.device.id.id,
                             ),
+                            subtitle: Text(e.device.id.id),
                             onTap: () async {
                               setState(() {
                                 _isConnecting = true;
