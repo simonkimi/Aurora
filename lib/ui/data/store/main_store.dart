@@ -55,7 +55,7 @@ abstract class MainStoreBase with Store {
   }
 
   @action
-  Future<void> sendData() async {
+  Future<void> sendColor() async {
     if (connectedDevice != null && characteristic != null) {
       final data = [
         cmykw.c,
@@ -65,9 +65,42 @@ abstract class MainStoreBase with Store {
         cmykw.w,
         0x40,
         0x40,
+        0x01,
+        0x01,
         0x0d,
         0x0a
       ];
+      await sendData(data);
+    }
+  }
+
+  @action
+  Future<void> sendPause() async {
+    final data = [0, 0, 0, 0, 0, 0x40, 0x40, 0xFF, 0x0, 0x0d, 0x0a];
+    await sendData(data);
+  }
+
+  @action
+  Future<void> sendStart() async {
+    final data = [0, 0, 0, 0, 0, 0x40, 0x40, 0xFF, 0x1, 0x0d, 0x0a];
+    await sendData(data);
+  }
+
+  @action
+  Future<void> sendPush() async {
+    final data = [0, 0, 0, 0, 0, 0x40, 0x40, 0x1, 0xFF, 0x0d, 0x0a];
+    await sendData(data);
+  }
+
+  @action
+  Future<void> sendPop() async {
+    final data = [0, 0, 0, 0, 0, 0x40, 0x40, 0x0, 0xFF, 0x0d, 0x0a];
+    await sendData(data);
+  }
+
+  @action
+  Future<void> sendData(List<int> data) async {
+    if (connectedDevice != null && characteristic != null) {
       await characteristic.write(data, withoutResponse: false);
       print(
           '发送数据: ${data.map((e) => e.toRadixString(16)).map((e) => e.length == 1 ? '0$e' : e).join(' ')}');
@@ -75,7 +108,6 @@ abstract class MainStoreBase with Store {
       nowCmykw = cmykw;
       return;
     }
-    throw Exception('设备未初始化');
   }
 
   Future<void> setBleListen() async {

@@ -24,35 +24,64 @@ class HomePage extends StatelessWidget {
           colorEndAnimation: Colors.red,
           fabButtons: [
             FloatActionButtonText(
-              icon: Icons.stop,
-              text: 'Stop',
-              onPressed: () {},
-            ),
-            FloatActionButtonText(
               icon: Icons.play_arrow,
               text: 'Start',
-              onPressed: () {},
+              onPressed: () async {
+                try {
+                  await mainStore.sendStart();
+                  showMessage(context, '已发送');
+                } on Exception catch(e) {
+                  showMessage(context, '出现错误: ${e.toString()}');
+                }
+              },
             ),
+            FloatActionButtonText(
+              icon: Icons.stop,
+              text: 'Pause',
+              onPressed: () async {
+                try {
+                  await mainStore.sendPause();
+                  showMessage(context, '已发送');
+                } on Exception catch(e) {
+                  showMessage(context, '出现错误: ${e.toString()}');
+                }
+              },
+            ),
+
             FloatActionButtonText(
               icon: Icons.input,
               text: 'Push',
-              onPressed: () {},
+              onPressed: () async {
+                try {
+                  await mainStore.sendPush();
+                  showMessage(context, '已发送');
+                } on Exception catch(e) {
+                  showMessage(context, '出现错误: ${e.toString()}');
+                }
+              },
             ),
             FloatActionButtonText(
               icon: Icons.open_in_new,
               text: 'Pop',
-              onPressed: () {},
+              onPressed: () async {
+                try {
+                  await mainStore.sendPop();
+                  showMessage(context, '已发送');
+                } on Exception catch(e) {
+                  showMessage(context, '出现错误: ${e.toString()}');
+                }
+              },
             ),
             FloatActionButtonText(
               icon: Icons.send,
               text: 'Send',
               onPressed: () async {
-                await mainStore.sendData();
-                ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('已发送'),
-                  duration: Duration(seconds: 1),
-                ));
+                try {
+                  await mainStore.sendColor();
+                  showMessage(context, '已发送');
+                } on Exception catch(e) {
+                  showMessage(context, '出现错误: ${e.toString()}');
+                }
               },
             ),
           ],
@@ -65,6 +94,14 @@ class HomePage extends StatelessWidget {
         },
       );
     });
+  }
+
+  void showMessage(BuildContext context, String data) {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(data),
+      duration: Duration(seconds: 1),
+    ));
   }
 
   Widget buildBody() {
@@ -104,7 +141,7 @@ class HomePage extends StatelessWidget {
           color: color,
           child: Center(
             child: Text(
-              num.toP,
+              num.toP(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: textColor,
