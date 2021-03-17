@@ -1,6 +1,7 @@
 import 'package:blue_demo/ui/page/controller/controller_page.dart';
 import 'package:blue_demo/ui/page/state/state_page.dart';
 import 'package:blue_demo/ui/page/task/task_page.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
@@ -10,6 +11,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   var _currentPage = 0;
+  var _lastQuitTime = DateTime.now();
+
   var _page = [
     StatePage(key: ValueKey('State')),
     ControllerPage(key: ValueKey('Controller')),
@@ -19,9 +22,24 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnimatedSwitcher(
-        child: _page[_currentPage],
-        duration: Duration(milliseconds: 300),
+      body: WillPopScope(
+        onWillPop: () async {
+          if (_lastQuitTime == null ||
+              DateTime
+                  .now()
+                  .difference(_lastQuitTime)
+                  .inSeconds > 1) {
+            BotToast.showText(text: '再按一次退出');
+            _lastQuitTime = DateTime.now();
+            return false;
+          } else {
+            return true;
+          }
+        },
+        child: AnimatedSwitcher(
+          child: _page[_currentPage],
+          duration: Duration(milliseconds: 300),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage,

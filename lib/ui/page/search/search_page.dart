@@ -68,7 +68,7 @@ class _SearchPageState extends State<SearchPage> {
                 )
               : FloatingActionButton(
                   key: ValueKey('scan'),
-                  child: const Icon(Icons.search),
+                  child: const Icon(Icons.bluetooth_disabled),
                   onPressed: () {
                     mainStore.findAndConnect();
                   },

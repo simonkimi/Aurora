@@ -1,5 +1,4 @@
 import 'package:blue_demo/ui/data/store/main_store.dart';
-import 'package:blue_demo/ui/page/home/home_page.dart';
 import 'package:blue_demo/ui/page/main/main_page.dart';
 import 'package:blue_demo/ui/page/search/search_page.dart';
 import 'package:blue_demo/ui/page/state/state_page.dart';
@@ -24,12 +23,12 @@ class MyApp extends StatelessWidget {
       ),
       navigatorObservers: [BotToastNavigatorObserver()],
       builder: BotToastInit(),
-      initialRoute: '/main',
+      initialRoute: '/',
       routes: {
-        '/': (context) => HomePage(),
+        // '/': (context) => HomePage(),
         '/search': (context) => SearchPage(),
         '/state': (context) => StatePage(),
-        '/main': (context) => MainPage(),
+        '/': (context) => MainPage(),
       },
     );
   }

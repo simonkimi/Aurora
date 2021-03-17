@@ -1,4 +1,4 @@
-import 'package:blue_demo/ui/data/store/constant.dart';
+import 'file:///F:/android/project/blue_demo/lib/ui/data/constant.dart';
 
 extension IntUtils on int {
   String toP() {
@@ -11,6 +11,6 @@ extension IntUtils on int {
     final n = (this * 1.5).round();
     if (n >= 100) return n.toString();
     return List.generate(3 - n.toString().length, (index) => '0').join('') +
-        this.toString();
+        n.toString();
   }
 }

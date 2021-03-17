@@ -1,4 +1,3 @@
-import 'package:animated_float_action_button/animated_floating_action_button.dart';
 import 'package:blue_demo/ui/data/store/main_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -10,91 +9,90 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      floatingActionButton: buildFloatingActionButton(context),
       body: buildBody(),
     );
   }
 
-  Widget buildFloatingActionButton(BuildContext context) {
-    return Observer(builder: (_) {
-      if (mainStore.connectedDevice != null) {
-        return AnimatedFloatingActionButton(
-          animatedIconData: AnimatedIcons.menu_close,
-          colorStartAnimation: Colors.blue,
-          colorEndAnimation: Colors.red,
-          fabButtons: [
-            FloatActionButtonText(
-              icon: Icons.play_arrow,
-              text: 'Start',
-              onPressed: () async {
-                try {
-                  await mainStore.sendStart();
-                  showMessage(context, '已发送');
-                } on Exception catch(e) {
-                  showMessage(context, '出现错误: ${e.toString()}');
-                }
-              },
-            ),
-            FloatActionButtonText(
-              icon: Icons.stop,
-              text: 'Pause',
-              onPressed: () async {
-                try {
-                  await mainStore.sendPause();
-                  showMessage(context, '已发送');
-                } on Exception catch(e) {
-                  showMessage(context, '出现错误: ${e.toString()}');
-                }
-              },
-            ),
-
-            FloatActionButtonText(
-              icon: Icons.input,
-              text: 'Push',
-              onPressed: () async {
-                try {
-                  await mainStore.sendPush();
-                  showMessage(context, '已发送');
-                } on Exception catch(e) {
-                  showMessage(context, '出现错误: ${e.toString()}');
-                }
-              },
-            ),
-            FloatActionButtonText(
-              icon: Icons.open_in_new,
-              text: 'Pop',
-              onPressed: () async {
-                try {
-                  await mainStore.sendPop();
-                  showMessage(context, '已发送');
-                } on Exception catch(e) {
-                  showMessage(context, '出现错误: ${e.toString()}');
-                }
-              },
-            ),
-            FloatActionButtonText(
-              icon: Icons.send,
-              text: 'Send',
-              onPressed: () async {
-                try {
-                  await mainStore.sendColor();
-                  showMessage(context, '已发送');
-                } on Exception catch(e) {
-                  showMessage(context, '出现错误: ${e.toString()}');
-                }
-              },
-            ),
-          ],
-        );
-      }
-      return FloatingActionButton(
-        child: Icon(Icons.bluetooth_disabled_outlined),
-        onPressed: () {
-          Navigator.of(context).pushNamed('/search');
-        },
-      );
-    });
-  }
+  // Widget buildFloatingActionButton(BuildContext context) {
+  //   return Observer(builder: (_) {
+  //     if (mainStore.connectedDevice != null) {
+  //       return AnimatedFloatingActionButton(
+  //         animatedIconData: AnimatedIcons.menu_close,
+  //         colorStartAnimation: Colors.blue,
+  //         colorEndAnimation: Colors.red,
+  //         fabButtons: [
+  //           FloatActionButtonText(
+  //             icon: Icons.play_arrow,
+  //             text: 'Start',
+  //             onPressed: () async {
+  //               try {
+  //                 await mainStore.sendStart();
+  //                 showMessage(context, '已发送');
+  //               } on Exception catch(e) {
+  //                 showMessage(context, '出现错误: ${e.toString()}');
+  //               }
+  //             },
+  //           ),
+  //           FloatActionButtonText(
+  //             icon: Icons.stop,
+  //             text: 'Pause',
+  //             onPressed: () async {
+  //               try {
+  //                 await mainStore.sendPause();
+  //                 showMessage(context, '已发送');
+  //               } on Exception catch(e) {
+  //                 showMessage(context, '出现错误: ${e.toString()}');
+  //               }
+  //             },
+  //           ),
+  //
+  //           FloatActionButtonText(
+  //             icon: Icons.input,
+  //             text: 'Push',
+  //             onPressed: () async {
+  //               try {
+  //                 await mainStore.sendPush();
+  //                 showMessage(context, '已发送');
+  //               } on Exception catch(e) {
+  //                 showMessage(context, '出现错误: ${e.toString()}');
+  //               }
+  //             },
+  //           ),
+  //           FloatActionButtonText(
+  //             icon: Icons.open_in_new,
+  //             text: 'Pop',
+  //             onPressed: () async {
+  //               try {
+  //                 await mainStore.sendPop();
+  //                 showMessage(context, '已发送');
+  //               } on Exception catch(e) {
+  //                 showMessage(context, '出现错误: ${e.toString()}');
+  //               }
+  //             },
+  //           ),
+  //           FloatActionButtonText(
+  //             icon: Icons.send,
+  //             text: 'Send',
+  //             onPressed: () async {
+  //               try {
+  //                 await mainStore.sendColor();
+  //                 showMessage(context, '已发送');
+  //               } on Exception catch(e) {
+  //                 showMessage(context, '出现错误: ${e.toString()}');
+  //               }
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     }
+  //     return FloatingActionButton(
+  //       child: Icon(Icons.bluetooth_disabled_outlined),
+  //       onPressed: () {
+  //         Navigator.of(context).pushNamed('/search');
+  //       },
+  //     );
+  //   });
+  // }
 
   void showMessage(BuildContext context, String data) {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();

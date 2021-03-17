@@ -1,6 +1,6 @@
-import 'package:animated_float_action_button/animated_floating_action_button.dart';
 import 'package:blue_demo/ui/data/store/main_store.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:bot_toast/bot_toast.dart';
+import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -15,11 +15,32 @@ class ControllerPage extends StatefulWidget {
   _ControllerPageState createState() => _ControllerPageState();
 }
 
-class _ControllerPageState extends State<ControllerPage> {
+class _ControllerPageState extends State<ControllerPage>
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   var _currentColor = mainStore.selectColor;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var auroraState = '停机';
   var motorState = '送料';
+
+  AnimationController _actionController;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _actionController.dispose();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _actionController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 260),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,16 +55,27 @@ class _ControllerPageState extends State<ControllerPage> {
     return Observer(
       builder: (_) {
         if (mainStore.connectedDevice != null) {
-          return AnimatedFloatingActionButton(
-            animatedIconData: AnimatedIcons.menu_close,
-            colorStartAnimation: Colors.blue,
-            colorEndAnimation: Colors.red,
-            fabButtons: [
-              FloatActionButtonText(
+          return FloatingActionBubble(
+            animation: _actionController,
+            onPress: () {
+              if (_actionController.isCompleted) {
+                _actionController.reverse();
+              } else {
+                _actionController.forward();
+              }
+            },
+            iconColor: Colors.blue,
+            icon: AnimatedIcons.menu_close,
+            items: [
+              Bubble(
+                title: "开始",
+                iconColor: Colors.white,
+                bubbleColor: Colors.blue,
                 icon: Icons.play_arrow,
-                text: '开始',
-                onPressed: () async {
+                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                onPress: () async {
                   try {
+                    _actionController.reverse();
                     await mainStore.sendStart();
                     setState(() {
                       auroraState = '运行';
@@ -54,11 +86,15 @@ class _ControllerPageState extends State<ControllerPage> {
                   }
                 },
               ),
-              FloatActionButtonText(
+              Bubble(
+                title: "暂停",
+                iconColor: Colors.white,
+                bubbleColor: Colors.blue,
                 icon: Icons.pause,
-                text: '暂停',
-                onPressed: () async {
+                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                onPress: () async {
                   try {
+                    _actionController.reverse();
                     await mainStore.sendPause();
                     setState(() {
                       auroraState = '停止';
@@ -69,11 +105,15 @@ class _ControllerPageState extends State<ControllerPage> {
                   }
                 },
               ),
-              FloatActionButtonText(
+              Bubble(
                 icon: Icons.input,
-                text: '送料',
-                onPressed: () async {
+                iconColor: Colors.white,
+                bubbleColor: Colors.blue,
+                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                title: '送料',
+                onPress: () async {
                   try {
+                    _actionController.reverse();
                     await mainStore.sendPush();
                     setState(() {
                       auroraState = '送料';
@@ -84,11 +124,15 @@ class _ControllerPageState extends State<ControllerPage> {
                   }
                 },
               ),
-              FloatActionButtonText(
+              Bubble(
                 icon: Icons.open_in_new,
-                text: '回抽',
-                onPressed: () async {
+                title: '回抽',
+                iconColor: Colors.white,
+                bubbleColor: Colors.blue,
+                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                onPress: () async {
                   try {
+                    _actionController.reverse();
                     await mainStore.sendPop();
                     setState(() {
                       auroraState = '回抽';
@@ -99,11 +143,15 @@ class _ControllerPageState extends State<ControllerPage> {
                   }
                 },
               ),
-              FloatActionButtonText(
+              Bubble(
                 icon: Icons.send,
-                text: '发送',
-                onPressed: () async {
+                title: '发送',
+                iconColor: Colors.white,
+                bubbleColor: Colors.blue,
+                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                onPress: () async {
                   try {
+                    _actionController.reverse();
                     await mainStore.sendColor();
                     showMessage(context, '已发送');
                   } on Exception catch (e) {
@@ -113,6 +161,9 @@ class _ControllerPageState extends State<ControllerPage> {
               ),
             ],
           );
+
+          //   ],
+          // );
         }
         return StreamBuilder<bool>(
           stream: FlutterBlue.instance.isScanning,
@@ -142,8 +193,7 @@ class _ControllerPageState extends State<ControllerPage> {
                       key: ValueKey('scan'),
                       child: const Icon(Icons.search),
                       onPressed: () {
-                        FlutterBlue.instance
-                            .startScan(timeout: Duration(seconds: 60));
+                        mainStore.findAndConnect();
                       },
                     ),
             );
@@ -154,11 +204,7 @@ class _ControllerPageState extends State<ControllerPage> {
   }
 
   void showMessage(BuildContext context, String data) {
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(data),
-      duration: Duration(seconds: 1),
-    ));
+    BotToast.showText(text: data, duration: Duration(milliseconds: 500));
   }
 
   Widget buildBody() {
@@ -441,10 +487,14 @@ class _ControllerPageState extends State<ControllerPage> {
   }
 
   void selectColorByRGB() {
-    final validator = (String value) =>
-        0 <= int.tryParse(value) && int.tryParse(value) <= 255
-            ? null
-            : '数值超出范围';
+    final validator = (String value) {
+      if (value.isEmpty) {
+        return '请输入数值';
+      }
+      return 0 <= int.tryParse(value) && int.tryParse(value) <= 255
+          ? null
+          : '数值超出范围';
+    };
 
     final rController = TextEditingController();
     final gController = TextEditingController();
@@ -513,10 +563,11 @@ class _ControllerPageState extends State<ControllerPage> {
                     setState(() {
                       mainStore.setColor(
                         Color.fromARGB(
-                            0xFF,
-                            int.parse(rController.value.text),
-                            int.parse(gController.value.text),
-                            int.parse(bController.value.text)),
+                          0xFF,
+                          int.parse(rController.value.text),
+                          int.parse(gController.value.text),
+                          int.parse(bController.value.text),
+                        ),
                       );
                     });
                     Navigator.of(context).pop();

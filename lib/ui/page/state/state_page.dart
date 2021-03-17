@@ -14,32 +14,30 @@ class StatePage extends StatefulWidget {
   _StatePageState createState() => _StatePageState();
 }
 
-class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
-  AnimationController _controller;
+class _StatePageState extends State<StatePage> with TickerProviderStateMixin, AutomaticKeepAliveClientMixin  {
+  AnimationController _checkController;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 3),
-    );
-    _controller.repeat();
+    _checkController =
+        AnimationController(duration: Duration(seconds: 4), vsync: this);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
+    _checkController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      body: Observer(
-        builder: (_) => buildBody(),
-      ),
+      body: Observer(builder: (_) => buildBody()),
     );
   }
 
@@ -56,7 +54,10 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
             ),
           ),
           SizedBox(height: 10),
-          Text(mainStore.stateHint, style: TextStyle(color: Colors.white),),
+          Text(
+            mainStore.stateHint,
+            style: TextStyle(color: Colors.white),
+          ),
           SizedBox(height: 20),
           Container(
             height: 100,
@@ -204,12 +205,14 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
 
   Widget buildHeaderHint() {
     if (mainStore.connectedDevice != null) {
+      _checkController.animateTo(0.4);
       return IconButton(
         padding: EdgeInsets.zero,
-        icon: Icon(
-          Icons.bluetooth_audio,
-          color: Colors.white,
-          size: 50,
+        icon: SizedBox(
+          height: 50,
+          width: 50,
+          child: Lottie.asset('assets/lottie/checked.json',
+              controller: _checkController),
         ),
         onPressed: () {},
       );
@@ -225,7 +228,6 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin {
             width: 50,
             child: Lottie.asset(
               'assets/lottie/bluetooth.json',
-              controller: _controller,
             ),
           );
         } else {

@@ -5,8 +5,8 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'constant.dart';
-import 'get_cmykw.dart';
+import '../constant.dart';
+import '../../../utils/get_cmykw.dart';
 
 part 'main_store.g.dart';
 
@@ -56,7 +56,7 @@ abstract class MainStoreBase with Store {
 
   @action
   Future<void> setColor(Color color) async {
-    selectColor = color;
+    selectColor = Color(color.value | 0xFF000000);
     cmykw =
         RGB_CMYG(Rgb2CMYG(rgb: [color.red, color.green, color.blue], TS: M_TS));
   }
@@ -90,13 +90,37 @@ abstract class MainStoreBase with Store {
 
   @action
   Future<void> sendStart() async {
-    final data = [0, 0, 0, 0, 0, 0x40, 0x40, 0xFF, 0x1, 0x0d, 0x0a];
+    final data = [
+      cmykw.c,
+      cmykw.y,
+      cmykw.m,
+      cmykw.k,
+      cmykw.w,
+      0x40,
+      0x40,
+      0xFF,
+      0x1,
+      0x0d,
+      0x0a
+    ];
     await sendData(data);
   }
 
   @action
   Future<void> sendPush() async {
-    final data = [0, 0, 0, 0, 0, 0x40, 0x40, 0x1, 0xFF, 0x0d, 0x0a];
+    final data = [
+      cmykw.c,
+      cmykw.y,
+      cmykw.m,
+      cmykw.k,
+      cmykw.w,
+      0x40,
+      0x40,
+      0x1,
+      0xFF,
+      0x0d,
+      0x0a
+    ];
     await sendData(data);
   }
 
@@ -126,12 +150,18 @@ abstract class MainStoreBase with Store {
   }
 
   @action
+  void setHint(String value) {
+    stateHint = value;
+  }
+
+  @action
   Future<void> findAndConnect() async {
     try {
       stateHint = '连接中, 请稍后...';
       final adapter = FlutterBlue.instance;
       final connectedData = await adapter.connectedDevices;
-      final data = connectedData.where((element) => element.id.id == HC08_MAC).toList();
+      final data =
+          connectedData.where((element) => element.id.id == HC08_MAC).toList();
       if (data.isNotEmpty) {
         await connectDevice(data[0], true);
       } else {
@@ -148,18 +178,20 @@ abstract class MainStoreBase with Store {
           });
         }, onDone: () {
           if (!deviceCompleter.isCompleted) {
+            stateHint = '没有找到设备...';
             deviceCompleter.completeError(Exception('没有找到设备'));
           }
-
         }, onError: (_) {
           if (!deviceCompleter.isCompleted) {
+            stateHint = '寻找设备出错!';
             deviceCompleter.completeError(Exception('寻找设备出错!'));
           }
         });
         var device = await deviceCompleter.future;
         await connectDevice(device);
       }
-    } on Exception catch(e) {
+    } on Exception {
+      stateHint = '连接失败, 点击重试...';
       rethrow;
     }
   }
