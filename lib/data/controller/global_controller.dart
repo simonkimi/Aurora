@@ -1,75 +1,63 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
+import 'package:blue_demo/ui/data/constant.dart';
+import 'package:blue_demo/utils/get_cmykw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../constant.dart';
-import '../../../utils/get_cmykw.dart';
+import 'package:get/get.dart';
 
-part 'main_store.g.dart';
+class GlobalController extends GetxController {
+  var selectColor = Rx<Color>(Colors.blue);
 
-final mainStore = MainStore();
+  var nowColor = Rx<Color>();
 
-class MainStore = MainStoreBase with _$MainStore;
+  var isScanning = false.obs;
 
-abstract class MainStoreBase with Store {
-  @observable
-  Color selectColor;
+  var stateHint = '点击蓝牙图标开始连接'.obs;
 
-  @observable
-  Color nowColor;
+  var connectedDevice = Rx<BluetoothDevice>();
 
-  @observable
-  bool isScanning = false;
+  var characteristic = Rx<BluetoothCharacteristic>();
 
-  @observable
-  String stateHint = '点击蓝牙图标开始连接';
+  var cmykw = CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0).obs;
 
-  @observable
-  BluetoothDevice connectedDevice;
+  var nowCmykw = CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0).obs;
 
-  @observable
-  BluetoothCharacteristic characteristic;
-
-  @observable
-  var cmykw = CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0);
-
-  @observable
-  var nowCmykw = CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0);
-
-  @action
   Future<void> init() async {
     final pref = await SharedPreferences.getInstance();
     final color = pref.getInt('color') ?? Colors.blue.value;
-    selectColor = Color(color | 0xFF000000);
-    nowColor = selectColor;
-    cmykw = RGB_CMYG(Rgb2CMYG(
-        rgb: [selectColor.red, selectColor.green, selectColor.blue], TS: M_TS));
+    selectColor(Color(color | 0xFF000000));
+    nowColor(Color(color | 0xFF000000));
+    cmykw(RGB_CMYG(Rgb2CMYG(rgb: [
+      selectColor.value.red,
+      selectColor.value.green,
+      selectColor.value.blue
+    ], TS: M_TS)));
 
     Stream.periodic(Duration(seconds: 2)).listen((event) async {
       final pref = await SharedPreferences.getInstance();
-      pref.setInt('color', selectColor.value);
+      pref.setInt('color', selectColor.value.value);
     });
   }
 
-  @action
   Future<void> setColor(Color color) async {
-    selectColor = Color(color.value | 0xFF000000);
-    cmykw =
-        RGB_CMYG(Rgb2CMYG(rgb: [color.red, color.green, color.blue], TS: M_TS));
+    selectColor(Color(color.value | 0xFF000000));
+    print(color.value);
+    cmykw(RGB_CMYG(
+        Rgb2CMYG(rgb: [color.red, color.green, color.blue], TS: M_TS)));
   }
 
-  @action
   Future<void> sendColor() async {
-    if (connectedDevice != null && characteristic != null) {
+    if (connectedDevice.value != null && characteristic.value != null) {
       final data = [
-        cmykw.c,
-        cmykw.y,
-        cmykw.m,
-        cmykw.k,
-        cmykw.w,
+        cmykw.value.c,
+        cmykw.value.y,
+        cmykw.value.m,
+        cmykw.value.k,
+        cmykw.value.w,
         0x40,
         0x40,
         0x01,
@@ -78,24 +66,22 @@ abstract class MainStoreBase with Store {
         0x0a
       ];
       await sendData(data);
-      nowColor = selectColor;
+      nowColor(selectColor.value);
     }
   }
 
-  @action
   Future<void> sendPause() async {
     final data = [0, 0, 0, 0, 0, 0x40, 0x40, 0xFF, 0x0, 0x0d, 0x0a];
     await sendData(data);
   }
 
-  @action
   Future<void> sendStart() async {
     final data = [
-      cmykw.c,
-      cmykw.y,
-      cmykw.m,
-      cmykw.k,
-      cmykw.w,
+      cmykw.value.c,
+      cmykw.value.y,
+      cmykw.value.m,
+      cmykw.value.k,
+      cmykw.value.w,
       0x40,
       0x40,
       0xFF,
@@ -106,14 +92,13 @@ abstract class MainStoreBase with Store {
     await sendData(data);
   }
 
-  @action
   Future<void> sendPush() async {
     final data = [
-      cmykw.c,
-      cmykw.y,
-      cmykw.m,
-      cmykw.k,
-      cmykw.w,
+      cmykw.value.c,
+      cmykw.value.y,
+      cmykw.value.m,
+      cmykw.value.k,
+      cmykw.value.w,
       0x40,
       0x40,
       0x1,
@@ -124,16 +109,14 @@ abstract class MainStoreBase with Store {
     await sendData(data);
   }
 
-  @action
   Future<void> sendPop() async {
     final data = [0, 0, 0, 0, 0, 0x40, 0x40, 0x0, 0xFF, 0x0d, 0x0a];
     await sendData(data);
   }
 
-  @action
   Future<void> sendData(List<int> data) async {
-    if (connectedDevice != null && characteristic != null) {
-      await characteristic.write(data, withoutResponse: false);
+    if (connectedDevice.value != null && characteristic.value != null) {
+      await characteristic.value.write(data, withoutResponse: false);
       print(
           '发送数据: ${data.map((e) => e.toRadixString(16)).map((e) => e.length == 1 ? '0$e' : e).join(' ')}');
       print('发送数据: ${data.map((e) => e.toString()).join(' ')}');
@@ -143,21 +126,21 @@ abstract class MainStoreBase with Store {
   }
 
   Future<void> setBleListen() async {
-    await characteristic.setNotifyValue(true);
-    characteristic.value.listen((event) {
+    await characteristic.value.setNotifyValue(true);
+    characteristic.value.value.listen((event) {
       print('收到数据: $event');
     });
   }
 
-  @action
   void setHint(String value) {
-    stateHint = value;
+    stateHint.value = value;
   }
 
-  @action
   Future<void> findAndConnect() async {
+    StreamSubscription<bool> scanListener;
+    StreamSubscription<List<ScanResult>> resultListener;
     try {
-      stateHint = '连接中, 请稍后...';
+      stateHint.value = '连接中, 请稍后...';
       final adapter = FlutterBlue.instance;
       final connectedData = await adapter.connectedDevices;
       final data =
@@ -165,9 +148,9 @@ abstract class MainStoreBase with Store {
       if (data.isNotEmpty) {
         await connectDevice(data[0], true);
       } else {
-        adapter.startScan(timeout: Duration(seconds: 10));
+        await adapter.startScan(timeout: Duration(seconds: 10));
         var deviceCompleter = Completer<BluetoothDevice>();
-        adapter.scanResults.listen((event) {
+        resultListener = adapter.scanResults.listen((event) {
           event.forEach((element) {
             if (element.device.id.id == HC08_MAC) {
               print(element.device.id.id);
@@ -176,53 +159,55 @@ abstract class MainStoreBase with Store {
               }
             }
           });
-        }, onDone: () {
-          if (!deviceCompleter.isCompleted) {
-            stateHint = '没有找到设备...';
-            deviceCompleter.completeError(Exception('没有找到设备'));
-          }
-        }, onError: (_) {
-          if (!deviceCompleter.isCompleted) {
-            stateHint = '寻找设备出错!';
-            deviceCompleter.completeError(Exception('寻找设备出错!'));
+        });
+        scanListener = adapter.isScanning.listen((event) {
+          if (event) {
+            stateHint.value = '连接中, 请稍后...';
+          } else {
+            if (!deviceCompleter.isCompleted) {
+              deviceCompleter.completeError(Exception('没有发现设备'));
+            }
           }
         });
         var device = await deviceCompleter.future;
         await connectDevice(device);
       }
-    } on Exception {
-      stateHint = '连接失败, 点击重试...';
+    } on Exception catch(e) {
+      print(e);
+      stateHint.value = '连接失败, 点击重试';
       rethrow;
+    } finally {
+      scanListener?.cancel();
+      resultListener?.cancel();
     }
   }
 
-  @action
   Future<void> connectDevice(BluetoothDevice device,
       [bool isConnect = false]) async {
     try {
       if (!isConnect) {
         await device.connect(timeout: Duration(seconds: 10));
       }
-      connectedDevice = device;
+      connectedDevice(device);
       final service = await device.discoverServices();
       service.forEach((element) {
         if (element.uuid.toString() == BLE_SERVICE_UUID) {
           element.characteristics.forEach((element) {
             if (element.uuid.toString() == BLE_READ_WRITE_UUID) {
-              characteristic = element;
+              characteristic(element);
             }
           });
         }
       });
       await FlutterBlue.instance.stopScan();
-      stateHint = '连接成功!';
-      if (characteristic == null) {
-        stateHint = '没有找到蓝牙对应的服务!';
+      stateHint.value = '连接成功!';
+      if (characteristic.value == null) {
+        stateHint.value = '没有找到蓝牙对应的服务!';
         throw Exception('没有找到蓝牙对应的服务!');
       }
       setBleListen();
     } on TimeoutException {
-      stateHint = '蓝牙连接超时!';
+      stateHint.value = '蓝牙连接超时!';
       throw Exception('蓝牙连接超时');
     }
   }

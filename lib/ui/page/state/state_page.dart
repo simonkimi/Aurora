@@ -1,43 +1,28 @@
+import 'package:blue_demo/data/controller/global_controller.dart';
 import 'package:blue_demo/ui/components/dash_line.dart';
-import 'package:blue_demo/ui/data/store/main_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:blue_demo/utils/utils.dart';
 
-class StatePage extends StatefulWidget {
-  const StatePage({Key key}) : super(key: key);
+class StatePage extends HookWidget {
+  StatePage({Key key}) : super(key: key);
 
-  @override
-  _StatePageState createState() => _StatePageState();
-}
 
-class _StatePageState extends State<StatePage> with TickerProviderStateMixin, AutomaticKeepAliveClientMixin  {
-  AnimationController _checkController;
 
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkController =
-        AnimationController(duration: Duration(seconds: 4), vsync: this);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _checkController.dispose();
-  }
+  final controller = Get.find<GlobalController>();
 
   @override
   Widget build(BuildContext context) {
+    final _checkController =
+    useAnimationController(duration: Duration(seconds: 4));
     return Scaffold(
       appBar: buildAppBar(),
-      body: Observer(builder: (_) => buildBody()),
+      body: buildBody(),
     );
   }
 
@@ -50,14 +35,14 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin, Au
           Container(
             height: 50,
             child: Center(
-              child: buildHeaderHint(),
+              child: Obx(() => buildHeaderHint()),
             ),
           ),
           SizedBox(height: 10),
-          Text(
-            mainStore.stateHint,
-            style: TextStyle(color: Colors.white),
-          ),
+          Obx(() => Text(
+                controller.stateHint.value,
+                style: TextStyle(color: Colors.white),
+              )),
           SizedBox(height: 20),
           Container(
             height: 100,
@@ -101,10 +86,10 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin, Au
                         ),
                       ),
                       Expanded(child: SizedBox()),
-                      Text(
-                        mainStore.connectedDevice != null ? '已连接' : '未连接',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      Obx(() => Text(
+                            controller.connectedDevice.value != null ? '已连接' : '未连接',
+                            style: TextStyle(color: Colors.white),
+                          )),
                     ],
                   ),
                 ],
@@ -129,70 +114,75 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin, Au
                       style: TextStyle(fontSize: 20),
                     ),
                     SizedBox(height: 10),
-                    Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Color(0XFF22F5FF),
-                          child: SvgPicture.asset(
-                            'assets/svg/motor.svg',
-                            width: 26,
+                    Obx(() => Card(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Color(0XFF22F5FF),
+                              child: SvgPicture.asset(
+                                'assets/svg/motor.svg',
+                                width: 26,
+                              ),
+                            ),
+                            title: Text('前置电机1'),
+                            subtitle:
+                                Text('转速 ${controller.nowCmykw.value.c.to3()}'),
                           ),
-                        ),
-                        title: Text('前置电机1'),
-                        subtitle: Text('转速 ${mainStore.nowCmykw.c.to3()}'),
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Color(0XFFFFFF2C),
-                          child: SvgPicture.asset(
-                            'assets/svg/motor.svg',
-                            width: 26,
+                        )),
+                    Obx(() => Card(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Color(0XFFFFFF2C),
+                              child: SvgPicture.asset(
+                                'assets/svg/motor.svg',
+                                width: 26,
+                              ),
+                            ),
+                            title: Text('前置电机2'),
+                            subtitle:
+                                Text('转速 ${controller.nowCmykw.value.y.to3()}'),
                           ),
-                        ),
-                        title: Text('前置电机2'),
-                        subtitle: Text('转速 ${mainStore.nowCmykw.y.to3()}'),
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Color(0XFFFF2CD9),
-                          child: SvgPicture.asset(
-                            'assets/svg/motor.svg',
-                            width: 26,
-                            color: Colors.white,
+                        )),
+                    Obx(() => Card(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Color(0XFFFF2CD9),
+                              child: SvgPicture.asset(
+                                'assets/svg/motor.svg',
+                                width: 26,
+                                color: Colors.white,
+                              ),
+                            ),
+                            title: Text('前置电机3'),
+                            subtitle:
+                                Text('转速 ${controller.nowCmykw.value.m.to3()}'),
                           ),
-                        ),
-                        title: Text('前置电机3'),
-                        subtitle: Text('转速 ${mainStore.nowCmykw.m.to3()}'),
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Color(0XFF3A3A3A),
-                          child: SvgPicture.asset('assets/svg/motor.svg',
-                              width: 26, color: Colors.white),
-                        ),
-                        title: Text('后置电机1'),
-                        subtitle: Text('转速 ${mainStore.nowCmykw.k.to3()}'),
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Color(0XFFEFF3FF),
-                          child: SvgPicture.asset(
-                            'assets/svg/motor.svg',
-                            width: 26,
+                        )),
+                    Obx(() => Card(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Color(0XFF3A3A3A),
+                              child: SvgPicture.asset('assets/svg/motor.svg',
+                                  width: 26, color: Colors.white),
+                            ),
+                            title: Text('后置电机1'),
+                            subtitle:
+                                Text('转速 ${controller.nowCmykw.value.k.to3()}'),
                           ),
-                        ),
-                        title: Text('后置电机2'),
-                        subtitle: Text('转速 ${mainStore.nowCmykw.w.to3()}'),
-                      ),
-                    ),
+                        )),
+                    Obx(() => Card(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Color(0XFFEFF3FF),
+                              child: SvgPicture.asset(
+                                'assets/svg/motor.svg',
+                                width: 26,
+                              ),
+                            ),
+                            title: Text('后置电机2'),
+                            subtitle:
+                                Text('转速 ${controller.nowCmykw.value.w.to3()}'),
+                          ),
+                        )),
                   ],
                 ),
               ),
@@ -204,15 +194,14 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin, Au
   }
 
   Widget buildHeaderHint() {
-    if (mainStore.connectedDevice != null) {
-      _checkController.animateTo(0.4);
+    if (controller.connectedDevice.value != null) {
+      // _checkController.animateTo(0.4);
       return IconButton(
         padding: EdgeInsets.zero,
         icon: SizedBox(
           height: 50,
           width: 50,
-          child: Lottie.asset('assets/lottie/checked.json',
-              controller: _checkController),
+          child: Lottie.asset('assets/lottie/checked.json'),
         ),
         onPressed: () {},
       );
@@ -239,7 +228,7 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin, Au
               size: 50,
             ),
             onPressed: () {
-              mainStore.findAndConnect();
+              controller.findAndConnect();
             },
           );
         }

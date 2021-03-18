@@ -12,23 +12,23 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_blue: ^0.7.3
-  like_button: ^1.0.4
   shared_preferences: ^0.5.12+4
-  flutter_mobx: ^1.1.0+2
   bot_toast: ^3.0.5
   flutter_colorpicker: ^0.3.5
   lottie: ^0.7.0+1
   floating_action_bubble: 1.0.9
   flutter_svg: ^0.19.3
-  floor: ^0.14.0
+  floor: ^0.19.1
+  get: ^3.26.0
+  flutter_hooks: ^0.16.0
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^1.7.3
-  mobx_codegen: ^1.1.2
-  floor_generator: ^0.14.0
+  floor_generator: ^0.19.1
+  build_runner: ^1.9.0
+
 
 
 flutter:
