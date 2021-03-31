@@ -51,7 +51,7 @@ class _SearchPageState extends State<SearchPage> {
           transitionBuilder: (Widget child, Animation<double> animation) {
             return ScaleTransition(child: child, scale: animation);
           },
-          child: snapshot.data
+          child: snapshot.data!
               ? FloatingActionButton(
                   key: ValueKey('stop'),
                   onPressed: FlutterBlue.instance.stopScan,
@@ -129,7 +129,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                           ),
                         );
-                      })?.toList() ??
+                      }).toList() ??
                       [],
                 );
               },
@@ -170,7 +170,7 @@ class _SearchPageState extends State<SearchPage> {
                 return Column(
                   children: snapshot.data?.where((e) {
                         return e.device.name.isNotEmpty || _showNoName;
-                      })?.map((e) {
+                      }).map((e) {
                         return Card(
                           child: ListTile(
                             leading: Icon(Icons.bluetooth),
@@ -198,7 +198,7 @@ class _SearchPageState extends State<SearchPage> {
                             },
                           ),
                         );
-                      })?.toList() ??
+                      }).toList() ??
                       [],
                 );
               },

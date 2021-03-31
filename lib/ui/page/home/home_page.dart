@@ -249,9 +249,9 @@ class HomePage extends StatelessWidget {
   }
 
   Row buildMotorItem({
-    Color background,
-    String leading,
-    String value,
+    required Color background,
+    required String leading,
+    required String value,
     Color color = Colors.black,
   }) {
     return Row(

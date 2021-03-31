@@ -8,14 +8,14 @@ import 'package:lottie/lottie.dart';
 import 'package:blue_demo/utils/utils.dart';
 
 class StatePage extends StatefulWidget {
-  const StatePage({Key key}) : super(key: key);
+  const StatePage({Key? key}) : super(key: key);
 
   @override
   _StatePageState createState() => _StatePageState();
 }
 
 class _StatePageState extends State<StatePage> with TickerProviderStateMixin, AutomaticKeepAliveClientMixin  {
-  AnimationController _checkController;
+  late AnimationController _checkController;
 
   @override
   bool get wantKeepAlive => true;
@@ -222,7 +222,7 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin, Au
       initialData: false,
       stream: FlutterBlue.instance.isScanning,
       builder: (c, snapshot) {
-        if (snapshot.data) {
+        if (snapshot.data!) {
           return SizedBox(
             height: 50,
             width: 50,
@@ -247,7 +247,7 @@ class _StatePageState extends State<StatePage> with TickerProviderStateMixin, Au
     );
   }
 
-  Widget buildAppBar() {
+  AppBar buildAppBar() {
     return AppBar(
       title: Text(
         '状态',

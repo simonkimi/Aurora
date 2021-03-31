@@ -9,7 +9,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:blue_demo/utils/utils.dart';
 
 class ControllerPage extends StatefulWidget {
-  const ControllerPage({Key key}) : super(key: key);
+  const ControllerPage({Key? key}) : super(key: key);
 
   @override
   _ControllerPageState createState() => _ControllerPageState();
@@ -22,7 +22,7 @@ class _ControllerPageState extends State<ControllerPage>
   var auroraState = '停机';
   var motorState = '送料';
 
-  AnimationController _actionController;
+  late AnimationController _actionController;
 
   @override
   void dispose() {
@@ -65,7 +65,7 @@ class _ControllerPageState extends State<ControllerPage>
               }
             },
             iconColor: Colors.blue,
-            icon: AnimatedIcons.menu_close,
+            animatedIconData: AnimatedIcons.menu_close,
             items: [
               Bubble(
                 title: "开始",
@@ -174,7 +174,7 @@ class _ControllerPageState extends State<ControllerPage>
               transitionBuilder: (Widget child, Animation<double> animation) {
                 return ScaleTransition(child: child, scale: animation);
               },
-              child: snapshot.data
+              child: snapshot.data!
                   ? FloatingActionButton(
                       key: ValueKey('stop'),
                       onPressed: FlutterBlue.instance.stopScan,
@@ -286,15 +286,15 @@ class _ControllerPageState extends State<ControllerPage>
                         children: [
                           buildColorCard(
                               'R',
-                              mainStore.selectColor?.red?.toString() ?? '0',
+                              mainStore.selectColor.red.toString(),
                               Colors.red),
                           buildColorCard(
                               'G',
-                              mainStore.selectColor?.green.toString() ?? '0',
+                              mainStore.selectColor.green.toString(),
                               Colors.green),
                           buildColorCard(
                               'B',
-                              mainStore.selectColor?.blue.toString() ?? '0',
+                              mainStore.selectColor.blue.toString(),
                               Colors.blue),
                         ],
                       ),
@@ -393,7 +393,7 @@ class _ControllerPageState extends State<ControllerPage>
     );
   }
 
-  Widget buildAppBar() {
+  AppBar buildAppBar() {
     return AppBar(
       title: Text(
         '控制',
@@ -487,11 +487,11 @@ class _ControllerPageState extends State<ControllerPage>
   }
 
   void selectColorByRGB() {
-    final validator = (String value) {
-      if (value.isEmpty) {
+    final validator = (String? value) {
+      if (value?.isEmpty ?? true) {
         return '请输入数值';
       }
-      return 0 <= int.tryParse(value) && int.tryParse(value) <= 255
+      return 0 <= int.tryParse(value!)! && int.tryParse(value)! <= 255
           ? null
           : '数值超出范围';
     };
@@ -559,7 +559,7 @@ class _ControllerPageState extends State<ControllerPage>
               ),
               TextButton(
                 onPressed: () {
-                  if (_formKey.currentState.validate()) {
+                  if (_formKey.currentState!.validate()) {
                     setState(() {
                       mainStore.setColor(
                         Color.fromARGB(

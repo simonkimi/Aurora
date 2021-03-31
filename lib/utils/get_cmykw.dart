@@ -3,7 +3,12 @@ import 'dart:math';
 //ignore_for_file: non_constant_identifier_names
 
 class CMYKW {
-  const CMYKW({this.c, this.m, this.y, this.k, this.w});
+  const CMYKW(
+      {required this.c,
+      required this.m,
+      required this.y,
+      required this.k,
+      required this.w});
 
   final int c;
   final int m;
@@ -176,7 +181,7 @@ class Rgb2CMYG {
   final List<int> rgb;
   final int TS;
 
-  Rgb2CMYG({this.rgb, this.TS});
+  Rgb2CMYG({required this.rgb, required this.TS});
 }
 
 class CMYGResult {

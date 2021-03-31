@@ -16,10 +16,10 @@ class MainStore = MainStoreBase with _$MainStore;
 
 abstract class MainStoreBase with Store {
   @observable
-  Color selectColor;
+  late Color selectColor;
 
   @observable
-  Color nowColor;
+  late Color? nowColor;
 
   @observable
   bool isScanning = false;
@@ -28,10 +28,10 @@ abstract class MainStoreBase with Store {
   String stateHint = '点击蓝牙图标开始连接';
 
   @observable
-  BluetoothDevice connectedDevice;
+  late BluetoothDevice? connectedDevice;
 
   @observable
-  BluetoothCharacteristic characteristic;
+  late BluetoothCharacteristic? characteristic;
 
   @observable
   var cmykw = CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0);
@@ -133,7 +133,7 @@ abstract class MainStoreBase with Store {
   @action
   Future<void> sendData(List<int> data) async {
     if (connectedDevice != null && characteristic != null) {
-      await characteristic.write(data, withoutResponse: false);
+      await characteristic!.write(data, withoutResponse: false);
       print(
           '发送数据: ${data.map((e) => e.toRadixString(16)).map((e) => e.length == 1 ? '0$e' : e).join(' ')}');
       print('发送数据: ${data.map((e) => e.toString()).join(' ')}');
@@ -143,8 +143,8 @@ abstract class MainStoreBase with Store {
   }
 
   Future<void> setBleListen() async {
-    await characteristic.setNotifyValue(true);
-    characteristic.value.listen((event) {
+    await characteristic!.setNotifyValue(true);
+    characteristic!.value.listen((event) {
       print('收到数据: $event');
     });
   }

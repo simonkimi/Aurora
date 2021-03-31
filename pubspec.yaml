@@ -6,29 +6,36 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0-0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_blue: ^0.7.3
-  like_button: ^1.0.4
-  shared_preferences: ^0.5.12+4
-  flutter_mobx: ^1.1.0+2
-  bot_toast: ^3.0.5
-  flutter_colorpicker: ^0.3.5
-  lottie: ^0.7.0+1
-  floating_action_bubble: 1.0.9
-  flutter_svg: ^0.19.3
-  floor: ^0.14.0
+  flutter_blue: ^0.8.0
+  shared_preferences: ^2.0.5
+  flutter_mobx: ^2.0.0-nullsafety.3
+  bot_toast: ^4.0.1
+  flutter_colorpicker: ^0.4.0
+  lottie: ^1.0.1
+
+  flutter_svg: ^0.21.0-nullsafety.0
+  floor: ^1.0.1
+
+  floating_action_bubble:
+    git:
+      url: https://github.com/simonkimi/floating_action_bubble.git
+      ref: ^2.0.0
+
+
+
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^1.7.3
-  mobx_codegen: ^1.1.2
-  floor_generator: ^0.14.0
+  build_runner: ^1.12.2
+  mobx_codegen: ^2.0.0-nullsafety.2
+  floor_generator: ^1.0.1
 
 
 flutter:
