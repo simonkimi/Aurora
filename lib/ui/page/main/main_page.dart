@@ -25,8 +25,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: WillPopScope(
         onWillPop: () async {
-          if (_lastQuitTime == null ||
-              DateTime
+          if (DateTime
                   .now()
                   .difference(_lastQuitTime)
                   .inSeconds > 1) {

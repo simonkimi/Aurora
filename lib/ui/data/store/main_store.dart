@@ -156,9 +156,8 @@ abstract class MainStoreBase with Store {
 
   @action
   Future<void> findAndConnect() async {
-    StreamSubscription<bool> scanListener;
-    StreamSubscription<List<ScanResult>> resultListener;
-
+    late StreamSubscription<bool> scanListener;
+    late StreamSubscription<List<ScanResult>> resultListener;
     try {
       stateHint = '连接中, 请稍后...';
       final adapter = FlutterBlue.instance;
@@ -180,19 +179,24 @@ abstract class MainStoreBase with Store {
             }
           });
         });
-
         scanListener = adapter.isScanning.listen((event) {
-
+          if (event) {
+            stateHint = '连接中, 请稍后...';
+          } else {
+            if (!deviceCompleter.isCompleted) {
+              deviceCompleter.completeError(Exception('没有发现设备'));
+            }
+          }
         });
-
-
-
         var device = await deviceCompleter.future;
         await connectDevice(device);
       }
     } on Exception {
       stateHint = '连接失败, 点击重试...';
       rethrow;
+    } finally {
+      scanListener.cancel();
+      resultListener.cancel();
     }
   }
 
