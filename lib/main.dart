@@ -1,6 +1,5 @@
 import 'package:blue_demo/ui/data/store/main_store.dart';
 import 'package:blue_demo/ui/page/main/main_page.dart';
-import 'package:blue_demo/ui/page/search/search_page.dart';
 import 'package:blue_demo/ui/page/state/state_page.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +24,6 @@ class MyApp extends StatelessWidget {
       builder: BotToastInit(),
       initialRoute: '/',
       routes: {
-        // '/': (context) => HomePage(),
-        '/search': (context) => SearchPage(),
         '/state': (context) => StatePage(),
         '/': (context) => MainPage(),
       },

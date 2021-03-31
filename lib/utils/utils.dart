@@ -1,5 +1,3 @@
-
-
 import 'package:blue_demo/ui/data/constant.dart';
 
 extension IntUtils on int {

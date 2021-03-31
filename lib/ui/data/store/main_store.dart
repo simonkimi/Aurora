@@ -16,10 +16,10 @@ class MainStore = MainStoreBase with _$MainStore;
 
 abstract class MainStoreBase with Store {
   @observable
-  late Color selectColor;
+  Color selectColor = Colors.blue;
 
   @observable
-  late Color? nowColor;
+  Color? nowColor;
 
   @observable
   bool isScanning = false;
@@ -28,10 +28,10 @@ abstract class MainStoreBase with Store {
   String stateHint = '点击蓝牙图标开始连接';
 
   @observable
-  late BluetoothDevice? connectedDevice;
+  BluetoothDevice? connectedDevice;
 
   @observable
-  late BluetoothCharacteristic? characteristic;
+  BluetoothCharacteristic? characteristic;
 
   @observable
   var cmykw = CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0);
@@ -43,7 +43,7 @@ abstract class MainStoreBase with Store {
   Future<void> init() async {
     final pref = await SharedPreferences.getInstance();
     final color = pref.getInt('color') ?? Colors.blue.value;
-    selectColor = Color(color | 0xFF000000);
+    this.selectColor = Color(color | 0xFF000000);
     nowColor = selectColor;
     cmykw = RGB_CMYG(Rgb2CMYG(
         rgb: [selectColor.red, selectColor.green, selectColor.blue], TS: M_TS));
