@@ -156,6 +156,9 @@ abstract class MainStoreBase with Store {
 
   @action
   Future<void> findAndConnect() async {
+    StreamSubscription<bool> scanListener;
+    StreamSubscription<List<ScanResult>> resultListener;
+
     try {
       stateHint = '连接中, 请稍后...';
       final adapter = FlutterBlue.instance;
@@ -165,9 +168,9 @@ abstract class MainStoreBase with Store {
       if (data.isNotEmpty) {
         await connectDevice(data[0], true);
       } else {
-        adapter.startScan(timeout: Duration(seconds: 10));
+        await adapter.startScan(timeout: Duration(seconds: 10));
         var deviceCompleter = Completer<BluetoothDevice>();
-        adapter.scanResults.listen((event) {
+        resultListener = adapter.scanResults.listen((event) {
           event.forEach((element) {
             if (element.device.id.id == HC08_MAC) {
               print(element.device.id.id);
@@ -176,17 +179,14 @@ abstract class MainStoreBase with Store {
               }
             }
           });
-        }, onDone: () {
-          if (!deviceCompleter.isCompleted) {
-            stateHint = '没有找到设备...';
-            deviceCompleter.completeError(Exception('没有找到设备'));
-          }
-        }, onError: (_) {
-          if (!deviceCompleter.isCompleted) {
-            stateHint = '寻找设备出错!';
-            deviceCompleter.completeError(Exception('寻找设备出错!'));
-          }
         });
+
+        scanListener = adapter.isScanning.listen((event) {
+
+        });
+
+
+
         var device = await deviceCompleter.future;
         await connectDevice(device);
       }

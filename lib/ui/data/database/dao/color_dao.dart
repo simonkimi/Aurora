@@ -4,7 +4,7 @@ import 'package:floor/floor.dart';
 @dao
 abstract class ColorDao {
   @Query('SELECT * FROM ColorEntity')
-  Future<ColorEntity> getAll();
+  Future<List<ColorEntity>> getAll();
 
   @insert
   Future<int> add(ColorEntity entity);
