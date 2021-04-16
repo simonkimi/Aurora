@@ -1,9 +1,12 @@
-import 'package:blue_demo/ui/data/database/database_helper.dart';
-import 'package:blue_demo/ui/data/store/main_store.dart';
 import 'package:blue_demo/ui/page/main/main_page.dart';
 import 'package:blue_demo/ui/page/state/state_page.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+
+import 'data/database/database_helper.dart';
+import 'data/store/main_store.dart';
+
+final mainStore = MainStore();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

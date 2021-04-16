@@ -1,16 +1,15 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:blue_demo/utils/get_cmykw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../constant.dart';
-import '../../../utils/get_cmykw.dart';
+import 'package:blue_demo/data/constant.dart';
 
 part 'main_store.g.dart';
 
-final mainStore = MainStore();
+
 
 class MainStore = MainStoreBase with _$MainStore;
 

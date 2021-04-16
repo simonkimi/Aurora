@@ -1,5 +1,5 @@
+import 'package:blue_demo/main.dart';
 import 'package:blue_demo/ui/components/dash_line.dart';
-import 'package:blue_demo/ui/data/store/main_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -14,7 +14,8 @@ class StatePage extends StatefulWidget {
   _StatePageState createState() => _StatePageState();
 }
 
-class _StatePageState extends State<StatePage> with TickerProviderStateMixin, AutomaticKeepAliveClientMixin  {
+class _StatePageState extends State<StatePage>
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late AnimationController _checkController;
 
   @override

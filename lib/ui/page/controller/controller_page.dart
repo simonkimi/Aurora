@@ -1,4 +1,4 @@
-import 'package:blue_demo/ui/data/store/main_store.dart';
+import 'package:blue_demo/main.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
@@ -284,10 +284,8 @@ class _ControllerPageState extends State<ControllerPage>
                     children: [
                       Row(
                         children: [
-                          buildColorCard(
-                              'R',
-                              mainStore.selectColor.red.toString(),
-                              Colors.red),
+                          buildColorCard('R',
+                              mainStore.selectColor.red.toString(), Colors.red),
                           buildColorCard(
                               'G',
                               mainStore.selectColor.green.toString(),

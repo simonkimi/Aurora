@@ -1,4 +1,6 @@
-import 'package:blue_demo/ui/data/constant.dart';
+
+
+import 'package:blue_demo/data/constant.dart';
 
 extension IntUtils on int {
   String toP() {
