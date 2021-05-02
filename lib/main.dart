@@ -5,13 +5,16 @@ import 'package:flutter/material.dart';
 
 import 'data/database/database_helper.dart';
 import 'data/store/main_store.dart';
+import 'data/store/task_store.dart';
 
 final mainStore = MainStore();
+final taskStore = TaskStore();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await mainStore.init();
   await DatabaseHelper().init();
+  await mainStore.init();
+  await taskStore.init();
   runApp(MyApp());
 }
 

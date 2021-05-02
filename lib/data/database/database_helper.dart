@@ -14,5 +14,7 @@ class DatabaseHelper {
     _database =
     await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   }
+
+  TaskDao get taskDao => _database.taskDao;
 }
 

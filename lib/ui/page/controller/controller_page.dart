@@ -43,6 +43,7 @@ class _ControllerPageState extends State<ControllerPage>
   }
 
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
@@ -363,12 +364,27 @@ class _ControllerPageState extends State<ControllerPage>
                         onTap: selectColorFromMaterialPicker,
                       ),
                     ),
+                    Card(
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.add),
+                        ),
+                        title: Text('添加任务'),
+                        subtitle: Text('将当前颜色添加至任务'),
+                        onTap: addToTask,
+                      ),
+                    ),
                   ],
                 )),
           ),
         ],
       ),
     );
+  }
+
+  void addToTask() {
+    taskStore.addTask(mainStore.selectColor.value);
   }
 
   Widget buildColorCard(String title, String value, Color color) {

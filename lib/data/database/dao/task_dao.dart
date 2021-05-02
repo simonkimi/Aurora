@@ -3,9 +3,15 @@ import 'package:floor/floor.dart';
 
 @dao
 abstract class TaskDao {
-  @Query('SELECT * FROM HistoryEntity ORDER BY createTime DESC')
+  @Query('SELECT * FROM TaskEntity ORDER BY id ASC')
   Future<List<TaskEntity>> getAll();
 
   @insert
-  Future<int> addHistory(TaskEntity entity);
+  Future<int> addTask(TaskEntity entity);
+
+  @update
+  Future<int> updateTask(TaskEntity entity);
+
+  @delete
+  Future<void> deleteTask(TaskEntity entity);
 }

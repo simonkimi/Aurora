@@ -36,6 +36,7 @@ class _StatePageState extends State<StatePage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: buildAppBar(),
       body: Observer(builder: (_) => buildBody()),

@@ -2,16 +2,25 @@ import 'package:floor/floor.dart';
 
 @Entity(tableName: 'TaskEntity')
 class TaskEntity {
-  TaskEntity(
-      {required this.id,
-      required this.delay,
-      required this.color,
-      required this.title});
+  TaskEntity({
+    this.id,
+    this.sort,
+    required this.color,
+    required this.c,
+    required this.m,
+    required this.y,
+    required this.k,
+    required this.w,
+  });
 
   @PrimaryKey(autoGenerate: true)
-  final int id;
+  int? id;
 
-  final int delay;
+  int? sort;
   final int color;
-  final String title;
+  final int c;
+  final int m;
+  final int y;
+  final int k;
+  final int w;
 }

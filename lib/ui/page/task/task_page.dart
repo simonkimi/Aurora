@@ -1,67 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:blue_demo/main.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:blue_demo/utils/utils.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
-class TaskPage extends StatefulWidget {
+class TaskPage extends StatelessWidget {
   const TaskPage({Key? key}) : super(key: key);
 
-  @override
-  _TaskPageState createState() => _TaskPageState();
-}
-
-class _TaskPageState extends State<TaskPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
       body: buildBody(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.add),
+        onPressed: () {
+          print(taskStore.taskList
+              .map((e) => (e.color & 0x00FFFFFF).toRadixString(16)));
+        },
+        child: Icon(Icons.send),
       ),
     );
   }
 
   Widget buildBody() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ListView(
-        children: [
-          Card(
+    return Observer(builder: (_) {
+      return ReorderableListView(
+        onReorder: taskStore.onListChange,
+        children: taskStore.taskList.map((e) {
+          return Slidable(
+            key: ValueKey('Task_${e.id}'),
             child: ListTile(
               leading: CircleAvatar(
-                backgroundColor: Color.fromARGB(255, 198, 40, 40),
+                backgroundColor: Color(e.color),
               ),
-              title: Text('#C62828'),
-              subtitle: Text('C: 1.0%  M: 29.5%  Y: 57.5%  K: 0.0%  W: 12.0%'),
+              title: Text('#${(e.color & 0x00FFFFFF).toRadixString(16).fill('0', 6)}'),
+              subtitle: Text(
+                  'C: ${e.c.toP()}  M: ${e.m.toP()}  Y: ${e.y.toP()}  K: ${e.k.toP()}  W: ${e.w.toP()}'),
             ),
-          ),
-          Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Color.fromARGB(255, 100, 255, 218),
+            actionPane: SlidableDrawerActionPane(),
+            secondaryActions: [
+              IconSlideAction(
+                caption: '删除',
+                color: Colors.red,
+                icon: Icons.delete,
+                onTap: () => taskStore.onDelete(e),
               ),
-              title: Text('#C62828'),
-              subtitle: Text('C: 49.5%  M: 11.0%  Y: 0.0%  K: 0.0%  W: 39.0%'),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Color.fromARGB(255, 61, 90, 254),
-              ),
-              title: Text('#C62828'),
-              subtitle: Text('C: 54.5%  M: 0.0%  Y: 21.5%  K: 0.0%  W: 24.5%'),
-            ),
-          ),
-        ],
-      ),
-    );
+            ],
+          );
+        }).toList(),
+      );
+    });
   }
 
   AppBar buildAppBar() {
     return AppBar(
       title: Text('任务', style: TextStyle(fontSize: 18)),
       centerTitle: true,
-        automaticallyImplyLeading: false,
+      automaticallyImplyLeading: false,
     );
   }
 }

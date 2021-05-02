@@ -1,5 +1,3 @@
-
-
 import 'package:blue_demo/data/constant.dart';
 
 extension IntUtils on int {
@@ -14,5 +12,12 @@ extension IntUtils on int {
     if (n >= 100) return n.toString();
     return List.generate(3 - n.toString().length, (index) => '0').join('') +
         n.toString();
+  }
+}
+
+extension StringHelper on String {
+  String fill(String char, int num) {
+    if (this.length >= num) return this;
+    return List.filled(num - this.length, char).join() + this;
   }
 }
