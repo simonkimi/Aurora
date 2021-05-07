@@ -12,9 +12,8 @@ class DatabaseHelper {
 
   Future<void> init() async {
     _database =
-    await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+        await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   }
 
   TaskDao get taskDao => _database.taskDao;
 }
-

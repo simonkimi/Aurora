@@ -206,7 +206,9 @@ class _StatePageState extends State<StatePage>
   }
 
   Widget buildHeaderHint() {
-    if (mainStore.connectedDevice != null && mainStore.characteristic != null && !mainStore.stateHint.contains('中')) {
+    if (mainStore.connectedDevice != null &&
+        mainStore.characteristic != null &&
+        !mainStore.stateHint.contains('中')) {
       _checkController.animateTo(0.4);
       return IconButton(
         padding: EdgeInsets.zero,

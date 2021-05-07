@@ -33,7 +33,8 @@ class TaskPage extends StatelessWidget {
               leading: CircleAvatar(
                 backgroundColor: Color(e.color),
               ),
-              title: Text('#${(e.color & 0x00FFFFFF).toRadixString(16).fill('0', 6)}'),
+              title: Text(
+                  '#${(e.color & 0x00FFFFFF).toRadixString(16).fill('0', 6)}'),
               subtitle: Text(
                   'C: ${e.c.toP()}  M: ${e.m.toP()}  Y: ${e.y.toP()}  K: ${e.k.toP()}  W: ${e.w.toP()}'),
             ),

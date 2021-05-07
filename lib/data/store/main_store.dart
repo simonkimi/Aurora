@@ -172,7 +172,6 @@ abstract class MainStoreBase with Store {
     stateHint = value;
   }
 
-
   // 寻找并且连接设备
   @action
   Future<void> findAndConnect() async {
@@ -184,9 +183,11 @@ abstract class MainStoreBase with Store {
       final connectedData = await adapter.connectedDevices;
       final data =
           connectedData.where((element) => element.id.id == HC08_MAC).toList();
-      if (data.isNotEmpty) {  // 当前设备已经连接, 获取设备状态
+      if (data.isNotEmpty) {
+        // 当前设备已经连接, 获取设备状态
         await connectDevice(data[0], true);
-      } else {  // 当前设备未连接
+      } else {
+        // 当前设备未连接
         print('未连接设备, 开始扫描设备...');
         await adapter.startScan(timeout: Duration(seconds: 10));
         var deviceCompleter = Completer<BluetoothDevice>();
@@ -213,7 +214,7 @@ abstract class MainStoreBase with Store {
         print('扫描设备完成, 设备:${device.name}');
         await connectDevice(device);
       }
-    } on Exception catch(e) {
+    } on Exception catch (e) {
       setHint('连接失败, 点击重试...');
       BotToast.showText(text: e.toString());
       rethrow;

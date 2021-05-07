@@ -1,4 +1,3 @@
-
 import 'package:blue_demo/ui/page/controller/controller_page.dart';
 import 'package:blue_demo/ui/page/state/state_page.dart';
 import 'package:blue_demo/ui/page/task/task_page.dart';
@@ -25,10 +24,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: WillPopScope(
         onWillPop: () async {
-          if (DateTime
-                  .now()
-                  .difference(_lastQuitTime)
-                  .inSeconds > 1) {
+          if (DateTime.now().difference(_lastQuitTime).inSeconds > 1) {
             BotToast.showText(text: '再按一次退出');
             _lastQuitTime = DateTime.now();
             return false;
