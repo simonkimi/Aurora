@@ -120,6 +120,7 @@ abstract class MainStoreBase with Store {
       0x0d,
       0x0a
     ];
+    nowColor = selectColor;
     await sendData(data);
   }
 
