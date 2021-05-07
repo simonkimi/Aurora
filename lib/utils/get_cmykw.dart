@@ -3,12 +3,13 @@ import 'dart:math';
 //ignore_for_file: non_constant_identifier_names
 
 class CMYKW {
-  const CMYKW(
-      {required this.c,
-      required this.m,
-      required this.y,
-      required this.k,
-      required this.w});
+  const CMYKW({
+    required this.c,
+    required this.m,
+    required this.y,
+    required this.k,
+    required this.w,
+  });
 
   final int c;
   final int m;

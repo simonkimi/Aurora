@@ -7,6 +7,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:blue_demo/utils/utils.dart';
+import 'package:blue_demo/utils/get_cmykw.dart';
 
 class ControllerPage extends StatefulWidget {
   const ControllerPage({Key? key}) : super(key: key);
@@ -160,11 +161,23 @@ class _ControllerPageState extends State<ControllerPage>
                   }
                 },
               ),
+              Bubble(
+                icon: Icons.widgets,
+                title: '输入',
+                iconColor: Colors.white,
+                bubbleColor: Colors.blue,
+                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                onPress: () async {
+                  try {
+                    _actionController.reverse();
+                    await showCmykwBuilder(context);
+                  } on Exception catch (e) {
+                    showMessage(context, '出现错误: ${e.toString()}');
+                  }
+                },
+              ),
             ],
           );
-
-          //   ],
-          // );
         }
         return StreamBuilder<bool>(
           stream: FlutterBlue.instance.isScanning,
@@ -205,7 +218,121 @@ class _ControllerPageState extends State<ControllerPage>
   }
 
   void showMessage(BuildContext context, String data) {
-    BotToast.showText(text: data, duration: Duration(milliseconds: 500));
+    BotToast.showText(text: data);
+  }
+
+  Future<void> showCmykwBuilder(BuildContext context) async {
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+    final String? Function(String?) validator = (String? value) {
+      final number = int.tryParse(value ?? '') ?? 0;
+      if (0 <= number && number <= 200) return null;
+      return '数值错误';
+    };
+
+    final cController = TextEditingController()
+      ..text = mainStore.cmykw.c.toString();
+    final mController = TextEditingController()
+      ..text = mainStore.cmykw.m.toString();
+    final yController = TextEditingController()
+      ..text = mainStore.cmykw.y.toString();
+    final kController = TextEditingController()
+      ..text = mainStore.cmykw.k.toString();
+    final wController = TextEditingController()
+      ..text = mainStore.cmykw.w.toString();
+
+    final CMYKW? result = await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('手动输入'),
+            content: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: ListBody(
+                  children: [
+                    TextFormField(
+                      controller: cController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'C',
+                      ),
+                      validator: validator,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                    ),
+                    TextFormField(
+                      controller: mController,
+                      decoration: const InputDecoration(
+                        labelText: 'M',
+                      ),
+                      validator: validator,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                    ),
+                    TextFormField(
+                      controller: yController,
+                      decoration: const InputDecoration(
+                        labelText: 'Y',
+                      ),
+                      validator: validator,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                    ),
+                    TextFormField(
+                      controller: kController,
+                      decoration: const InputDecoration(
+                        labelText: 'K',
+                      ),
+                      validator: validator,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                    ),
+                    TextFormField(
+                      controller: wController,
+                      decoration: const InputDecoration(
+                        labelText: 'W',
+                      ),
+                      validator: validator,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    Navigator.of(context).pop(CMYKW(
+                      c: int.tryParse(cController.text) ?? 0,
+                      m: int.tryParse(mController.text) ?? 0,
+                      y: int.tryParse(yController.text) ?? 0,
+                      k: int.tryParse(kController.text) ?? 0,
+                      w: int.tryParse(wController.text) ?? 0,
+                    ));
+                  }
+                },
+                child: const Text('确定'),
+                style: ButtonStyle(
+                  foregroundColor: MaterialStateProperty.all(Colors.white),
+                  backgroundColor:
+                      MaterialStateProperty.all(Theme.of(context).primaryColor),
+                ),
+              )
+            ],
+          );
+        });
+    if (result != null) {
+      await mainStore.sendCmykw(result);
+      showMessage(context, '已发送');
+    }
   }
 
   Widget buildBody() {
@@ -272,14 +399,15 @@ class _ControllerPageState extends State<ControllerPage>
                 ),
               ),
               Positioned(
-                left: 5,
+                left: 20,
+                right: 10,
                 bottom: -45,
                 child: Container(
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.all(Radius.circular(20))),
                   width: 400,
-                  height: 120,
+                  height: 130,
                   padding: EdgeInsets.all(10),
                   child: Column(
                     children: [
@@ -385,6 +513,7 @@ class _ControllerPageState extends State<ControllerPage>
 
   void addToTask() {
     taskStore.addTask(mainStore.selectColor.value);
+    BotToast.showText(text: '添加成功!');
   }
 
   Widget buildColorCard(String title, String value, Color color) {

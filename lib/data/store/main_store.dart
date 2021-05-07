@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:blue_demo/utils/get_cmykw.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mobx/mobx.dart';
@@ -79,6 +80,25 @@ abstract class MainStoreBase with Store {
     }
   }
 
+  Future<void> sendCmykw(CMYKW cmykw) async {
+    if (connectedDevice != null && characteristic != null) {
+      final data = [
+        cmykw.c,
+        cmykw.y,
+        cmykw.m,
+        cmykw.k,
+        cmykw.w,
+        0x40,
+        0x40,
+        0x01,
+        0x01,
+        0x0d,
+        0x0a
+      ];
+      await sendData(data);
+    }
+  }
+
   @action
   Future<void> sendPause() async {
     final data = [0, 0, 0, 0, 0, 0x40, 0x40, 0xFF, 0x0, 0x0d, 0x0a];
@@ -151,19 +171,22 @@ abstract class MainStoreBase with Store {
     stateHint = value;
   }
 
+
+  // 寻找并且连接设备
   @action
   Future<void> findAndConnect() async {
-    late StreamSubscription<bool> scanListener;
-    late StreamSubscription<List<ScanResult>> resultListener;
+    StreamSubscription<bool>? scanListener;
+    StreamSubscription<List<ScanResult>>? resultListener;
     try {
-      stateHint = '连接中, 请稍后...';
+      setHint('连接中, 请稍后...');
       final adapter = FlutterBlue.instance;
       final connectedData = await adapter.connectedDevices;
       final data =
           connectedData.where((element) => element.id.id == HC08_MAC).toList();
-      if (data.isNotEmpty) {
+      if (data.isNotEmpty) {  // 当前设备已经连接, 获取设备状态
         await connectDevice(data[0], true);
-      } else {
+      } else {  // 当前设备未连接
+        print('未连接设备, 开始扫描设备...');
         await adapter.startScan(timeout: Duration(seconds: 10));
         var deviceCompleter = Completer<BluetoothDevice>();
         resultListener = adapter.scanResults.listen((event) {
@@ -178,7 +201,7 @@ abstract class MainStoreBase with Store {
         });
         scanListener = adapter.isScanning.listen((event) {
           if (event) {
-            stateHint = '连接中, 请稍后...';
+            setHint('连接中, 请稍后...');
           } else {
             if (!deviceCompleter.isCompleted) {
               deviceCompleter.completeError(Exception('没有发现设备'));
@@ -186,14 +209,16 @@ abstract class MainStoreBase with Store {
           }
         });
         var device = await deviceCompleter.future;
+        print('扫描设备完成, 设备:${device.name}');
         await connectDevice(device);
       }
-    } on Exception {
-      stateHint = '连接失败, 点击重试...';
+    } on Exception catch(e) {
+      setHint('连接失败, 点击重试...');
+      BotToast.showText(text: e.toString());
       rethrow;
     } finally {
-      scanListener.cancel();
-      resultListener.cancel();
+      scanListener?.cancel();
+      resultListener?.cancel();
     }
   }
 
@@ -202,8 +227,9 @@ abstract class MainStoreBase with Store {
       [bool isConnect = false]) async {
     try {
       if (!isConnect) {
-        await device.connect(timeout: Duration(seconds: 10));
+        print('设备未连接, 准备连接...');
       }
+      await device.connect(timeout: Duration(seconds: 10));
       connectedDevice = device;
       final service = await device.discoverServices();
       service.forEach((element) {
@@ -216,7 +242,7 @@ abstract class MainStoreBase with Store {
         }
       });
       await FlutterBlue.instance.stopScan();
-      stateHint = '连接成功!';
+      setHint('连接成功!');
       if (characteristic == null) {
         stateHint = '没有找到蓝牙对应的服务!';
         throw Exception('没有找到蓝牙对应的服务!');

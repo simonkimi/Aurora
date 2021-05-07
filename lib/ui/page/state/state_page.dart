@@ -206,15 +206,17 @@ class _StatePageState extends State<StatePage>
   }
 
   Widget buildHeaderHint() {
-    if (mainStore.connectedDevice != null) {
+    if (mainStore.connectedDevice != null && mainStore.characteristic != null && !mainStore.stateHint.contains('中')) {
       _checkController.animateTo(0.4);
       return IconButton(
         padding: EdgeInsets.zero,
         icon: SizedBox(
           height: 50,
           width: 50,
-          child: Lottie.asset('assets/lottie/checked.json',
-              controller: _checkController),
+          child: Lottie.asset(
+            'assets/lottie/checked.json',
+            controller: _checkController,
+          ),
         ),
         onPressed: () {},
       );
@@ -224,7 +226,7 @@ class _StatePageState extends State<StatePage>
       initialData: false,
       stream: FlutterBlue.instance.isScanning,
       builder: (c, snapshot) {
-        if (snapshot.data!) {
+        if (snapshot.data! || mainStore.stateHint.contains('中')) {
           return SizedBox(
             height: 50,
             width: 50,
