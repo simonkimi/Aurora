@@ -7,12 +7,13 @@ class DashedLine extends StatelessWidget {
   final int count; // 个数，密度
   final Color color;
 
-  DashedLine(
-      {this.axis = Axis.horizontal,
-      this.width = 1,
-      this.height = 1,
-      this.count = 10,
-      this.color = Colors.black});
+  DashedLine({
+    this.axis = Axis.horizontal,
+    this.width = 1,
+    this.height = 1,
+    this.count = 10,
+    this.color = Colors.black,
+  });
 
   @override
   Widget build(BuildContext context) {
