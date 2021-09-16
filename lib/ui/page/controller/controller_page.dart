@@ -9,6 +9,12 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:blue_demo/utils/utils.dart';
 import 'package:blue_demo/utils/get_cmykw.dart';
 
+
+enum AppBarAction {
+  CMYKWConfig,
+}
+
+
 class ControllerPage extends StatefulWidget {
   const ControllerPage({Key? key}) : super(key: key);
 
@@ -39,7 +45,7 @@ class _ControllerPageState extends State<ControllerPage>
     super.initState();
     _actionController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 260),
+      duration: const Duration(milliseconds: 260),
     );
   }
 
@@ -70,11 +76,11 @@ class _ControllerPageState extends State<ControllerPage>
             animatedIconData: AnimatedIcons.menu_close,
             items: [
               Bubble(
-                title: "开始",
+                title: '开始',
                 iconColor: Colors.white,
                 bubbleColor: Colors.blue,
                 icon: Icons.play_arrow,
-                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
                 onPress: () async {
                   try {
                     _actionController.reverse();
@@ -89,11 +95,11 @@ class _ControllerPageState extends State<ControllerPage>
                 },
               ),
               Bubble(
-                title: "暂停",
+                title: '暂停',
                 iconColor: Colors.white,
                 bubbleColor: Colors.blue,
                 icon: Icons.pause,
-                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
                 onPress: () async {
                   try {
                     _actionController.reverse();
@@ -111,7 +117,7 @@ class _ControllerPageState extends State<ControllerPage>
                 icon: Icons.input,
                 iconColor: Colors.white,
                 bubbleColor: Colors.blue,
-                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
                 title: '送料',
                 onPress: () async {
                   try {
@@ -131,7 +137,7 @@ class _ControllerPageState extends State<ControllerPage>
                 title: '回抽',
                 iconColor: Colors.white,
                 bubbleColor: Colors.blue,
-                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
                 onPress: () async {
                   try {
                     _actionController.reverse();
@@ -150,7 +156,7 @@ class _ControllerPageState extends State<ControllerPage>
                 title: '发送',
                 iconColor: Colors.white,
                 bubbleColor: Colors.blue,
-                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
                 onPress: () async {
                   try {
                     _actionController.reverse();
@@ -166,7 +172,7 @@ class _ControllerPageState extends State<ControllerPage>
                 title: '输入',
                 iconColor: Colors.white,
                 bubbleColor: Colors.blue,
-                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
                 onPress: () async {
                   try {
                     _actionController.reverse();
@@ -184,32 +190,32 @@ class _ControllerPageState extends State<ControllerPage>
           initialData: false,
           builder: (_, snapshot) {
             return AnimatedSwitcher(
-              duration: Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 200),
               transitionBuilder: (Widget child, Animation<double> animation) {
                 return ScaleTransition(child: child, scale: animation);
               },
               child: snapshot.data!
                   ? FloatingActionButton(
-                      key: ValueKey('stop'),
-                      onPressed: FlutterBlue.instance.stopScan,
-                      backgroundColor: Colors.red,
-                      child: SizedBox(
-                        width: 30,
-                        height: 30,
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.red,
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
-                          strokeWidth: 3,
-                        ),
-                      ),
-                    )
+                key: const ValueKey('stop'),
+                onPressed: FlutterBlue.instance.stopScan,
+                backgroundColor: Colors.red,
+                child: const SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(
+                    backgroundColor: Colors.red,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    strokeWidth: 3,
+                  ),
+                ),
+              )
                   : FloatingActionButton(
-                      key: ValueKey('scan'),
-                      child: const Icon(Icons.search),
-                      onPressed: () {
-                        mainStore.findAndConnect();
-                      },
-                    ),
+                key: const ValueKey('scan'),
+                child: const Icon(Icons.search),
+                onPressed: () {
+                  mainStore.findAndConnect();
+                },
+              ),
             );
           },
         );
@@ -323,7 +329,9 @@ class _ControllerPageState extends State<ControllerPage>
                 style: ButtonStyle(
                   foregroundColor: MaterialStateProperty.all(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all(Theme.of(context).primaryColor),
+                  MaterialStateProperty.all(Theme
+                      .of(context)
+                      .primaryColor),
                 ),
               )
             ],
@@ -356,16 +364,19 @@ class _ControllerPageState extends State<ControllerPage>
                     Text(
                         '当前设备 : ' +
                             (mainStore.connectedDevice != null
-                                ? "Aurora"
-                                : "未连接"),
-                        style: TextStyle(color: Colors.white, fontSize: 16)),
+                                ? 'Aurora'
+                                : '未连接'),
+                        style:
+                        const TextStyle(color: Colors.white, fontSize: 16)),
                     Text('设备状态 : $auroraState',
-                        style: TextStyle(color: Colors.white, fontSize: 16)),
+                        style:
+                        const TextStyle(color: Colors.white, fontSize: 16)),
                     Text('出料状态 : $motorState',
-                        style: TextStyle(color: Colors.white, fontSize: 16)),
+                        style:
+                        const TextStyle(color: Colors.white, fontSize: 16)),
                     Row(
                       children: [
-                        Text(
+                        const Text(
                           '设定颜色: ',
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
@@ -374,14 +385,14 @@ class _ControllerPageState extends State<ControllerPage>
                           child: Container(
                             color: mainStore.selectColor,
                             width: 100,
-                            child: Text(''),
+                            child: const Text(''),
                           ),
                         )
                       ],
                     ),
                     Row(
                       children: [
-                        Text(
+                        const Text(
                           '当前颜色: ',
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
@@ -390,7 +401,7 @@ class _ControllerPageState extends State<ControllerPage>
                           child: Container(
                             color: mainStore.nowColor,
                             width: 100,
-                            child: Text(''),
+                            child: const Text(''),
                           ),
                         )
                       ],
@@ -403,12 +414,12 @@ class _ControllerPageState extends State<ControllerPage>
                 right: 10,
                 bottom: -45,
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.all(Radius.circular(20))),
                   width: 400,
                   height: 130,
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: Column(
                     children: [
                       Row(
@@ -427,16 +438,16 @@ class _ControllerPageState extends State<ControllerPage>
                       ),
                       Row(
                         children: [
-                          buildColorCard(
-                              'C', mainStore.cmykw.c.toP(), Color(0XFF22F5FF)),
-                          buildColorCard(
-                              'Y', mainStore.cmykw.y.toP(), Color(0XFFFF2CD9)),
-                          buildColorCard(
-                              'M', mainStore.cmykw.m.toP(), Color(0XFFFFFF2C)),
-                          buildColorCard(
-                              'K', mainStore.cmykw.k.toP(), Color(0XFF3A3A3A)),
-                          buildColorCard(
-                              'W', mainStore.cmykw.w.toP(), Color(0XFF909399)),
+                          buildColorCard('C', mainStore.cmykw.c.toP(),
+                              const Color(0xff22f5ff)),
+                          buildColorCard('M', mainStore.cmykw.m.toP(),
+                              const Color(0xffffff2c)),
+                          buildColorCard('Y', mainStore.cmykw.y.toP(),
+                              const Color(0xffff2cd9)),
+                          buildColorCard('K', mainStore.cmykw.k.toP(),
+                              const Color(0xff3a3a3a)),
+                          buildColorCard('W', mainStore.cmykw.w.toP(),
+                              const Color(0xff909399)),
                         ],
                       ),
                     ],
@@ -445,9 +456,9 @@ class _ControllerPageState extends State<ControllerPage>
               ),
             ],
           ),
-          SizedBox(height: 50),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          const SizedBox(height: 50),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Text(
               '颜色选择',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -455,51 +466,51 @@ class _ControllerPageState extends State<ControllerPage>
           ),
           Expanded(
             child: Container(
-                padding: EdgeInsets.all(5),
+                padding: const EdgeInsets.all(5),
                 color: Colors.white,
                 child: ListView(
                   children: [
                     Card(
                       child: ListTile(
-                        leading: CircleAvatar(
+                        leading: const CircleAvatar(
                           backgroundColor: Colors.white,
                           child: Icon(Icons.pageview_outlined),
                         ),
-                        title: Text('自选颜色'),
-                        subtitle: Text('从调色板中选择一个颜色'),
+                        title: const Text('自选颜色'),
+                        subtitle: const Text('从调色板中选择一个颜色'),
                         onTap: selectColorFromBoard,
                       ),
                     ),
                     Card(
                       child: ListTile(
-                        leading: CircleAvatar(
+                        leading: const CircleAvatar(
                           backgroundColor: Colors.white,
                           child: Icon(Icons.color_lens_outlined),
                         ),
-                        title: Text('精确颜色'),
-                        subtitle: Text('填入颜色RGB精确生成颜色'),
+                        title: const Text('精确颜色'),
+                        subtitle: const Text('填入颜色RGB精确生成颜色'),
                         onTap: selectColorByRGB,
                       ),
                     ),
                     Card(
                       child: ListTile(
-                        leading: CircleAvatar(
+                        leading: const CircleAvatar(
                           backgroundColor: Colors.white,
                           child: Icon(Icons.check),
                         ),
-                        title: Text('预设颜色'),
-                        subtitle: Text('选择一个系统预设的颜色'),
+                        title: const Text('预设颜色'),
+                        subtitle: const Text('选择一个系统预设的颜色'),
                         onTap: selectColorFromMaterialPicker,
                       ),
                     ),
                     Card(
                       child: ListTile(
-                        leading: CircleAvatar(
+                        leading: const CircleAvatar(
                           backgroundColor: Colors.white,
                           child: Icon(Icons.add),
                         ),
-                        title: Text('添加任务'),
-                        subtitle: Text('将当前颜色添加至任务'),
+                        title: const Text('添加任务'),
+                        subtitle: const Text('将当前颜色添加至任务'),
                         onTap: addToTask,
                       ),
                     ),
@@ -538,17 +549,71 @@ class _ControllerPageState extends State<ControllerPage>
 
   AppBar buildAppBar() {
     return AppBar(
-      title: Text(
+      title: const Text(
         '控制',
         style: TextStyle(fontSize: 18),
       ),
       centerTitle: true,
       automaticallyImplyLeading: false,
       elevation: 0,
+      actions: [
+        PopupMenuButton<AppBarAction>(
+          icon: const Icon(
+            Icons.more_vert_outlined,
+            color: Colors.white,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          onSelected: (value) async {
+            switch (value) {
+              case AppBarAction.CMYKWConfig:
+                Navigator.of(context).pushNamed('/config');
+                break;
+            }
+          },
+          itemBuilder: (context) {
+            return [
+              buildPopupMenuItem(
+                context: context,
+                icon: Icons.stacked_line_chart,
+                value: AppBarAction.CMYKWConfig,
+                text: '耗材配置',
+              ),
+            ];
+          },
+        ),
+      ],
     );
   }
 
-  void selectColorFromBoard() async {
+  PopupMenuItem<T> buildPopupMenuItem<T>({
+    required BuildContext context,
+    required IconData icon,
+    required String text,
+    required T value,
+  }) {
+    return PopupMenuItem<T>(
+      value: value,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: Theme
+                .of(context)
+                .textTheme
+                .subtitle1!
+                .color,
+          ),
+          const SizedBox(width: 20),
+          Text(text),
+        ],
+      ),
+    );
+  }
+
+  Future<void> selectColorFromBoard() async {
     await showDialog(
       context: context,
       builder: (context) {
@@ -572,14 +637,14 @@ class _ControllerPageState extends State<ControllerPage>
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('取消'),
+              child: const Text('取消'),
             ),
             TextButton(
               onPressed: () {
                 mainStore.setColor(_currentColor);
                 Navigator.of(context).pop();
               },
-              child: Text('确定'),
+              child: const Text('确定'),
               style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.blue),
                   foregroundColor: MaterialStateProperty.all(Colors.white)),
@@ -590,7 +655,7 @@ class _ControllerPageState extends State<ControllerPage>
     );
   }
 
-  void selectColorFromMaterialPicker() async {
+  Future<void> selectColorFromMaterialPicker() async {
     await showDialog(
       context: context,
       builder: (context) {
@@ -611,14 +676,14 @@ class _ControllerPageState extends State<ControllerPage>
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('取消'),
+              child: const Text('取消'),
             ),
             TextButton(
               onPressed: () {
                 mainStore.setColor(_currentColor);
                 Navigator.of(context).pop();
               },
-              child: Text('确定'),
+              child: const Text('确定'),
               style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.blue),
                   foregroundColor: MaterialStateProperty.all(Colors.white)),
@@ -698,7 +763,7 @@ class _ControllerPageState extends State<ControllerPage>
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('取消'),
+                child: const Text('取消'),
               ),
               TextButton(
                 onPressed: () {
@@ -720,7 +785,9 @@ class _ControllerPageState extends State<ControllerPage>
                 style: ButtonStyle(
                   foregroundColor: MaterialStateProperty.all(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all(Theme.of(context).primaryColor),
+                  MaterialStateProperty.all(Theme
+                      .of(context)
+                      .primaryColor),
                 ),
               )
             ],

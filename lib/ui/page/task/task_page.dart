@@ -17,7 +17,7 @@ class TaskPage extends StatelessWidget {
           print(taskStore.taskList
               .map((e) => (e.color & 0x00FFFFFF).toRadixString(16)));
         },
-        child: Icon(Icons.send),
+        child: const Icon(Icons.send),
       ),
     );
   }
@@ -38,7 +38,7 @@ class TaskPage extends StatelessWidget {
               subtitle: Text(
                   'C: ${e.c.toP()}  M: ${e.m.toP()}  Y: ${e.y.toP()}  K: ${e.k.toP()}  W: ${e.w.toP()}'),
             ),
-            actionPane: SlidableDrawerActionPane(),
+            actionPane: const SlidableDrawerActionPane(),
             secondaryActions: [
               IconSlideAction(
                 caption: '删除',
@@ -55,7 +55,7 @@ class TaskPage extends StatelessWidget {
 
   AppBar buildAppBar() {
     return AppBar(
-      title: Text('任务', style: TextStyle(fontSize: 18)),
+      title: const Text('任务', style: TextStyle(fontSize: 18)),
       centerTitle: true,
       automaticallyImplyLeading: false,
     );

@@ -5,8 +5,6 @@ import 'package:blue_demo/data/database/database_helper.dart';
 import 'package:blue_demo/data/database/entity/task_entity.dart';
 import 'package:mobx/mobx.dart';
 
-import '../constant.dart';
-
 part 'task_store.g.dart';
 
 class TaskStore = TaskStoreBase with _$TaskStore;
@@ -25,7 +23,7 @@ abstract class TaskStoreBase with Store {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-    var child = taskList.removeAt(oldIndex);
+    final child = taskList.removeAt(oldIndex);
     taskList.insert(newIndex, child);
 
     await save();
@@ -47,8 +45,7 @@ abstract class TaskStoreBase with Store {
   @action
   Future<void> addTask(int colorInt) async {
     final color = Color(colorInt);
-    final cmykw =
-        RGB_CMYG(Rgb2CMYG(rgb: [color.red, color.green, color.blue], TS: M_TS));
+    final cmykw = CMYKWUtil(null).RGB_CMYG(color);
     final taskEntity = TaskEntity(
       color: colorInt,
       c: cmykw.c,

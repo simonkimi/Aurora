@@ -2,7 +2,7 @@ import 'package:blue_demo/data/constant.dart';
 
 extension IntUtils on int {
   String toP() {
-    final data = (this / M_TS * 100);
+    final data = this / M_TS * 100;
     if (data >= 100) return '100%';
     return (this / M_TS * 100).toStringAsFixed(1) + '%';
   }
@@ -17,7 +17,7 @@ extension IntUtils on int {
 
 extension StringHelper on String {
   String fill(String char, int num) {
-    if (this.length >= num) return this;
-    return List.filled(num - this.length, char).join() + this;
+    if (length >= num) return this;
+    return List.filled(num - length, char).join() + this;
   }
 }

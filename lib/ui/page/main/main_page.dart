@@ -13,10 +13,10 @@ class _MainPageState extends State<MainPage> {
   var _currentPage = 0;
   var _lastQuitTime = DateTime.now();
 
-  var _page = [
-    StatePage(key: ValueKey('State')),
-    ControllerPage(key: ValueKey('Controller')),
-    TaskPage(key: ValueKey('TaskPage')),
+  final _page = [
+    const StatePage(key: ValueKey('State')),
+    const ControllerPage(key: ValueKey('Controller')),
+    const TaskPage(key: ValueKey('TaskPage')),
   ];
 
   @override
@@ -34,7 +34,7 @@ class _MainPageState extends State<MainPage> {
         },
         child: AnimatedSwitcher(
           child: _page[_currentPage],
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -44,7 +44,7 @@ class _MainPageState extends State<MainPage> {
             _currentPage = value;
           });
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(
               Icons.home,

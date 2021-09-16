@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
 class DashedLine extends StatelessWidget {
-  final Axis axis; // 方向
-  final double width; //宽度
-  final double height; //高度
-  final int count; // 个数，密度
-  final Color color;
-
-  DashedLine({
+  const DashedLine({
     this.axis = Axis.horizontal,
     this.width = 1,
     this.height = 1,
     this.count = 10,
     this.color = Colors.black,
   });
+
+  final Axis axis; // 方向
+  final double width; //宽度
+  final double height; //高度
+  final int count; // 个数，密度
+  final Color color;
 
   @override
   Widget build(BuildContext context) {

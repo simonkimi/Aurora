@@ -1,3 +1,4 @@
+import 'package:blue_demo/ui/page/cmykw_config/config_manager.dart';
 import 'package:blue_demo/ui/page/main/main_page.dart';
 import 'package:blue_demo/ui/page/state/state_page.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -10,7 +11,7 @@ import 'data/store/task_store.dart';
 final mainStore = MainStore();
 final taskStore = TaskStore();
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DatabaseHelper().init();
   await mainStore.init();
@@ -32,8 +33,9 @@ class MyApp extends StatelessWidget {
       builder: BotToastInit(),
       initialRoute: '/',
       routes: {
-        '/state': (context) => StatePage(),
+        '/state': (context) => const StatePage(),
         '/': (context) => MainPage(),
+        '/config': (context) => const ConfigManager(),
       },
     );
   }

@@ -32,21 +32,25 @@ abstract class MainStoreBase with Store {
   BluetoothCharacteristic? characteristic;
 
   @observable
-  var cmykw = CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0);
+  var cmykw = const CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0);
 
   @observable
-  var nowCmykw = CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0);
+  var nowCmykw = const CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0);
 
   @action
   Future<void> init() async {
     final pref = await SharedPreferences.getInstance();
     final color = pref.getInt('color') ?? Colors.blue.value;
-    this.selectColor = Color(color | 0xFF000000);
+    selectColor = Color(color | 0xFF000000);
     nowColor = selectColor;
-    cmykw = RGB_CMYG(Rgb2CMYG(
-        rgb: [selectColor.red, selectColor.green, selectColor.blue], TS: M_TS));
 
-    Stream.periodic(Duration(seconds: 2)).listen((event) async {
+    cmykw = CMYKWUtil(null).RGB_CMYG(selectColor);
+
+    //
+    // cmykw = RGB_CMYG(Rgb2CMYG(
+    //     rgb: [selectColor.red, selectColor.green, selectColor.blue], TS: M_TS));
+
+    Stream.periodic(const Duration(seconds: 2)).listen((event) async {
       final pref = await SharedPreferences.getInstance();
       pref.setInt('color', selectColor.value);
     });
@@ -55,8 +59,7 @@ abstract class MainStoreBase with Store {
   @action
   Future<void> setColor(Color color) async {
     selectColor = Color(color.value | 0xFF000000);
-    cmykw =
-        RGB_CMYG(Rgb2CMYG(rgb: [color.red, color.green, color.blue], TS: M_TS));
+    cmykw = CMYKWUtil(null).RGB_CMYG(color);
   }
 
   @action
@@ -189,17 +192,17 @@ abstract class MainStoreBase with Store {
       } else {
         // 当前设备未连接
         print('未连接设备, 开始扫描设备...');
-        await adapter.startScan(timeout: Duration(seconds: 10));
-        var deviceCompleter = Completer<BluetoothDevice>();
+        await adapter.startScan(timeout: const Duration(seconds: 10));
+        final deviceCompleter = Completer<BluetoothDevice>();
         resultListener = adapter.scanResults.listen((event) {
-          event.forEach((element) {
+          for (final element in event) {
             if (element.device.id.id == HC08_MAC) {
               print(element.device.id.id);
               if (!deviceCompleter.isCompleted) {
                 deviceCompleter.complete(element.device);
               }
             }
-          });
+          }
         });
         scanListener = adapter.isScanning.listen((event) {
           if (event) {
@@ -210,7 +213,7 @@ abstract class MainStoreBase with Store {
             }
           }
         });
-        var device = await deviceCompleter.future;
+        final device = await deviceCompleter.future;
         print('扫描设备完成, 设备:${device.name}');
         await connectDevice(device);
       }
@@ -231,18 +234,20 @@ abstract class MainStoreBase with Store {
       if (!isConnect) {
         print('设备未连接, 准备连接...');
       }
-      await device.connect(timeout: Duration(seconds: 10));
+      await device.connect(timeout: const Duration(seconds: 10));
       connectedDevice = device;
       final service = await device.discoverServices();
-      service.forEach((element) {
+
+      for (final element in service) {
         if (element.uuid.toString() == BLE_SERVICE_UUID) {
-          element.characteristics.forEach((element) {
-            if (element.uuid.toString() == BLE_READ_WRITE_UUID) {
-              characteristic = element;
+          for (final device in element.characteristics) {
+            if (device.uuid.toString() == BLE_READ_WRITE_UUID) {
+              characteristic = device;
             }
-          });
+          }
         }
-      });
+      }
+
       await FlutterBlue.instance.stopScan();
       setHint('连接成功!');
       if (characteristic == null) {
