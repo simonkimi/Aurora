@@ -18,4 +18,6 @@ message CMYKWConfigPB {
   double xy22 = 13;
   double xy31 = 14;
   double xy32 = 15;
+
+  string name = 16;
 }

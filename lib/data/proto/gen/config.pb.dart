@@ -26,6 +26,7 @@ class CMYKWConfigPB extends $pb.GeneratedMessage {
     ..a<$core.double>(13, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'xy22', $pb.PbFieldType.OD)
     ..a<$core.double>(14, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'xy31', $pb.PbFieldType.OD)
     ..a<$core.double>(15, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'xy32', $pb.PbFieldType.OD)
+    ..aOS(16, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
     ..hasRequiredFields = false
   ;
 
@@ -46,6 +47,7 @@ class CMYKWConfigPB extends $pb.GeneratedMessage {
     $core.double? xy22,
     $core.double? xy31,
     $core.double? xy32,
+    $core.String? name,
   }) {
     final _result = create();
     if (gKwM != null) {
@@ -92,6 +94,9 @@ class CMYKWConfigPB extends $pb.GeneratedMessage {
     }
     if (xy32 != null) {
       _result.xy32 = xy32;
+    }
+    if (name != null) {
+      _result.name = name;
     }
     return _result;
   }
@@ -250,5 +255,14 @@ class CMYKWConfigPB extends $pb.GeneratedMessage {
   $core.bool hasXy32() => $_has(14);
   @$pb.TagNumber(15)
   void clearXy32() => clearField(15);
+
+  @$pb.TagNumber(16)
+  $core.String get name => $_getSZ(15);
+  @$pb.TagNumber(16)
+  set name($core.String v) { $_setString(15, v); }
+  @$pb.TagNumber(16)
+  $core.bool hasName() => $_has(15);
+  @$pb.TagNumber(16)
+  void clearName() => clearField(16);
 }
 

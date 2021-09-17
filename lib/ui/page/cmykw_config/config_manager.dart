@@ -4,6 +4,7 @@ import 'package:blue_demo/main.dart';
 import 'package:blue_demo/ui/components/select_tile.dart';
 import 'package:blue_demo/ui/page/cmykw_config/config_maker.dart';
 import 'package:blue_demo/ui/page/cmykw_config/config_qrcode.dart';
+import 'package:blue_demo/ui/page/cmykw_config/config_scanner.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -54,6 +55,14 @@ class ConfigManager extends StatelessWidget {
           Navigator.of(context).pop();
         },
       ),
+      actions: [
+        IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const ConfigScanner()));
+            },
+            icon: const Icon(Icons.qr_code)),
+      ],
     );
   }
 
@@ -162,34 +171,30 @@ class ConfigManager extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        flex: 1,
-                        child: Column(
-                          children: [
-                            const Text('颜色配置矩阵'),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Column(
-                                  children: [
-                                    Text('${e.xy11}, '),
-                                    Text('${e.xy21}, '),
-                                    Text('${e.xy31}, '),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Text(e.xy12.toString()),
-                                    Text(e.xy22.toString()),
-                                    Text(e.xy32.toString()),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
+                      Column(
+                        children: [
+                          const Text('颜色配置矩阵'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Column(
+                                children: [
+                                  Text('${e.xy11}, '),
+                                  Text('${e.xy21}, '),
+                                  Text('${e.xy31}, '),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  Text(e.xy12.toString()),
+                                  Text(e.xy22.toString()),
+                                  Text(e.xy32.toString()),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ],
                   )
                 ],
