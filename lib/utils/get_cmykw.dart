@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:blue_demo/data/database/entity/config_entity.dart';
 import 'package:flutter/cupertino.dart';
 
 // ignore_for_file: non_constant_identifier_names
@@ -43,6 +44,22 @@ class CMYKWConfig {
     ],
   });
 
+  CMYKWConfig.database(ConfigEntity entity)
+      : G_kwM = entity.G_kwM,
+        G_W_max = entity.G_W_max,
+        G_K_min = entity.G_K_min,
+        G_kw1 = entity.G_kw1,
+        Ka = entity.Ka,
+        Kb1 = entity.Kb1,
+        Kb2 = entity.Kb2,
+        Kc = entity.Kc,
+        ts = entity.ts,
+        XY_cmy = [
+          [entity.xy11, entity.xy12],
+          [entity.xy21, entity.xy22],
+          [entity.xy31, entity.xy32],
+        ];
+
   double G_kwM; //最灰色值
   double G_W_max; //最白色值
   double G_K_min; //最黑色值
@@ -51,9 +68,27 @@ class CMYKWConfig {
   double Kb1; //拟合参数b1
   double Kb2; //拟合参数b2
   double Kc; //拟合参数c
-  int ts;
+  double ts;
 
   List<List<double>> XY_cmy;
+
+  bool isSame(ConfigEntity entity) {
+    return entity.G_K_min == G_K_min &&
+        entity.G_kw1 == G_kw1 &&
+        entity.G_kwM == G_kwM &&
+        entity.G_W_max == G_W_max &&
+        entity.Ka == Ka &&
+        entity.Kb1 == Kb1 &&
+        entity.Kb2 == Kb2 &&
+        entity.Kc == Kc &&
+        entity.ts == ts &&
+        XY_cmy[0][0] == entity.xy11 &&
+        XY_cmy[0][1] == entity.xy12 &&
+        XY_cmy[1][0] == entity.xy21 &&
+        XY_cmy[1][1] == entity.xy22 &&
+        XY_cmy[2][0] == entity.xy31 &&
+        XY_cmy[2][1] == entity.xy32;
+  }
 }
 
 class CMYKWUtil {
@@ -82,7 +117,7 @@ class CMYKWUtil {
   double Kb1; //拟合参数b1
   double Kb2; //拟合参数b2
   double Kc; //拟合参数c
-  int ts;
+  double ts;
 
   List<List<double>> XY_cmy;
 

@@ -474,7 +474,7 @@ packages:
     source: hosted
     version: "4.2.1"
   protobuf:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: protobuf
       url: "https://pub.flutter-io.cn"
@@ -494,6 +494,20 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.0"
+  qr:
+    dependency: transitive
+    description:
+      name: qr
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.1.0"
+  qr_flutter:
+    dependency: "direct main"
+    description:
+      name: qr_flutter
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.0.0"
   rxdart:
     dependency: transitive
     description:

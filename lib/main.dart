@@ -13,7 +13,7 @@ final taskStore = TaskStore();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DatabaseHelper().init();
+  await DB().init();
   await mainStore.init();
   await taskStore.init();
   runApp(MyApp());
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/state': (context) => const StatePage(),
         '/': (context) => MainPage(),
-        '/config': (context) => const ConfigManager(),
+        '/config': (context) => ConfigManager(),
       },
     );
   }

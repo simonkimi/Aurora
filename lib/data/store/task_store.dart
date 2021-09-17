@@ -11,7 +11,7 @@ class TaskStore = TaskStoreBase with _$TaskStore;
 
 abstract class TaskStoreBase with Store {
   Future<void> init() async {
-    taskList.addAll(await DatabaseHelper().taskDao.getAll());
+    taskList.addAll(await DB().taskDao.getAll());
     print('length ${taskList.length}');
   }
 
@@ -32,13 +32,13 @@ abstract class TaskStoreBase with Store {
   @action
   Future<void> onDelete(TaskEntity entity) async {
     taskList.remove(entity);
-    await DatabaseHelper().taskDao.deleteTask(entity);
+    await DB().taskDao.deleteTask(entity);
     await save();
   }
 
   Future<void> save() async {
     for (int index = 0; index < taskList.length; index++) {
-      await DatabaseHelper().taskDao.updateTask(taskList[index]..sort = index);
+      await DB().taskDao.updateTask(taskList[index]..sort = index);
     }
   }
 
@@ -55,7 +55,7 @@ abstract class TaskStoreBase with Store {
       w: cmykw.w,
       sort: taskList.length,
     );
-    final id = await DatabaseHelper().taskDao.addTask(taskEntity);
+    final id = await DB().taskDao.addTask(taskEntity);
     taskList.add(taskEntity..id = id);
   }
 }

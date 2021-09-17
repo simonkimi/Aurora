@@ -5,6 +5,7 @@ import 'package:floor/floor.dart';
 @Entity(tableName: 'ConfigEntity')
 class ConfigEntity {
   ConfigEntity({
+    required this.name,
     this.G_K_min = 66.0,
     this.G_kw1 = 73.0,
     this.G_kwM = 130.0,
@@ -14,10 +15,19 @@ class ConfigEntity {
     this.Kb2 = -5.63,
     this.Kc = 6.61,
     this.ts = 200,
+    this.xy11 = -0.295519,
+    this.xy12 = 0.093337,
+    this.xy21 = 0.316407,
+    this.xy22 = 0.323877,
+    this.xy31 = 0.408362,
+    this.xy32 = -0.637566,
   });
 
   @PrimaryKey(autoGenerate: true)
   int? id;
+
+  @primaryKey
+  final String name;
 
   final double G_kwM; //最灰色值
   final double G_W_max; //最白色值
@@ -27,12 +37,12 @@ class ConfigEntity {
   final double Kb1; //拟合参数b1
   final double Kb2; //拟合参数b2
   final double Kc; //拟合参数c
-  final int ts;
+  final double ts;
 
-  final double xy11 = -0.295519;
-  final double xy12 = 0.093337;
-  final double xy21 = 0.316407;
-  final double xy22 = 0.323877;
-  final double xy31 = 0.408362;
-  final double xy32 = -0.637566;
+  final double xy11;
+  final double xy12;
+  final double xy21;
+  final double xy22;
+  final double xy31;
+  final double xy32;
 }

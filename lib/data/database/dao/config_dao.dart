@@ -1,4 +1,3 @@
-
 import 'package:blue_demo/data/database/entity/config_entity.dart';
 import 'package:floor/floor.dart';
 
@@ -10,7 +9,10 @@ abstract class ConfigDao {
   @Query('SELECT * FROM ConfigEntity ORDER BY id ASC')
   Stream<List<ConfigEntity>> getAllStream();
 
-  @insert
+  @Query('SELECT * FROM ConfigEntity WHERE name = :name')
+  Future<ConfigEntity?> get(String name);
+
+  @Insert(onConflict: OnConflictStrategy.replace)
   Future<int> addConfig(ConfigEntity entity);
 
   @update

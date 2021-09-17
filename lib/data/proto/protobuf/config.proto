@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+
+message CMYKWConfigPB {
+  double G_kwM = 1; //最灰色值
+  double G_W_max = 2; //最白色值
+  double G_K_min = 3; //最黑色值
+  double G_kw1 = 4; //黑阶分界值
+  double Ka = 5; //拟合参数a
+  double Kb1 = 6; //拟合参数b1
+  double Kb2 = 7; //拟合参数b2
+  double Kc = 8; //拟合参数c
+  double ts = 9;
+
+  double xy11 = 10;
+  double xy12 = 11;
+  double xy21 = 12;
+  double xy22 = 13;
+  double xy31 = 14;
+  double xy32 = 15;
+}

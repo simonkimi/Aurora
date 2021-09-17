@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:blue_demo/data/database/database_helper.dart';
+import 'package:blue_demo/data/database/entity/config_entity.dart';
 import 'package:blue_demo/utils/get_cmykw.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +39,9 @@ abstract class MainStoreBase with Store {
   @observable
   var nowCmykw = const CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0);
 
+  @observable
+  var cmykwConfig = CMYKWConfig();
+
   @action
   Future<void> init() async {
     final pref = await SharedPreferences.getInstance();
@@ -44,11 +49,16 @@ abstract class MainStoreBase with Store {
     selectColor = Color(color | 0xFF000000);
     nowColor = selectColor;
 
-    cmykw = CMYKWUtil(null).RGB_CMYG(selectColor);
+    final configName = pref.getString('cmykwConfig');
 
-    //
-    // cmykw = RGB_CMYG(Rgb2CMYG(
-    //     rgb: [selectColor.red, selectColor.green, selectColor.blue], TS: M_TS));
+    if (configName == null) {
+      await setCmykwConfig((await DB().configDao.getAll()).first);
+    } else {
+      final entity = await DB().configDao.get(configName);
+      await setCmykwConfig(entity ?? (await DB().configDao.getAll()).first);
+    }
+
+    cmykw = CMYKWUtil(cmykwConfig).RGB_CMYG(selectColor);
 
     Stream.periodic(const Duration(seconds: 2)).listen((event) async {
       final pref = await SharedPreferences.getInstance();
@@ -57,9 +67,17 @@ abstract class MainStoreBase with Store {
   }
 
   @action
+  Future<void> setCmykwConfig(ConfigEntity entity) async {
+    cmykwConfig = CMYKWConfig.database(entity);
+    cmykw = CMYKWUtil(cmykwConfig).RGB_CMYG(selectColor);
+    final pref = await SharedPreferences.getInstance();
+    pref.setString('cmykwConfig', entity.name);
+  }
+
+  @action
   Future<void> setColor(Color color) async {
     selectColor = Color(color.value | 0xFF000000);
-    cmykw = CMYKWUtil(null).RGB_CMYG(color);
+    cmykw = CMYKWUtil(cmykwConfig).RGB_CMYG(color);
   }
 
   @action
