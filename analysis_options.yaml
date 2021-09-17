@@ -53,7 +53,7 @@ analyzer:
     - '**/*.g.dart'
     - '**/*.pb.dart'
     - '**/*.pbenum.dart'
-    - 'lib/src/generated/*.dart'
+    - '**/*.pbjson.dart'
     - '**/*.mocks.dart' # Mockito @GenerateMocks
 
 linter:
