@@ -9,11 +9,9 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:blue_demo/utils/utils.dart';
 import 'package:blue_demo/utils/get_cmykw.dart';
 
-
 enum AppBarAction {
   CMYKWConfig,
 }
-
 
 class ControllerPage extends StatefulWidget {
   const ControllerPage({Key? key}) : super(key: key);
@@ -196,26 +194,26 @@ class _ControllerPageState extends State<ControllerPage>
               },
               child: snapshot.data!
                   ? FloatingActionButton(
-                key: const ValueKey('stop'),
-                onPressed: FlutterBlue.instance.stopScan,
-                backgroundColor: Colors.red,
-                child: const SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: CircularProgressIndicator(
-                    backgroundColor: Colors.red,
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    strokeWidth: 3,
-                  ),
-                ),
-              )
+                      key: const ValueKey('stop'),
+                      onPressed: FlutterBlue.instance.stopScan,
+                      backgroundColor: Colors.red,
+                      child: const SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.red,
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                          strokeWidth: 3,
+                        ),
+                      ),
+                    )
                   : FloatingActionButton(
-                key: const ValueKey('scan'),
-                child: const Icon(Icons.search),
-                onPressed: () {
-                  mainStore.findAndConnect();
-                },
-              ),
+                      key: const ValueKey('scan'),
+                      child: const Icon(Icons.search),
+                      onPressed: () {
+                        mainStore.findAndConnect();
+                      },
+                    ),
             );
           },
         );
@@ -329,9 +327,7 @@ class _ControllerPageState extends State<ControllerPage>
                 style: ButtonStyle(
                   foregroundColor: MaterialStateProperty.all(Colors.white),
                   backgroundColor:
-                  MaterialStateProperty.all(Theme
-                      .of(context)
-                      .primaryColor),
+                      MaterialStateProperty.all(Theme.of(context).primaryColor),
                 ),
               )
             ],
@@ -367,13 +363,13 @@ class _ControllerPageState extends State<ControllerPage>
                                 ? 'Aurora'
                                 : '未连接'),
                         style:
-                        const TextStyle(color: Colors.white, fontSize: 16)),
+                            const TextStyle(color: Colors.white, fontSize: 16)),
                     Text('设备状态 : $auroraState',
                         style:
-                        const TextStyle(color: Colors.white, fontSize: 16)),
+                            const TextStyle(color: Colors.white, fontSize: 16)),
                     Text('出料状态 : $motorState',
                         style:
-                        const TextStyle(color: Colors.white, fontSize: 16)),
+                            const TextStyle(color: Colors.white, fontSize: 16)),
                     Row(
                       children: [
                         const Text(
@@ -410,46 +406,78 @@ class _ControllerPageState extends State<ControllerPage>
                 ),
               ),
               Positioned(
-                left: 20,
-                right: 10,
                 bottom: -45,
-                child: Container(
-                  decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(20))),
-                  width: 400,
-                  height: 130,
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Row(
-                        children: [
-                          buildColorCard('R',
-                              mainStore.selectColor.red.toString(), Colors.red),
-                          buildColorCard(
-                              'G',
-                              mainStore.selectColor.green.toString(),
-                              Colors.green),
-                          buildColorCard(
-                              'B',
-                              mainStore.selectColor.blue.toString(),
-                              Colors.blue),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          buildColorCard('C', mainStore.cmykw.c.toP(),
-                              const Color(0xff22f5ff)),
-                          buildColorCard('M', mainStore.cmykw.m.toP(),
-                              const Color(0xffffff2c)),
-                          buildColorCard('Y', mainStore.cmykw.y.toP(),
-                              const Color(0xffff2cd9)),
-                          buildColorCard('K', mainStore.cmykw.k.toP(),
-                              const Color(0xff3a3a3a)),
-                          buildColorCard('W', mainStore.cmykw.w.toP(),
-                              const Color(0xff909399)),
-                        ],
-                      ),
+                      Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                        ),
+                        width: 400,
+                        height: 130,
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                buildColorCard(
+                                    title: 'R',
+                                    value: mainStore.selectColor.red.toString(),
+                                    color: Colors.red),
+                                buildColorCard(
+                                    title: 'G',
+                                    value:
+                                        mainStore.selectColor.green.toString(),
+                                    color: Colors.green),
+                                buildColorCard(
+                                    title: 'B',
+                                    value:
+                                        mainStore.selectColor.blue.toString(),
+                                    color: Colors.blue),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                buildColorCard(
+                                  title: 'C',
+                                  value: mainStore.cmykw.c.toString(),
+                                  color: const Color(0xff22f5ff),
+                                  subtitle: mainStore.cmykw.c.toP(),
+                                ),
+                                buildColorCard(
+                                  title: 'M',
+                                  value: mainStore.cmykw.m.toString(),
+                                  color: const Color(0xffffff2c),
+                                  subtitle: mainStore.cmykw.m.toP(),
+                                ),
+                                buildColorCard(
+                                  title: 'Y',
+                                  value: mainStore.cmykw.y.toString(),
+                                  color: const Color(0xffff2cd9),
+                                  subtitle: mainStore.cmykw.y.toP(),
+                                ),
+                                buildColorCard(
+                                  title: 'K',
+                                  value: mainStore.cmykw.k.toString(),
+                                  color: const Color(0xff3a3a3a),
+                                  subtitle: mainStore.cmykw.k.toP(),
+                                ),
+                                buildColorCard(
+                                  title: 'W',
+                                  value: mainStore.cmykw.w.toString(),
+                                  color: const Color(0xff909399),
+                                  subtitle: mainStore.cmykw.w.toP(),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -527,7 +555,12 @@ class _ControllerPageState extends State<ControllerPage>
     BotToast.showText(text: '添加成功!');
   }
 
-  Widget buildColorCard(String title, String value, Color color) {
+  Widget buildColorCard({
+    required String title,
+    required String value,
+    required Color color,
+    String? subtitle,
+  }) {
     return Expanded(
       child: Card(
         child: Padding(
@@ -539,7 +572,9 @@ class _ControllerPageState extends State<ControllerPage>
                 style: TextStyle(
                     color: color, fontWeight: FontWeight.bold, fontSize: 20),
               ),
-              Text(value, style: TextStyle(color: color, fontSize: 15))
+              Text(value, style: TextStyle(color: color, fontSize: 15)),
+              if (subtitle != null)
+                Text(subtitle, style: TextStyle(color: color, fontSize: 10))
             ],
           ),
         ),
@@ -600,11 +635,7 @@ class _ControllerPageState extends State<ControllerPage>
         children: [
           Icon(
             icon,
-            color: Theme
-                .of(context)
-                .textTheme
-                .subtitle1!
-                .color,
+            color: Theme.of(context).textTheme.subtitle1!.color,
           ),
           const SizedBox(width: 20),
           Text(text),
@@ -785,9 +816,7 @@ class _ControllerPageState extends State<ControllerPage>
                 style: ButtonStyle(
                   foregroundColor: MaterialStateProperty.all(Colors.white),
                   backgroundColor:
-                  MaterialStateProperty.all(Theme
-                      .of(context)
-                      .primaryColor),
+                      MaterialStateProperty.all(Theme.of(context).primaryColor),
                 ),
               )
             ],
