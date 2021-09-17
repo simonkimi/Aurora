@@ -5,6 +5,7 @@ import 'package:blue_demo/ui/components/select_tile.dart';
 import 'package:blue_demo/ui/page/cmykw_config/config_maker.dart';
 import 'package:blue_demo/ui/page/cmykw_config/config_qrcode.dart';
 import 'package:blue_demo/ui/page/cmykw_config/config_scanner.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -99,6 +100,10 @@ class ConfigManager extends StatelessWidget {
                         builder: (context) => ConfigQrCode(entity: e)));
                     break;
                   case ConfigItemAction.DELETE:
+                    if (snapshot.data!.length == 1) {
+                      BotToast.showText(text: '请至少保留一个配置');
+                      return;
+                    }
                     await DB().configDao.deleteConfig(e);
                     break;
                 }

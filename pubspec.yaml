@@ -24,6 +24,7 @@ dependencies:
   qr_flutter: ^4.0.0
   qr_code_scanner: ^0.5.2
 
+
   floating_action_bubble:
     git:
       url: https://github.com/simonkimi/floating_action_bubble.git

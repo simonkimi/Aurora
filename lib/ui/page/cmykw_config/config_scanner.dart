@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:blue_demo/data/database/entity/config_entity.dart';
@@ -5,6 +6,7 @@ import 'package:blue_demo/data/proto/gen/config.pbserver.dart';
 import 'package:blue_demo/ui/page/cmykw_config/config_maker.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:lottie/lottie.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
@@ -18,6 +20,7 @@ class ConfigScanner extends StatefulWidget {
 class _ConfigScannerState extends State<ConfigScanner> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   late QRViewController controller;
+  late final StreamSubscription<Barcode> listener;
 
   @override
   Widget build(BuildContext context) {
@@ -44,28 +47,31 @@ class _ConfigScannerState extends State<ConfigScanner> {
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
+    listener = controller.scannedDataStream
+        .debounceTime(const Duration(seconds: 2))
+        .listen((scanData) {
       final scan = scanData.code;
       try {
         final pb = CMYKWConfigPB.fromBuffer(base64Decode(scan));
         final entity = ConfigEntity(
-            name: pb.name,
-            ts: pb.ts,
-            xy11: pb.xy11,
-            xy12: pb.xy12,
-            xy21: pb.xy21,
-            xy22: pb.xy22,
-            xy31: pb.xy31,
-            xy32: pb.xy32,
-            Kc: pb.kc,
-            Kb2: pb.kb2,
-            Kb1: pb.kb1,
-            Ka: pb.ka,
-            G_kw1: pb.gKw1,
-            G_K_min: pb.gKMin,
-            G_W_max: pb.gWMax,
-            G_kwM: pb.gKwM);
-
+          name: pb.name,
+          ts: pb.ts,
+          xy11: pb.xy11,
+          xy12: pb.xy12,
+          xy21: pb.xy21,
+          xy22: pb.xy22,
+          xy31: pb.xy31,
+          xy32: pb.xy32,
+          Kc: pb.kc,
+          Kb2: pb.kb2,
+          Kb1: pb.kb1,
+          Ka: pb.ka,
+          G_kw1: pb.gKw1,
+          G_K_min: pb.gKMin,
+          G_W_max: pb.gWMax,
+          G_kwM: pb.gKwM,
+        );
+        listener.cancel();
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => ConfigMaker(
                   entity: entity,
@@ -84,6 +90,14 @@ class _ConfigScannerState extends State<ConfigScanner> {
     } else if (Platform.isIOS) {
       controller.resumeCamera();
     }
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+    listener.cancel();
   }
 
   AppBar buildAppBar(BuildContext context) {
