@@ -28,14 +28,17 @@ class ConfigManager extends StatelessWidget {
     );
   }
 
-  StreamBuilder<List<ConfigEntity>> buildBody() {
-    return StreamBuilder<List<ConfigEntity>>(
-      stream: DB().configDao.getAllStream(),
-      initialData: const [],
-      builder: (context, snapshot) {
-        return Observer(builder: (_) => buildList(context, snapshot));
-      },
-    );
+  Widget buildBody() {
+    return StatefulBuilder(builder: (context, setState) {
+      return StreamBuilder<List<ConfigEntity>>(
+        stream: DB().configDao.getAllStream(),
+        initialData: const [],
+        builder: (context, snapshot) {
+          return Observer(
+              builder: (_) => buildList(context, snapshot, setState));
+        },
+      );
+    });
   }
 
   AppBar buildAppBar(BuildContext context) {
@@ -58,17 +61,18 @@ class ConfigManager extends StatelessWidget {
       ),
       actions: [
         IconButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const ConfigScanner()));
-            },
-            icon: const Icon(Icons.qr_code)),
+          onPressed: () {
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const ConfigScanner()));
+          },
+          icon: const Icon(Icons.qr_code),
+        ),
       ],
     );
   }
 
-  ListView buildList(
-      BuildContext context, AsyncSnapshot<List<ConfigEntity>> snapshot) {
+  ListView buildList(BuildContext context,
+      AsyncSnapshot<List<ConfigEntity>> snapshot, StateSetter setState) {
     mainStore.cmykwConfig;
     return ListView(
       children: snapshot.data!.map((e) {
@@ -104,7 +108,9 @@ class ConfigManager extends StatelessWidget {
                       BotToast.showText(text: '请至少保留一个配置');
                       return;
                     }
-                    await DB().configDao.deleteConfig(e);
+                    print('删除配置');
+                    await DB().configDao.deleteConfig(e.name);
+                    setState(() {});
                     break;
                 }
               }

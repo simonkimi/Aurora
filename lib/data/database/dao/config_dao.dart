@@ -18,6 +18,6 @@ abstract class ConfigDao {
   @update
   Future<int> updateConfig(ConfigEntity entity);
 
-  @delete
-  Future<void> deleteConfig(ConfigEntity entity);
+  @Query('DELETE FROM ConfigEntity WHERE name = :name')
+  Future<void> deleteConfig(String name);
 }
