@@ -27,22 +27,22 @@ class ConfigEntity {
   int? id;
 
   @primaryKey
-  final String name;
+  String name;
 
-  final double G_kwM; //最灰色值
-  final double G_W_max; //最白色值
-  final double G_K_min; //最黑色值
-  final double G_kw1; //黑阶分界值
-  final double Ka; //拟合参数a
-  final double Kb1; //拟合参数b1
-  final double Kb2; //拟合参数b2
-  final double Kc; //拟合参数c
-  final double ts;
+  double G_kwM; //最灰色值
+  double G_W_max; //最白色值
+  double G_K_min; //最黑色值
+  double G_kw1; //黑阶分界值
+  double Ka; //拟合参数a
+  double Kb1; //拟合参数b1
+  double Kb2; //拟合参数b2
+  double Kc; //拟合参数c
+  double ts;
 
-  final double xy11;
-  final double xy12;
-  final double xy21;
-  final double xy22;
-  final double xy31;
-  final double xy32;
+  double xy11;
+  double xy12;
+  double xy21;
+  double xy22;
+  double xy31;
+  double xy32;
 }

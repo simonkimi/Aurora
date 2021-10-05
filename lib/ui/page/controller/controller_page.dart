@@ -452,13 +452,13 @@ class _ControllerPageState extends State<ControllerPage>
                                 buildColorCard(
                                   title: 'M',
                                   value: mainStore.cmykw.m.toString(),
-                                  color: const Color(0xffffff2c),
+                                  color: const Color(0xffff2cd9),
                                   subtitle: mainStore.cmykw.m.toP(),
                                 ),
                                 buildColorCard(
                                   title: 'Y',
                                   value: mainStore.cmykw.y.toString(),
-                                  color: const Color(0xffff2cd9),
+                                  color: const Color(0xffffff2c),
                                   subtitle: mainStore.cmykw.y.toP(),
                                 ),
                                 buildColorCard(

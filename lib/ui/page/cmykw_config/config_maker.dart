@@ -1,5 +1,6 @@
 import 'package:blue_demo/data/database/database_helper.dart';
 import 'package:blue_demo/data/database/entity/config_entity.dart';
+import 'package:blue_demo/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -36,7 +37,7 @@ class ConfigMaker extends StatelessWidget {
         xy31Controller =
             TextEditingController(text: entity?.xy31.toString() ?? ''),
         xy32Controller =
-            TextEditingController(text: entity?.xy12.toString() ?? ''),
+            TextEditingController(text: entity?.xy32.toString() ?? ''),
         super(key: key);
 
   final ConfigEntity? entity;
@@ -83,7 +84,13 @@ class ConfigMaker extends StatelessWidget {
         child: const Icon(Icons.check),
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
-            final entity = ConfigEntity(
+            var autoSelect = false;
+            final entity = await DB().configDao.get(nameController.text);
+            if (entity != null) {
+              await DB().configDao.deleteConfig(nameController.text);
+              autoSelect = true;
+            }
+            final next = ConfigEntity(
               name: nameController.text,
               G_K_min: gkMinMController.text.toDouble(),
               G_kw1: gkw1Controller.text.toDouble(),
@@ -101,7 +108,9 @@ class ConfigMaker extends StatelessWidget {
               xy31: xy31Controller.text.toDouble(),
               xy32: xy32Controller.text.toDouble(),
             );
-            await DB().configDao.addConfig(entity);
+            await DB().configDao.addConfig(next);
+            if (autoSelect)
+              mainStore.setCmykwConfig(next);
             Navigator.of(context).pop();
           }
         },
