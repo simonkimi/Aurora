@@ -1,17 +1,28 @@
-import 'dart:async';
+import 'dart:io';
 
-import 'package:floor/floor.dart';
-import 'package:sqflite/sqflite.dart' as sqflite;
+import 'package:blue_demo/data/database/dao/config_dao.dart';
+import 'package:blue_demo/data/database/dao/task_dao.dart';
+import 'package:moor/ffi.dart';
+import 'package:moor/moor.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
-import 'dao/config_dao.dart';
-import 'dao/task_dao.dart';
-import 'entity/config_entity.dart';
-import 'entity/task_entity.dart';
+import 'entity/config_table.dart';
 
 part 'database.g.dart';
 
-@Database(version: 1, entities: [TaskEntity, ConfigEntity])
-abstract class AppDatabase extends FloorDatabase {
-  TaskDao get taskDao;
-  ConfigDao get configDao;
+LazyDatabase _openConnection() {
+  return LazyDatabase(() async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    final file = File(p.join(dbFolder.path, 'db.sqlite'));
+    return VmDatabase(file);
+  });
+}
+
+@UseMoor(tables: [ConfigTable], daos: [ConfigDao, TaskDao])
+class MyDatabase extends _$MyDatabase {
+  MyDatabase() : super(_openConnection());
+
+  @override
+  int get schemaVersion => 1;
 }

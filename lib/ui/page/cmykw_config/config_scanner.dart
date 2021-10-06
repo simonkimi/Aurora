@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:blue_demo/data/database/entity/config_entity.dart';
+import 'package:blue_demo/data/database/database.dart';
 import 'package:blue_demo/data/proto/gen/config.pbserver.dart';
 import 'package:blue_demo/ui/page/cmykw_config/config_maker.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -54,7 +54,7 @@ class _ConfigScannerState extends State<ConfigScanner> {
       final scan = scanData.code;
       try {
         final pb = CMYKWConfigPB.fromBuffer(base64Decode(scan));
-        final entity = ConfigEntity(
+        final entity = ConfigTableCompanion.insert(
           name: pb.name,
           ts: pb.ts,
           xy11: pb.xy11,

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:blue_demo/data/database/database.dart';
 import 'package:blue_demo/data/database/database_helper.dart';
-import 'package:blue_demo/data/database/entity/config_entity.dart';
 import 'package:blue_demo/utils/get_cmykw.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
@@ -52,7 +52,7 @@ abstract class MainStoreBase with Store {
   }
 
   @action
-  Future<void> setCmykwConfig(ConfigEntity entity) async {
+  Future<void> setCmykwConfig(ConfigTableData entity) async {
     cmykwConfig = CMYKWConfig.database(entity);
     cmykw = CMYKWUtil(cmykwConfig).RGB_CMYG(selectColor);
     final pref = await SharedPreferences.getInstance();

@@ -1,5 +1,3 @@
-import 'package:blue_demo/data/database/entity/config_entity.dart';
-
 import 'dao/config_dao.dart';
 import 'dao/task_dao.dart';
 import 'database.dart';
@@ -11,17 +9,11 @@ class DB {
 
   static final DB _db = DB._internal();
 
-  late AppDatabase _database;
+  final MyDatabase _database = MyDatabase();
 
-  Future<void> init() async {
-    _database =
-        await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-    await addDefaultConfig();
-  }
-
-  Future<ConfigEntity?> addDefaultConfig() async {
+  Future<void> addDefaultConfig() async {
     if ((await configDao.getAll()).isEmpty) {
-      final config = ConfigEntity(
+      final config = ConfigTableCompanion.insert(
         name: 'default',
         G_kwM: 130.0,
         G_W_max: 204.0,
@@ -40,9 +32,7 @@ class DB {
         xy32: -0.637566,
       );
       await configDao.addConfig(config);
-      return config;
     }
-    return null;
   }
 
   TaskDao get taskDao => _database.taskDao;

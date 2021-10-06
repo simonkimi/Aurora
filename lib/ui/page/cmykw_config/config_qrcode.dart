@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:blue_demo/data/database/entity/config_entity.dart';
+import 'package:blue_demo/data/database/database.dart';
 import 'package:blue_demo/data/proto/gen/config.pbserver.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -11,7 +11,7 @@ class ConfigQrCode extends StatelessWidget {
     required this.entity,
   }) : super(key: key);
 
-  final ConfigEntity entity;
+  final ConfigTableData entity;
 
   @override
   Widget build(BuildContext context) {

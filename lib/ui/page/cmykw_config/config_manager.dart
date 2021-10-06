@@ -1,5 +1,5 @@
+import 'package:blue_demo/data/database/database.dart';
 import 'package:blue_demo/data/database/database_helper.dart';
-import 'package:blue_demo/data/database/entity/config_entity.dart';
 import 'package:blue_demo/main.dart';
 import 'package:blue_demo/ui/components/select_tile.dart';
 import 'package:blue_demo/ui/page/cmykw_config/config_maker.dart';
@@ -30,7 +30,7 @@ class ConfigManager extends StatelessWidget {
 
   Widget buildBody() {
     return StatefulBuilder(builder: (context, setState) {
-      return StreamBuilder<List<ConfigEntity>>(
+      return StreamBuilder<List<ConfigTableData>>(
         stream: DB().configDao.getAllStream(),
         initialData: const [],
         builder: (context, snapshot) {
@@ -72,7 +72,7 @@ class ConfigManager extends StatelessWidget {
   }
 
   ListView buildList(BuildContext context,
-      AsyncSnapshot<List<ConfigEntity>> snapshot, StateSetter setState) {
+      AsyncSnapshot<List<ConfigTableData>> snapshot, StateSetter setState) {
     mainStore.cmykwConfig;
     return ListView(
       children: snapshot.data!.map((e) {
@@ -97,7 +97,7 @@ class ConfigManager extends StatelessWidget {
                     break;
                   case ConfigItemAction.EDIT:
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ConfigMaker(entity: e)));
+                        builder: (context) => ConfigMaker(entity: e.toCompanion(true))));
                     break;
                   case ConfigItemAction.SHARE:
                     Navigator.of(context).push(MaterialPageRoute(

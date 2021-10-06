@@ -1,5 +1,5 @@
+import 'package:blue_demo/data/database/database.dart';
 import 'package:blue_demo/data/database/database_helper.dart';
-import 'package:blue_demo/data/database/entity/config_entity.dart';
 import 'package:blue_demo/main.dart';
 import 'package:blue_demo/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,7 @@ class ConfigMaker extends StatelessWidget {
   ConfigMaker({
     Key? key,
     this.entity,
-  })  : nameController = TextEditingController(text: entity?.name ?? ''),
+  })  : nameController = TextEditingController(text: entity?.name.value ?? ''),
         tsController = TextEditingController(text: entity?.ts.toString() ?? ''),
         gkwMController =
             TextEditingController(text: entity?.G_kwM.toString() ?? ''),
@@ -39,7 +39,7 @@ class ConfigMaker extends StatelessWidget {
             TextEditingController(text: entity?.xy32.toString() ?? ''),
         super(key: key);
 
-  final ConfigEntity? entity;
+  final ConfigTableCompanion? entity;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -89,7 +89,7 @@ class ConfigMaker extends StatelessWidget {
               await DB().configDao.deleteConfig(nameController.text);
               autoSelect = true;
             }
-            final next = ConfigEntity(
+            final next = ConfigTableCompanion.insert(
               name: nameController.text,
               G_K_min: gkMinMController.text.toDouble(),
               G_kw1: gkw1Controller.text.toDouble(),

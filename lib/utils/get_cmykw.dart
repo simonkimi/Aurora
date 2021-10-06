@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:blue_demo/data/database/entity/config_entity.dart';
+import 'package:blue_demo/data/database/database.dart';
 import 'package:flutter/cupertino.dart';
 
 // ignore_for_file: non_constant_identifier_names
@@ -44,7 +44,7 @@ class CMYKWConfig {
     ],
   });
 
-  CMYKWConfig.database(ConfigEntity entity)
+  CMYKWConfig.database(ConfigTableData entity)
       : G_kwM = entity.G_kwM,
         G_W_max = entity.G_W_max,
         G_K_min = entity.G_K_min,
@@ -72,7 +72,7 @@ class CMYKWConfig {
 
   List<List<double>> XY_cmy;
 
-  bool isSame(ConfigEntity entity) {
+  bool isSame(ConfigTableData entity) {
     return entity.G_K_min == G_K_min &&
         entity.G_kw1 == G_kw1 &&
         entity.G_kwM == G_kwM &&

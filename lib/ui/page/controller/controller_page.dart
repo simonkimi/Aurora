@@ -567,7 +567,7 @@ class _ControllerPageState extends State<ControllerPage>
   }
 
   void addToTask() {
-    taskStore.addTask(mainStore.selectColor.value);
+    // TODO ADDTASK
     BotToast.showText(text: '添加成功!');
   }
 

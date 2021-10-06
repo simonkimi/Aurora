@@ -1,17 +1,32 @@
-import 'package:blue_demo/data/database/entity/task_entity.dart';
-import 'package:floor/floor.dart';
+// import 'package:blue_demo/data/database/entity/task_entity.dart';
+// import 'package:floor/floor.dart';
+//
+// @dao
+// abstract class TaskDao {
+//   @Query('SELECT * FROM TaskEntity ORDER BY id ASC')
+//   Future<List<TaskEntity>> getAll();
+//
+//   @insert
+//   Future<int> addTask(TaskEntity entity);
+//
+//   @update
+//   Future<int> updateTask(TaskEntity entity);
+//
+//   @delete
+//   Future<void> deleteTask(TaskEntity entity);
+// }
 
-@dao
-abstract class TaskDao {
-  @Query('SELECT * FROM TaskEntity ORDER BY id ASC')
-  Future<List<TaskEntity>> getAll();
+import 'package:blue_demo/data/database/entity/task_table.dart';
+import 'package:moor/moor.dart';
 
-  @insert
-  Future<int> addTask(TaskEntity entity);
+import '../database.dart';
 
-  @update
-  Future<int> updateTask(TaskEntity entity);
+part 'task_dao.g.dart';
 
-  @delete
-  Future<void> deleteTask(TaskEntity entity);
+@UseDao(tables: [TaskTable])
+class TaskDao extends DatabaseAccessor<MyDatabase>
+    with _$TaskDaoMixin {
+  TaskDao(MyDatabase attachedDatabase) : super(attachedDatabase);
+
+
 }

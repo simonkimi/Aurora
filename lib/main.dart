@@ -17,9 +17,7 @@ final monitorStore = MonitorStore();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DB().init();
   await mainStore.init();
-  await taskStore.init();
   runApp(MyApp());
 }
 
