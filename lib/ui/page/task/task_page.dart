@@ -1,8 +1,7 @@
-import 'package:blue_demo/main.dart';
-import 'package:blue_demo/utils/utils.dart';
+import 'package:blue_demo/data/database/database.dart';
+import 'package:blue_demo/data/database/database_helper.dart';
+import 'package:blue_demo/ui/page/task/task_maker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
 class TaskPage extends StatelessWidget {
   const TaskPage({Key? key}) : super(key: key);
@@ -13,14 +12,29 @@ class TaskPage extends StatelessWidget {
       appBar: buildAppBar(),
       body: buildBody(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.send),
+        onPressed: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => TaskMaker()));
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
 
   Widget buildBody() {
-    return SizedBox();
+    return StreamBuilder<List<TaskTableData>>(
+      stream: DB().taskDao.getAllStream(),
+      initialData: const [],
+      builder: (context, snapshot) {
+        return ListView(
+          children: snapshot.data!.map((e) {
+            return ListTile(
+              title: Text(e.name),
+            );
+          }).toList(),
+        );
+      },
+    );
   }
 
   AppBar buildAppBar() {

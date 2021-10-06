@@ -88,4 +88,8 @@ abstract class MonitorStoreBase with Store {
       }
     });
   }
+
+  void dispose() {
+    listener?.cancel();
+  }
 }

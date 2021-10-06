@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'entity/config_table.dart';
+import 'entity/task_table.dart';
 
 part 'database.g.dart';
 
@@ -19,7 +20,7 @@ LazyDatabase _openConnection() {
   });
 }
 
-@UseMoor(tables: [ConfigTable], daos: [ConfigDao, TaskDao])
+@UseMoor(tables: [ConfigTable, TaskTable], daos: [ConfigDao, TaskDao])
 class MyDatabase extends _$MyDatabase {
   MyDatabase() : super(_openConnection());
 
