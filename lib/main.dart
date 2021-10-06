@@ -1,3 +1,4 @@
+import 'package:blue_demo/data/store/bluetooth_store.dart';
 import 'package:blue_demo/ui/page/cmykw_config/config_manager.dart';
 import 'package:blue_demo/ui/page/main/main_page.dart';
 import 'package:blue_demo/ui/page/state/state_page.dart';
@@ -10,6 +11,7 @@ import 'data/store/task_store.dart';
 
 final mainStore = MainStore();
 final taskStore = TaskStore();
+final bluetoothStore = BluetoothStore();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

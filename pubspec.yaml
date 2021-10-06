@@ -15,7 +15,7 @@ dependencies:
   shared_preferences: ^2.0.5
   flutter_mobx: ^2.0.0
   bot_toast: ^4.0.1
-  flutter_colorpicker: ^0.4.0
+  flutter_colorpicker: ^0.6.0
   lottie: ^1.0.1
   protobuf: ^2.0.0
   flutter_svg: ^0.21.0+1
@@ -23,11 +23,15 @@ dependencies:
   flutter_slidable: ^0.6.0
   qr_flutter: ^4.0.0
   qr_code_scanner: ^0.5.2
+  synchronized: ^3.0.0
+  http: any
+  fl_chart: ^0.40.0
+  dio: any
 
 
   floating_action_bubble:
     git:
-      url: https://github.com/simonkimi/floating_action_bubble.git
+      url: https://github.com/simonkimi/FloatingActionBubble
       ref: ^2.0.0
 
 

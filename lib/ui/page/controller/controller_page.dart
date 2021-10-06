@@ -1,4 +1,6 @@
 import 'package:blue_demo/main.dart';
+import 'package:blue_demo/utils/get_cmykw.dart';
+import 'package:blue_demo/utils/utils.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:blue_demo/utils/utils.dart';
-import 'package:blue_demo/utils/get_cmykw.dart';
 
 enum AppBarAction {
   CMYKWConfig,
@@ -60,7 +60,7 @@ class _ControllerPageState extends State<ControllerPage>
   Widget buildFloatingActionButton(BuildContext context) {
     return Observer(
       builder: (_) {
-        if (mainStore.connectedDevice != null) {
+        if (bluetoothStore.connectedDevice != null) {
           return FloatingActionBubble(
             animation: _actionController,
             onPress: () {
@@ -82,7 +82,7 @@ class _ControllerPageState extends State<ControllerPage>
                 onPress: () async {
                   try {
                     _actionController.reverse();
-                    await mainStore.sendStart();
+                    // TODO await mainStore.sendStart();
                     setState(() {
                       auroraState = '运行';
                     });
@@ -101,7 +101,7 @@ class _ControllerPageState extends State<ControllerPage>
                 onPress: () async {
                   try {
                     _actionController.reverse();
-                    await mainStore.sendPause();
+                    // TODO await mainStore.sendPause();
                     setState(() {
                       auroraState = '停止';
                     });
@@ -120,7 +120,7 @@ class _ControllerPageState extends State<ControllerPage>
                 onPress: () async {
                   try {
                     _actionController.reverse();
-                    await mainStore.sendPush();
+                    // TODO await mainStore.sendPush();
                     setState(() {
                       auroraState = '送料';
                     });
@@ -139,7 +139,7 @@ class _ControllerPageState extends State<ControllerPage>
                 onPress: () async {
                   try {
                     _actionController.reverse();
-                    await mainStore.sendPop();
+                    // TODO await mainStore.sendPop();
                     setState(() {
                       auroraState = '回抽';
                     });
@@ -158,7 +158,7 @@ class _ControllerPageState extends State<ControllerPage>
                 onPress: () async {
                   try {
                     _actionController.reverse();
-                    await mainStore.sendColor();
+                    // TODO await mainStore.sendColor();
                     showMessage(context, '已发送');
                   } on Exception catch (e) {
                     showMessage(context, '出现错误: ${e.toString()}');
@@ -211,7 +211,7 @@ class _ControllerPageState extends State<ControllerPage>
                       key: const ValueKey('scan'),
                       child: const Icon(Icons.search),
                       onPressed: () {
-                        mainStore.findAndConnect();
+                        // TODO mainStore.findAndConnect();
                       },
                     ),
             );
@@ -334,7 +334,7 @@ class _ControllerPageState extends State<ControllerPage>
           );
         });
     if (result != null) {
-      await mainStore.sendCmykw(result);
+      // await mainStore.sendCmykw(result);
       showMessage(context, '已发送');
     }
   }
@@ -359,8 +359,8 @@ class _ControllerPageState extends State<ControllerPage>
                   children: [
                     Text(
                         '当前设备 : ' +
-                            (mainStore.connectedDevice != null
-                                ? 'Aurora'
+                            (bluetoothStore.connectedDevice != null
+                                ? bluetoothStore.connectedDevice!.id.id
                                 : '未连接'),
                         style:
                             const TextStyle(color: Colors.white, fontSize: 16)),

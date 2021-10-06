@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:blue_demo/data/database/entity/config_entity.dart';
 import 'package:blue_demo/data/proto/gen/config.pbserver.dart';
 import 'package:blue_demo/ui/page/cmykw_config/config_maker.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:lottie/lottie.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:rxdart/rxdart.dart';
 
 class ConfigScanner extends StatefulWidget {
   const ConfigScanner({Key? key}) : super(key: key);

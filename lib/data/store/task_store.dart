@@ -1,8 +1,7 @@
-import 'package:blue_demo/utils/get_cmykw.dart';
-import 'package:flutter/material.dart';
-
 import 'package:blue_demo/data/database/database_helper.dart';
 import 'package:blue_demo/data/database/entity/task_entity.dart';
+import 'package:blue_demo/utils/get_cmykw.dart';
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 
 part 'task_store.g.dart';

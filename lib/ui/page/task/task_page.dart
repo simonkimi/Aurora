@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:blue_demo/main.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:blue_demo/utils/utils.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class TaskPage extends StatelessWidget {

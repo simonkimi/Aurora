@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:blue_demo/main.dart';
 
 extension IntUtils on int {
@@ -20,6 +22,9 @@ extension StringHelper on String {
     if (length >= num) return this;
     return List.filled(num - length, char).join() + this;
   }
+
+
+
   double toDouble() => double.parse(this);
 }
 
@@ -29,5 +34,17 @@ extension IterableUtils<T> on Iterable<T> {
       if (test(e)) return e;
     }
     return null;
+  }
+}
+
+extension StreamHelper<T> on Stream<T> {
+  Stream<T> stopAfter(Duration duration) {
+    final con = StreamController<T>();
+    final listener = listen(con.add);
+    Future.delayed(duration, () {
+      listener.cancel();
+      con.close();
+    });
+    return con.stream;
   }
 }

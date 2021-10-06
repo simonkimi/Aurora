@@ -1,11 +1,12 @@
+import 'package:blue_demo/data/store/bluetooth_store.dart';
 import 'package:blue_demo/main.dart';
 import 'package:blue_demo/ui/components/dash_line.dart';
+import 'package:blue_demo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
-import 'package:blue_demo/utils/utils.dart';
 
 class StatePage extends StatefulWidget {
   const StatePage({Key? key}) : super(key: key);
@@ -44,9 +45,7 @@ class _StatePageState extends State<StatePage>
   }
 
   Widget buildHeaderHint() {
-    if (mainStore.connectedDevice != null &&
-        mainStore.characteristic != null &&
-        !mainStore.stateHint.contains('中')) {
+    if (bluetoothStore.state == ConnectState.Connected) {
       _checkController.animateTo(0.4);
       return IconButton(
         padding: EdgeInsets.zero,
@@ -66,7 +65,9 @@ class _StatePageState extends State<StatePage>
       initialData: false,
       stream: FlutterBlue.instance.isScanning,
       builder: (c, snapshot) {
-        if (snapshot.data! || mainStore.stateHint.contains('中')) {
+        if (snapshot.data! ||
+            bluetoothStore.state == ConnectState.Connecting ||
+            bluetoothStore.state == ConnectState.Scanning) {
           return SizedBox(
             height: 50,
             width: 50,
@@ -83,7 +84,7 @@ class _StatePageState extends State<StatePage>
               size: 50,
             ),
             onPressed: () {
-              mainStore.findAndConnect();
+              // TODO mainStore.findAndConnect();
             },
           );
         }
@@ -117,7 +118,7 @@ class _StatePageState extends State<StatePage>
           ),
           const SizedBox(height: 10),
           Text(
-            mainStore.stateHint,
+            bluetoothStore.stateString,
             style: const TextStyle(color: Colors.white),
           ),
           const SizedBox(height: 20),
@@ -164,7 +165,7 @@ class _StatePageState extends State<StatePage>
                       ),
                       const Expanded(child: SizedBox()),
                       Text(
-                        mainStore.connectedDevice != null ? '已连接' : '未连接',
+                        bluetoothStore.connectedDevice != null ? '已连接' : '未连接',
                         style: const TextStyle(color: Colors.white),
                       ),
                     ],
@@ -251,7 +252,7 @@ class _StatePageState extends State<StatePage>
                             width: 26,
                           ),
                         ),
-                        title:const Text('后置电机2'),
+                        title: const Text('后置电机2'),
                         subtitle: Text('转速 ${mainStore.nowCmykw.w.to3()}'),
                       ),
                     ),

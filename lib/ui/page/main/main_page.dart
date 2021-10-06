@@ -1,4 +1,5 @@
 import 'package:blue_demo/ui/page/controller/controller_page.dart';
+import 'package:blue_demo/ui/page/monitor/monitor.dart';
 import 'package:blue_demo/ui/page/state/state_page.dart';
 import 'package:blue_demo/ui/page/task/task_page.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -17,6 +18,7 @@ class _MainPageState extends State<MainPage> {
     const StatePage(key: ValueKey('State')),
     const ControllerPage(key: ValueKey('Controller')),
     const TaskPage(key: ValueKey('TaskPage')),
+    const MonitorPage(key: ValueKey('MonitorPage')),
   ];
 
   @override
@@ -39,6 +41,7 @@ class _MainPageState extends State<MainPage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage,
+        type: BottomNavigationBarType.fixed,
         onTap: (value) {
           setState(() {
             _currentPage = value;
@@ -62,6 +65,12 @@ class _MainPageState extends State<MainPage> {
               Icons.list_alt,
             ),
             label: '任务',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.camera_alt,
+            ),
+            label: '监控',
           ),
         ],
       ),

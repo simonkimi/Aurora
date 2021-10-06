@@ -1,10 +1,9 @@
 import 'package:blue_demo/data/database/database_helper.dart';
 import 'package:blue_demo/data/database/entity/config_entity.dart';
 import 'package:blue_demo/main.dart';
+import 'package:blue_demo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'package:blue_demo/utils/utils.dart';
 
 class ConfigMaker extends StatelessWidget {
   ConfigMaker({
