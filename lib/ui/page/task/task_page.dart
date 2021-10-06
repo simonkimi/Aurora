@@ -1,6 +1,6 @@
-import 'package:blue_demo/data/database/database.dart';
-import 'package:blue_demo/data/database/database_helper.dart';
-import 'package:blue_demo/ui/page/task/task_maker.dart';
+import 'package:aurora/data/database/database.dart';
+import 'package:aurora/data/database/database_helper.dart';
+import 'package:aurora/ui/page/task/task_maker.dart';
 import 'package:flutter/material.dart';
 
 class TaskPage extends StatelessWidget {

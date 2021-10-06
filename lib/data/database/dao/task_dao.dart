@@ -1,4 +1,4 @@
-// import 'package:blue_demo/data/database/entity/task_entity.dart';
+// import 'package:aurora/data/database/entity/task_entity.dart';
 // import 'package:floor/floor.dart';
 //
 // @dao
@@ -16,7 +16,7 @@
 //   Future<void> deleteTask(TaskEntity entity);
 // }
 
-import 'package:blue_demo/data/database/entity/task_table.dart';
+import 'package:aurora/data/database/entity/task_table.dart';
 import 'package:moor/moor.dart';
 
 import '../database.dart';

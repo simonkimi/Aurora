@@ -1,4 +1,4 @@
-import 'package:blue_demo/utils/utils.dart';
+import 'package:aurora/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class SelectTileItem<T> {

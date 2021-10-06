@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:blue_demo/main.dart';
+import 'package:aurora/main.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';

@@ -1,4 +1,4 @@
-import 'package:blue_demo/data/proto/gen/task.pb.dart';
+import 'package:aurora/data/proto/gen/task.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobx/mobx.dart';

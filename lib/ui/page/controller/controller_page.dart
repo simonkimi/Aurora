@@ -1,7 +1,7 @@
-import 'package:blue_demo/main.dart';
-import 'package:blue_demo/ui/components/color_selector.dart';
-import 'package:blue_demo/utils/get_cmykw.dart';
-import 'package:blue_demo/utils/utils.dart';
+import 'package:aurora/main.dart';
+import 'package:aurora/ui/components/color_selector.dart';
+import 'package:aurora/utils/get_cmykw.dart';
+import 'package:aurora/utils/utils.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';

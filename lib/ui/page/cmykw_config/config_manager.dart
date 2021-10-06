@@ -1,10 +1,10 @@
-import 'package:blue_demo/data/database/database.dart';
-import 'package:blue_demo/data/database/database_helper.dart';
-import 'package:blue_demo/main.dart';
-import 'package:blue_demo/ui/components/select_tile.dart';
-import 'package:blue_demo/ui/page/cmykw_config/config_maker.dart';
-import 'package:blue_demo/ui/page/cmykw_config/config_qrcode.dart';
-import 'package:blue_demo/ui/page/cmykw_config/config_scanner.dart';
+import 'package:aurora/data/database/database.dart';
+import 'package:aurora/data/database/database_helper.dart';
+import 'package:aurora/main.dart';
+import 'package:aurora/ui/components/select_tile.dart';
+import 'package:aurora/ui/page/cmykw_config/config_maker.dart';
+import 'package:aurora/ui/page/cmykw_config/config_qrcode.dart';
+import 'package:aurora/ui/page/cmykw_config/config_scanner.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

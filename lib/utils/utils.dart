@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
-import 'package:blue_demo/main.dart';
+
+import 'package:aurora/main.dart';
+import 'package:vibration/vibration.dart';
 
 extension IntUtils on int {
   String toP() {
@@ -46,5 +49,24 @@ extension StreamHelper<T> on Stream<T> {
       con.close();
     });
     return con.stream;
+  }
+}
+
+Future<void> vibrate({
+  int duration = 100,
+  List<int> pattern = const [],
+  int repeat = -1,
+  List<int> intensities = const [],
+  int amplitude = -1,
+}) async {
+  if ((Platform.isIOS || Platform.isAndroid) &&
+      (await Vibration.hasVibrator() ?? false)) {
+    Vibration.vibrate(
+      duration: duration,
+      pattern: pattern,
+      repeat: repeat,
+      intensities: intensities,
+      amplitude: amplitude,
+    );
   }
 }

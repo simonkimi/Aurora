@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:blue_demo/data/database/database.dart';
-import 'package:blue_demo/data/database/database_helper.dart';
-import 'package:blue_demo/utils/get_cmykw.dart';
+import 'package:aurora/data/database/database.dart';
+import 'package:aurora/data/database/database_helper.dart';
+import 'package:aurora/utils/get_cmykw.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';

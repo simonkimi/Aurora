@@ -1,7 +1,7 @@
-import 'package:blue_demo/data/store/bluetooth_store.dart';
-import 'package:blue_demo/main.dart';
-import 'package:blue_demo/ui/components/dash_line.dart';
-import 'package:blue_demo/utils/utils.dart';
+import 'package:aurora/data/store/bluetooth_store.dart';
+import 'package:aurora/main.dart';
+import 'package:aurora/ui/components/dash_line.dart';
+import 'package:aurora/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';

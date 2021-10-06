@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:blue_demo/data/database/database.dart';
+import 'package:aurora/data/database/database.dart';
 import 'package:flutter/cupertino.dart';
 
 // ignore_for_file: non_constant_identifier_names

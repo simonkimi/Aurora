@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:blue_demo/data/database/dao/config_dao.dart';
-import 'package:blue_demo/data/database/dao/task_dao.dart';
+import 'package:aurora/data/database/dao/config_dao.dart';
+import 'package:aurora/data/database/dao/task_dao.dart';
 import 'package:moor/ffi.dart';
 import 'package:moor/moor.dart';
 import 'package:path/path.dart' as p;

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:blue_demo/data/database/database.dart';
-import 'package:blue_demo/data/proto/gen/config.pbserver.dart';
+import 'package:aurora/data/database/database.dart';
+import 'package:aurora/data/proto/gen/config.pbserver.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 

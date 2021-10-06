@@ -1,4 +1,4 @@
-// import 'package:blue_demo/data/database/entity/config_entity.dart';
+// import 'package:aurora/data/database/entity/config_entity.dart';
 // import 'package:floor/floor.dart';
 //
 //
@@ -22,7 +22,7 @@
 //   Future<void> deleteConfig(String name);
 // }
 
-import 'package:blue_demo/data/database/entity/config_table.dart';
+import 'package:aurora/data/database/entity/config_table.dart';
 import 'package:moor/moor.dart';
 
 import '../database.dart';

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:blue_demo/main.dart';
-import 'package:blue_demo/utils/udp_client.dart';
+import 'package:aurora/main.dart';
+import 'package:aurora/utils/udp_client.dart';
 import 'package:dio/dio.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';

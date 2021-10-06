@@ -1,7 +1,7 @@
-import 'package:blue_demo/ui/page/controller/controller_page.dart';
-import 'package:blue_demo/ui/page/monitor/monitor.dart';
-import 'package:blue_demo/ui/page/state/state_page.dart';
-import 'package:blue_demo/ui/page/task/task_page.dart';
+import 'package:aurora/ui/page/controller/controller_page.dart';
+import 'package:aurora/ui/page/monitor/monitor.dart';
+import 'package:aurora/ui/page/state/state_page.dart';
+import 'package:aurora/ui/page/task/task_page.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 

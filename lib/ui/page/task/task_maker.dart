@@ -1,8 +1,9 @@
-import 'package:blue_demo/data/database/database.dart';
-import 'package:blue_demo/data/proto/gen/task.pbserver.dart';
-import 'package:blue_demo/ui/components/color_selector.dart';
-import 'package:blue_demo/ui/components/select_tile.dart';
-import 'package:blue_demo/ui/page/task/store/task_maker_store.dart';
+import 'package:aurora/data/database/database.dart';
+import 'package:aurora/data/proto/gen/task.pbserver.dart';
+import 'package:aurora/ui/components/color_selector.dart';
+import 'package:aurora/ui/components/select_tile.dart';
+import 'package:aurora/ui/page/task/store/task_maker_store.dart';
+import 'package:aurora/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -63,6 +64,9 @@ class TaskMaker extends StatelessWidget {
                           },
                           onLongPress: () {
                             store.loop.removeAt(key);
+                            if (store.editIndex.value >= store.loop.length) {
+                              store.editIndex.value = store.loop.length - 1;
+                            }
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(5),
@@ -85,6 +89,7 @@ class TaskMaker extends StatelessWidget {
                                           onTap: () {
                                             if (key == store.editIndex.value) {
                                               loopE.colorList.removeAt(index);
+                                              vibrate(duration: 50);
                                             } else {
                                               store.editIndex.value = key;
                                             }
@@ -121,6 +126,9 @@ class TaskMaker extends StatelessWidget {
                                         inputFormatters: [
                                           FilteringTextInputFormatter.digitsOnly
                                         ],
+                                        onChanged: (text) {
+                                          store.loop[key].loop.value = int.parse(text);
+                                        },
                                       ),
                                     ),
                                   ],
@@ -176,6 +184,9 @@ class TaskMaker extends StatelessWidget {
                               store.loop[store.editIndex.value].colorList
                                   .add(color);
                             }
+                          },
+                          onLongPress: () {
+                            store.palette.removeAt(index);
                           },
                           child: AspectRatio(
                             aspectRatio: 1,

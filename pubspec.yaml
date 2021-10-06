@@ -1,4 +1,4 @@
-name: blue_demo
+name: aurora
 description: A new Flutter application.
 
 publish_to: 'none'
@@ -43,6 +43,7 @@ dependencies:
   path: ^1.8.0
   synchronized: ^3.0.0
   protobuf: ^2.0.0
+  vibration: ^1.7.4-nullsafety.0
 
 
 dev_dependencies:
