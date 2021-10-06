@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+
+message ColorPb {
+  int32 red = 1;
+  int32 green = 2;
+  int32 blue = 3;
+}
+
+message LooperPb {
+  repeated ColorPb colorList = 1;
+  int32 loopTime = 2;
+}
+
+message TaskPb {
+  repeated LooperPb loop = 1;
+  repeated ColorPb colorList = 2;
+}

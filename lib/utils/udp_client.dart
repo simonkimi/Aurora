@@ -11,11 +11,11 @@ class UdpClient {
 
   static final UdpClient _instance = UdpClient._();
 
-  Future<String> findPi() async {
+  Future<String?> findPi() async {
     RawDatagramSocket? socket;
     StreamSubscription? listener;
     socket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 9999);
-    final completer = Completer<String>();
+    final completer = Completer<String?>();
     listener = socket.listen((event) {
       final message = socket!.receive();
       if (message != null &&
@@ -29,6 +29,9 @@ class UdpClient {
     Timer.periodic(const Duration(seconds: 10), (timer) {
       listener?.cancel();
       socket?.close();
+      if (!completer.isCompleted) {
+        completer.complete(null);
+      }
     });
     return completer.future;
   }

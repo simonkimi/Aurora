@@ -7,11 +7,13 @@ import 'package:flutter/material.dart';
 
 import 'data/database/database_helper.dart';
 import 'data/store/main_store.dart';
+import 'data/store/monitor_store.dart';
 import 'data/store/task_store.dart';
 
 final mainStore = MainStore();
 final taskStore = TaskStore();
 final bluetoothStore = BluetoothStore();
+final monitorStore = MonitorStore();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

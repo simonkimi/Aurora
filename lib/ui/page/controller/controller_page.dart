@@ -1,4 +1,5 @@
 import 'package:blue_demo/main.dart';
+import 'package:blue_demo/ui/components/color_selector.dart';
 import 'package:blue_demo/utils/get_cmykw.dart';
 import 'package:blue_demo/utils/utils.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -6,7 +7,6 @@ import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 enum AppBarAction {
@@ -22,8 +22,6 @@ class ControllerPage extends StatefulWidget {
 
 class _ControllerPageState extends State<ControllerPage>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  var _currentColor = mainStore.selectColor;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var auroraState = '停机';
   var motorState = '送料';
 
@@ -506,7 +504,13 @@ class _ControllerPageState extends State<ControllerPage>
                         ),
                         title: const Text('自选颜色'),
                         subtitle: const Text('从调色板中选择一个颜色'),
-                        onTap: selectColorFromBoard,
+                        onTap: () async {
+                          final color = await selectColorFromBoard(
+                              context, mainStore.selectColor);
+                          if (color != null) {
+                            mainStore.setColor(color);
+                          }
+                        },
                       ),
                     ),
                     Card(
@@ -517,7 +521,13 @@ class _ControllerPageState extends State<ControllerPage>
                         ),
                         title: const Text('精确颜色'),
                         subtitle: const Text('填入颜色RGB精确生成颜色'),
-                        onTap: selectColorByRGB,
+                        onTap: () async {
+                          final color = await selectColorByRGB(
+                              context, mainStore.selectColor);
+                          if (color != null) {
+                            mainStore.setColor(color);
+                          }
+                        },
                       ),
                     ),
                     Card(
@@ -528,7 +538,13 @@ class _ControllerPageState extends State<ControllerPage>
                         ),
                         title: const Text('预设颜色'),
                         subtitle: const Text('选择一个系统预设的颜色'),
-                        onTap: selectColorFromMaterialPicker,
+                        onTap: () async {
+                          final color = await selectColorFromMaterialPicker(
+                              context, mainStore.selectColor);
+                          if (color != null) {
+                            mainStore.setColor(color);
+                          }
+                        },
                       ),
                     ),
                     Card(
@@ -642,185 +658,5 @@ class _ControllerPageState extends State<ControllerPage>
         ],
       ),
     );
-  }
-
-  Future<void> selectColorFromBoard() async {
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('选择一个颜色'),
-          content: SingleChildScrollView(
-            child: ColorPicker(
-              pickerColor: Color(mainStore.selectColor.value | 0xFF000000),
-              onColorChanged: (v) {
-                setState(() {
-                  _currentColor = v;
-                });
-              },
-              showLabel: true,
-              pickerAreaHeightPercent: 0.8,
-              enableAlpha: false,
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('取消'),
-            ),
-            TextButton(
-              onPressed: () {
-                mainStore.setColor(_currentColor);
-                Navigator.of(context).pop();
-              },
-              child: const Text('确定'),
-              style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.blue),
-                  foregroundColor: MaterialStateProperty.all(Colors.white)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> selectColorFromMaterialPicker() async {
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('选择一个颜色'),
-          content: SingleChildScrollView(
-            child: MaterialPicker(
-              pickerColor: Color(mainStore.selectColor.value | 0xFF000000),
-              onColorChanged: (v) {
-                setState(() {
-                  _currentColor = v;
-                });
-              },
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('取消'),
-            ),
-            TextButton(
-              onPressed: () {
-                mainStore.setColor(_currentColor);
-                Navigator.of(context).pop();
-              },
-              child: const Text('确定'),
-              style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.blue),
-                  foregroundColor: MaterialStateProperty.all(Colors.white)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void selectColorByRGB() {
-    final validator = (String? value) {
-      if (value?.isEmpty ?? true) {
-        return '请输入数值';
-      }
-      return 0 <= int.tryParse(value!)! && int.tryParse(value)! <= 255
-          ? null
-          : '数值超出范围';
-    };
-
-    final rController = TextEditingController();
-    final gController = TextEditingController();
-    final bController = TextEditingController();
-
-    rController.text = mainStore.selectColor.red.toString();
-    gController.text = mainStore.selectColor.green.toString();
-    bController.text = mainStore.selectColor.blue.toString();
-
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('设置颜色'),
-            content: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: ListBody(
-                  children: [
-                    TextFormField(
-                      controller: rController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'R',
-                      ),
-                      validator: validator,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                    ),
-                    TextFormField(
-                      controller: gController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'G',
-                      ),
-                      validator: validator,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                    ),
-                    TextFormField(
-                      controller: bController,
-                      decoration: const InputDecoration(
-                        labelText: 'B',
-                      ),
-                      validator: validator,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('取消'),
-              ),
-              TextButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    setState(() {
-                      mainStore.setColor(
-                        Color.fromARGB(
-                          0xFF,
-                          int.parse(rController.value.text),
-                          int.parse(gController.value.text),
-                          int.parse(bController.value.text),
-                        ),
-                      );
-                    });
-                    Navigator.of(context).pop();
-                  }
-                },
-                child: const Text('确定'),
-                style: ButtonStyle(
-                  foregroundColor: MaterialStateProperty.all(Colors.white),
-                  backgroundColor:
-                      MaterialStateProperty.all(Theme.of(context).primaryColor),
-                ),
-              )
-            ],
-          );
-        });
   }
 }

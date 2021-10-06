@@ -27,6 +27,7 @@ dependencies:
   http: any
   fl_chart: ^0.40.0
   dio: any
+  get: ^4.3.8
 
 
   floating_action_bubble:

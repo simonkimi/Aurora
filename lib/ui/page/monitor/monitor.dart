@@ -1,11 +1,9 @@
-import 'dart:async';
 import 'dart:typed_data';
-import 'package:blue_demo/utils/udp_client.dart';
+import 'package:blue_demo/main.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:http/http.dart' as http;
-import 'monitor_store.dart';
+import 'package:get/get.dart';
 
 class MonitorPage extends StatefulWidget {
   const MonitorPage({Key? key}) : super(key: key);
@@ -14,9 +12,8 @@ class MonitorPage extends StatefulWidget {
   _MonitorPageState createState() => _MonitorPageState();
 }
 
-class _MonitorPageState extends State<MonitorPage> with AutomaticKeepAliveClientMixin {
-  final store = MonitorStore();
-
+class _MonitorPageState extends State<MonitorPage>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -27,36 +24,27 @@ class _MonitorPageState extends State<MonitorPage> with AutomaticKeepAliveClient
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    store.dispose();
+  void initState() {
+    super.initState();
+    monitorStore.findPiIp();
   }
 
   Widget buildBody() {
-    return FutureBuilder<String>(
-      future: UdpClient().findPi(),
-      builder: (context, snapshot) {
-        if (snapshot.data != null) {
-          print('取得IP: ${snapshot.data}');
-          if (store.ip == null) {
-            store.ip = snapshot.data!;
-            store.loadLine();
-          }
-          store.ip = snapshot.data!;
-          return Column(
-            children: [
-              Observer(builder: (context) => buildColor()),
-              buildVideo(snapshot.data!),
-              const SizedBox(height: 5),
-              Observer(builder: (context) => buildChart()),
-            ],
-          );
-        }
+    return Observer(builder: (context) {
+      if (monitorStore.ip == null)
         return const Center(
           child: CircularProgressIndicator(),
         );
-      },
-    );
+
+      return Column(
+        children: [
+          buildColor(),
+          buildVideo(),
+          const SizedBox(height: 5),
+          buildChart(),
+        ],
+      );
+    });
   }
 
   Widget buildColor() {
@@ -64,13 +52,13 @@ class _MonitorPageState extends State<MonitorPage> with AutomaticKeepAliveClient
       padding: const EdgeInsets.all(3),
       child: Card(
         child: ListTile(
-          leading: CircleAvatar(
-            backgroundColor: store.nowColor,
-            child: const SizedBox(),
-          ),
+          leading: Obx(() => CircleAvatar(
+                backgroundColor: monitorStore.centerColor.value,
+                child: const SizedBox(),
+              )),
           title: const Text('识别颜色'),
-          subtitle: Text(
-              'R: ${store.nowColor.red} G: ${store.nowColor.green} B: ${store.nowColor.blue}'),
+          subtitle: Obx(() => Text(
+              'R: ${monitorStore.centerColor.value.red} G: ${monitorStore.centerColor.value.green} B: ${monitorStore.centerColor.value.blue}')),
         ),
       ),
     );
@@ -83,53 +71,57 @@ class _MonitorPageState extends State<MonitorPage> with AutomaticKeepAliveClient
         child: Container(
           padding: const EdgeInsets.all(10),
           height: 300,
-          child: LineChart(LineChartData(
-            minX: store.colorDeltaE.isEmpty ? 0 : store.colorDeltaE.first.x,
-            maxX: store.colorDeltaE.isEmpty ? 0 : store.colorDeltaE.last.x,
-            minY: 0,
-            lineTouchData: LineTouchData(enabled: false),
-            clipData: FlClipData.none(),
-            axisTitleData: FlAxisTitleData(
-              leftTitle: AxisTitle(
-                titleText: 'ΔE',
-                showTitle: true,
-                margin: 0,
-                reservedSize: 2,
-              ),
-              bottomTitle: AxisTitle(titleText: '时间', showTitle: true),
-            ),
-            titlesData: FlTitlesData(
-              show: true,
-              topTitles: SideTitles(showTitles: false),
-              bottomTitles: SideTitles(showTitles: false),
-              rightTitles: SideTitles(showTitles: true),
-              leftTitles: SideTitles(showTitles: true),
-            ),
-            lineBarsData: [
-              LineChartBarData(
-                spots: store.colorDeltaE.toList(),
-                dotData: FlDotData(
-                  show: false,
+          child: Obx(() => LineChart(LineChartData(
+                minX: monitorStore.colorDeltaE.isEmpty
+                    ? 0
+                    : monitorStore.colorDeltaE.first.x,
+                maxX: monitorStore.colorDeltaE.isEmpty
+                    ? 0
+                    : monitorStore.colorDeltaE.last.x,
+                minY: 0,
+                lineTouchData: LineTouchData(enabled: false),
+                clipData: FlClipData.none(),
+                axisTitleData: FlAxisTitleData(
+                  leftTitle: AxisTitle(
+                    titleText: 'ΔE',
+                    showTitle: true,
+                    margin: 0,
+                    reservedSize: 2,
+                  ),
+                  bottomTitle: AxisTitle(titleText: '时间', showTitle: true),
                 ),
-                colors: [Colors.red],
-                colorStops: [0.1, 1.0],
-                barWidth: 3,
-                isCurved: false,
-              )
-            ],
-          )),
+                titlesData: FlTitlesData(
+                  show: true,
+                  topTitles: SideTitles(showTitles: false),
+                  bottomTitles: SideTitles(showTitles: false),
+                  rightTitles: SideTitles(showTitles: true),
+                  leftTitles: SideTitles(showTitles: true),
+                ),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: monitorStore.colorDeltaE.toList(),
+                    dotData: FlDotData(
+                      show: false,
+                    ),
+                    colors: [Colors.red],
+                    colorStops: [0.1, 1.0],
+                    barWidth: 3,
+                    isCurved: false,
+                  )
+                ],
+              ))),
         ),
       ),
     );
   }
 
-  Widget buildVideo(String ip) {
+  Widget buildVideo() {
     return Padding(
       padding: const EdgeInsets.all(3),
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: StreamBuilder<List<int>>(
-          stream: _loadImagesData(ip),
+          stream: monitorStore.loadImagesData(),
           builder: (context, snapshot) {
             if (snapshot.data == null) {
               return const AspectRatio(
@@ -147,30 +139,6 @@ class _MonitorPageState extends State<MonitorPage> with AutomaticKeepAliveClient
         ),
       ),
     );
-  }
-
-  Stream<List<int>> _loadImagesData(String ip) {
-    final stream = StreamController<List<int>>();
-    final uri = Uri.parse('http://$ip:8888/stream');
-    http.Client().send(http.Request('GET', uri)).then((response) {
-      final pipe = <int>[];
-      response.stream.listen((event) {
-        pipe.addAll(event);
-        final reg = RegExp(r'\-\-\-\-([\s\S]+?)\+\+\+\+');
-        while (true) {
-          final pipeString = String.fromCharCodes(pipe);
-          final matches = reg.allMatches(pipeString);
-          if (matches.isNotEmpty) {
-            stream.add(
-                pipe.sublist(matches.first.start + 4, matches.first.end - 4));
-            pipe.removeRange(matches.first.start, matches.first.end);
-          } else {
-            break;
-          }
-        }
-      });
-    });
-    return stream.stream.asBroadcastStream();
   }
 
   AppBar buildAppBar() {
