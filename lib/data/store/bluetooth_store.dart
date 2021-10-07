@@ -61,6 +61,7 @@ abstract class BluetoothStoreBase with Store {
       return;
     }
     BotToast.showText(text: '设备未连接');
+    throw Exception('设备未连接');
   }
 
   Future<void> setBleListen() async {

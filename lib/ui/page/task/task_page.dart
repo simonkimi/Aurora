@@ -77,7 +77,12 @@ class TaskPage extends StatelessWidget {
                   displayRadio: false);
               switch (selection) {
                 case TaskSelection.Send:
-                  bluetoothStore.sendTask(pb);
+                  try {
+                    await bluetoothStore.sendTask(pb);
+                    BotToast.showText(text: '已发送');
+                  } catch(e) {
+                    BotToast.showText(text: e.toString());
+                  }
                   break;
                 case TaskSelection.Share:
                   Navigator.of(context).push(MaterialPageRoute(

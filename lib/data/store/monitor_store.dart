@@ -27,6 +27,7 @@ abstract class MonitorStoreBase with Store {
 
   Future<void> findPiIp() async {
     ip ??= await UdpClient().findPi();
+    print('查找到ip: $ip');
     if (ip != null && listener == null) {
       loadLine();
     }
