@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:aurora/data/database/database.dart';
 import 'package:aurora/data/database/database_helper.dart';
 import 'package:aurora/data/proto/gen/task.pbserver.dart';
+import 'package:aurora/ui/components/select_tile.dart';
+import 'package:aurora/ui/page/qr_code/qr_gen.dart';
 import 'package:aurora/ui/page/task/task_maker.dart';
 import 'package:flutter/material.dart';
 import 'store/task_maker_store.dart';
+
+enum TaskSelection { Send, Edit, Share, Delete }
 
 class TaskPage extends StatelessWidget {
   const TaskPage({Key? key}) : super(key: key);
@@ -12,7 +18,7 @@ class TaskPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      body: buildBody(),
+      body: buildBody(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final pb = await Navigator.of(context).push<TaskPb?>(
@@ -28,32 +34,74 @@ class TaskPage extends StatelessWidget {
     );
   }
 
-  Widget buildBody() {
+  Widget buildBody(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(3),
       child: StreamBuilder<List<TaskTableData>>(
         stream: DB().taskDao.getAllStream(),
         initialData: const [],
         builder: (context, snapshot) {
-          return buildListView(snapshot);
+          return buildListView(context, snapshot);
         },
       ),
     );
   }
 
-  ListView buildListView(AsyncSnapshot<List<TaskTableData>> snapshot) {
+  ListView buildListView(
+      BuildContext context, AsyncSnapshot<List<TaskTableData>> snapshot) {
     return ListView(
       children: snapshot.data!.map((e) {
         final pb = TaskPb.fromBuffer(e.taskPb);
         return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                buildPaletteList(pb),
-                const SizedBox(height: 10),
-                buildLoopList(pb),
-              ],
+          child: InkWell(
+            onTap: () async {
+              final selection = await showSelectDialog<TaskSelection>(
+                  context: context,
+                  items: const [
+                    SelectTileItem(title: '发送', value: TaskSelection.Send),
+                    SelectTileItem(title: '编辑', value: TaskSelection.Edit),
+                    SelectTileItem(title: '分享', value: TaskSelection.Share),
+                    SelectTileItem(title: '删除', value: TaskSelection.Delete),
+                  ],
+                  title: '配置',
+                  displayRadio: false);
+              switch (selection) {
+                case TaskSelection.Send:
+                  // TODO: 发送
+                  break;
+                case TaskSelection.Share:
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          QrGen(buffer: base64Encode(e.taskPb))));
+                  break;
+                case TaskSelection.Delete:
+                  DB().taskDao.remove(e);
+                  break;
+                case TaskSelection.Edit:
+                  final pb = await Navigator.of(context)
+                      .push<TaskPb>(MaterialPageRoute(
+                          builder: (context) => TaskMaker(
+                                tableData: e,
+                              )));
+                  if (pb != null) {
+                    DB()
+                        .taskDao
+                        .replace(e.copyWith(taskPb: pb.writeToBuffer()));
+                  }
+                  break;
+                case null:
+                  break;
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  buildPaletteList(pb),
+                  const SizedBox(height: 10),
+                  buildLoopList(pb),
+                ],
+              ),
             ),
           ),
         );

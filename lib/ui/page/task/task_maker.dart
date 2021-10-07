@@ -13,7 +13,8 @@ enum ColorPicker { Choice, Input, Default }
 class TaskMaker extends StatelessWidget {
   TaskMaker({Key? key, TaskTableData? tableData})
       : store = TaskMakerStore(
-            tableData != null ? TaskPb.fromBuffer(tableData.taskPb) : null),
+          tableData != null ? TaskPb.fromBuffer(tableData.taskPb) : null,
+        ),
         super(key: key);
 
   final TaskMakerStore store;

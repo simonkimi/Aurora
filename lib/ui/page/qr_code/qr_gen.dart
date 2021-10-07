@@ -11,10 +11,15 @@ class QrGen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: buildAppBar(context),
+      body: Center(
+        child: buildQrCode(context),
+      ),
+    );
   }
 
-  Widget qrCode(BuildContext context) {
+  Widget buildQrCode(BuildContext context) {
     final size = MediaQuery.of(context).size.width;
 
     return QrImage(
