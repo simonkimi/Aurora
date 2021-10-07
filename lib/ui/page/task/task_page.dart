@@ -4,12 +4,13 @@ import 'package:aurora/data/database/database.dart';
 import 'package:aurora/data/database/database_helper.dart';
 import 'package:aurora/data/proto/gen/ble.pbserver.dart';
 import 'package:aurora/data/proto/gen/task.pbserver.dart';
+import 'package:aurora/main.dart';
 import 'package:aurora/ui/components/select_tile.dart';
 import 'package:aurora/ui/page/qr_code/qr_gen.dart';
 import 'package:aurora/ui/page/task/task_maker.dart';
 import 'package:aurora/utils/get_cmykw.dart';
-import 'package:aurora/main.dart';
 import 'package:flutter/material.dart';
+
 import 'store/task_maker_store.dart';
 
 enum TaskSelection { Send, Edit, Share, Delete }

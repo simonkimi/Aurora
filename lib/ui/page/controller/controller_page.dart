@@ -59,163 +59,171 @@ class _ControllerPageState extends State<ControllerPage>
     return Observer(
       builder: (_) {
         if (bluetoothStore.connectedDevice != null) {
-          return FloatingActionBubble(
-            animation: _actionController,
-            onPress: () {
-              if (_actionController.isCompleted) {
-                _actionController.reverse();
-              } else {
-                _actionController.forward();
-              }
-            },
-            iconColor: Colors.blue,
-            animatedIconData: AnimatedIcons.menu_close,
-            items: [
-              Bubble(
-                title: '开始',
-                iconColor: Colors.white,
-                bubbleColor: Colors.blue,
-                icon: Icons.play_arrow,
-                titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-                onPress: () async {
-                  try {
-                    _actionController.reverse();
-                    // TODO await mainStore.sendStart();
-                    setState(() {
-                      auroraState = '运行';
-                    });
-                    showMessage(context, '已发送');
-                  } on Exception catch (e) {
-                    showMessage(context, '出现错误: ${e.toString()}');
-                  }
-                },
-              ),
-              Bubble(
-                title: '暂停',
-                iconColor: Colors.white,
-                bubbleColor: Colors.blue,
-                icon: Icons.pause,
-                titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-                onPress: () async {
-                  try {
-                    _actionController.reverse();
-                    // TODO await mainStore.sendPause();
-                    setState(() {
-                      auroraState = '停止';
-                    });
-                    showMessage(context, '已发送');
-                  } on Exception catch (e) {
-                    showMessage(context, '出现错误: ${e.toString()}');
-                  }
-                },
-              ),
-              Bubble(
-                icon: Icons.input,
-                iconColor: Colors.white,
-                bubbleColor: Colors.blue,
-                titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-                title: '送料',
-                onPress: () async {
-                  try {
-                    _actionController.reverse();
-                    // TODO await mainStore.sendPush();
-                    setState(() {
-                      auroraState = '送料';
-                    });
-                    showMessage(context, '已发送');
-                  } on Exception catch (e) {
-                    showMessage(context, '出现错误: ${e.toString()}');
-                  }
-                },
-              ),
-              Bubble(
-                icon: Icons.open_in_new,
-                title: '回抽',
-                iconColor: Colors.white,
-                bubbleColor: Colors.blue,
-                titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-                onPress: () async {
-                  try {
-                    _actionController.reverse();
-                    // TODO await mainStore.sendPop();
-                    setState(() {
-                      auroraState = '回抽';
-                    });
-                    showMessage(context, '已发送');
-                  } on Exception catch (e) {
-                    showMessage(context, '出现错误: ${e.toString()}');
-                  }
-                },
-              ),
-              Bubble(
-                icon: Icons.send,
-                title: '发送',
-                iconColor: Colors.white,
-                bubbleColor: Colors.blue,
-                titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-                onPress: () async {
-                  try {
-                    _actionController.reverse();
-                    // TODO await mainStore.sendColor();
-                    showMessage(context, '已发送');
-                  } on Exception catch (e) {
-                    showMessage(context, '出现错误: ${e.toString()}');
-                  }
-                },
-              ),
-              Bubble(
-                icon: Icons.widgets,
-                title: '输入',
-                iconColor: Colors.white,
-                bubbleColor: Colors.blue,
-                titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-                onPress: () async {
-                  try {
-                    _actionController.reverse();
-                    await showCmykwBuilder(context);
-                  } on Exception catch (e) {
-                    showMessage(context, '出现错误: ${e.toString()}');
-                  }
-                },
-              ),
-            ],
-          );
+          return buildActionFab(context);
         }
-        return StreamBuilder<bool>(
-          stream: FlutterBlue.instance.isScanning,
-          initialData: false,
-          builder: (_, snapshot) {
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                return ScaleTransition(child: child, scale: animation);
-              },
-              child: snapshot.data!
-                  ? FloatingActionButton(
-                      key: const ValueKey('stop'),
-                      onPressed: FlutterBlue.instance.stopScan,
-                      backgroundColor: Colors.red,
-                      child: const SizedBox(
-                        width: 30,
-                        height: 30,
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.red,
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
-                          strokeWidth: 3,
-                        ),
-                      ),
-                    )
-                  : FloatingActionButton(
-                      key: const ValueKey('scan'),
-                      child: const Icon(Icons.search),
-                      onPressed: () {
-                        // TODO mainStore.findAndConnect();
-                      },
-                    ),
-            );
+        return buildSearchFab();
+      },
+    );
+  }
+
+  StreamBuilder<bool> buildSearchFab() {
+    return StreamBuilder<bool>(
+      stream: FlutterBlue.instance.isScanning,
+      initialData: false,
+      builder: (_, snapshot) {
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return ScaleTransition(child: child, scale: animation);
           },
+          child: snapshot.data!
+              ? FloatingActionButton(
+                  key: const ValueKey('stop'),
+                  onPressed: FlutterBlue.instance.stopScan,
+                  backgroundColor: Colors.red,
+                  child: const SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.red,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                      strokeWidth: 3,
+                    ),
+                  ),
+                )
+              : FloatingActionButton(
+                  key: const ValueKey('scan'),
+                  child: const Icon(Icons.search),
+                  onPressed: () {
+                    bluetoothStore.findAndConnect();
+                  },
+                ),
         );
       },
+    );
+  }
+
+  Widget buildActionFab(BuildContext context) {
+    return FloatingActionBubble(
+      animation: _actionController,
+      onPress: () {
+        if (_actionController.isCompleted) {
+          _actionController.reverse();
+        } else {
+          _actionController.forward();
+        }
+      },
+      iconColor: Colors.blue,
+      animatedIconData: AnimatedIcons.menu_close,
+      items: [
+        Bubble(
+          title: '开始',
+          iconColor: Colors.white,
+          bubbleColor: Colors.blue,
+          icon: Icons.play_arrow,
+          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+          onPress: () async {
+            try {
+              _actionController.reverse();
+              // TODO await mainStore.sendStart();
+              setState(() {
+                auroraState = '运行';
+              });
+              showMessage(context, '已发送');
+            } on Exception catch (e) {
+              showMessage(context, '出现错误: ${e.toString()}');
+            }
+          },
+        ),
+        Bubble(
+          title: '暂停',
+          iconColor: Colors.white,
+          bubbleColor: Colors.blue,
+          icon: Icons.pause,
+          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+          onPress: () async {
+            try {
+              _actionController.reverse();
+              // TODO await mainStore.sendPause();
+              setState(() {
+                auroraState = '停止';
+              });
+              showMessage(context, '已发送');
+            } on Exception catch (e) {
+              showMessage(context, '出现错误: ${e.toString()}');
+            }
+          },
+        ),
+        Bubble(
+          icon: Icons.input,
+          iconColor: Colors.white,
+          bubbleColor: Colors.blue,
+          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+          title: '送料',
+          onPress: () async {
+            try {
+              _actionController.reverse();
+              // TODO await mainStore.sendPush();
+              setState(() {
+                auroraState = '送料';
+              });
+              showMessage(context, '已发送');
+            } on Exception catch (e) {
+              showMessage(context, '出现错误: ${e.toString()}');
+            }
+          },
+        ),
+        Bubble(
+          icon: Icons.open_in_new,
+          title: '回抽',
+          iconColor: Colors.white,
+          bubbleColor: Colors.blue,
+          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+          onPress: () async {
+            try {
+              _actionController.reverse();
+              // TODO await mainStore.sendPop();
+              setState(() {
+                auroraState = '回抽';
+              });
+              showMessage(context, '已发送');
+            } on Exception catch (e) {
+              showMessage(context, '出现错误: ${e.toString()}');
+            }
+          },
+        ),
+        Bubble(
+          icon: Icons.send,
+          title: '发送',
+          iconColor: Colors.white,
+          bubbleColor: Colors.blue,
+          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+          onPress: () async {
+            try {
+              _actionController.reverse();
+              // TODO await mainStore.sendColor();
+              showMessage(context, '已发送');
+            } on Exception catch (e) {
+              showMessage(context, '出现错误: ${e.toString()}');
+            }
+          },
+        ),
+        Bubble(
+          icon: Icons.widgets,
+          title: '输入',
+          iconColor: Colors.white,
+          bubbleColor: Colors.blue,
+          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+          onPress: () async {
+            try {
+              _actionController.reverse();
+              await showCmykwBuilder(context);
+            } on Exception catch (e) {
+              showMessage(context, '出现错误: ${e.toString()}');
+            }
+          },
+        ),
+      ],
     );
   }
 

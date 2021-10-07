@@ -53,6 +53,11 @@ abstract class BluetoothStoreBase with Store {
     });
   }
 
+
+  // Future<void>
+
+
+
   // 寻找并且连接设备
   @action
   Future<void> findAndConnect() async {
@@ -72,7 +77,7 @@ abstract class BluetoothStoreBase with Store {
         await connectDevice(data[0], true);
       } else {
         // 当前设备未连接
-        await adapter.startScan(timeout: const Duration(seconds: 10));
+        adapter.startScan(timeout: const Duration(seconds: 10));
         final deviceCompleter = Completer<BluetoothDevice>();
         resultListener = adapter.scanResults.listen((event) {
           for (final element in event) {
@@ -84,7 +89,9 @@ abstract class BluetoothStoreBase with Store {
             }
           }
         });
+        await Future.delayed(const Duration(seconds: 1));
         scanListener = adapter.isScanning.listen((event) {
+          print(event);
           if (event) {
             state = ConnectState.Scanning;
           } else {

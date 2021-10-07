@@ -84,7 +84,7 @@ class _StatePageState extends State<StatePage>
               size: 50,
             ),
             onPressed: () {
-              // TODO mainStore.findAndConnect();
+              bluetoothStore.findAndConnect();
             },
           );
         }
