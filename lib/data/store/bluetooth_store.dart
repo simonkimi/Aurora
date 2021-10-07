@@ -6,6 +6,7 @@ import 'package:aurora/data/proto/gen/task.pbserver.dart';
 import 'package:aurora/main.dart';
 import 'package:aurora/ui/page/task/store/task_maker_store.dart';
 import 'package:aurora/utils/get_cmykw.dart';
+import 'package:aurora/utils/utils.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mobx/mobx.dart';
@@ -26,6 +27,13 @@ enum ConnectState {
   Connected,
 }
 
+class SendHistory {
+  SendHistory(this.data);
+
+  final DateTime time = DateTime.now();
+  final List<int> data;
+}
+
 abstract class BluetoothStoreBase with Store {
   @observable
   bool isScanning = false;
@@ -39,15 +47,17 @@ abstract class BluetoothStoreBase with Store {
   @observable
   ConnectState state = ConnectState.Waiting;
 
+  final sendHistory = ObservableList<SendHistory>();
+
   Future<void> sendData(List<int> data) async {
     print('-' * 50);
     print('数据: ${data.length}');
-    print(
-        '发送数据: ${data.map((e) => e.toRadixString(16)).map((e) => e.length == 1 ? '0$e' : e).join(' ')}');
-    print('发送数据: ${data.map((e) => e.toString()).join(' ')}');
+    print('发送数据: ${to16String(data)}');
+    print('发送数据: ${to10String(data)}');
     print('-' * 50);
     if (connectedDevice != null && characteristic != null) {
       await characteristic!.write(data, withoutResponse: false);
+      sendHistory.add(SendHistory(data));
       return;
     }
     BotToast.showText(text: '设备未连接');

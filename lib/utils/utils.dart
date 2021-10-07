@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-
 import 'package:aurora/main.dart';
 import 'package:vibration/vibration.dart';
 
@@ -25,8 +24,6 @@ extension StringHelper on String {
     if (length >= num) return this;
     return List.filled(num - length, char).join() + this;
   }
-
-
 
   double toDouble() => double.parse(this);
 }
@@ -70,3 +67,10 @@ Future<void> vibrate({
     );
   }
 }
+
+String to16String(List<int> data) => data
+    .map((e) => e.toRadixString(16))
+    .map((e) => e.length == 1 ? '0$e' : e)
+    .join(' ');
+
+String to10String(List<int> data) => data.map((e) => e.toString()).join(' ');

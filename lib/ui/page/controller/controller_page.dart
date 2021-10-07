@@ -11,9 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
-enum AppBarAction {
-  CMYKWConfig,
-}
+enum AppBarAction { CMYKWConfig, SendHistory }
 
 class ControllerPage extends StatefulWidget {
   const ControllerPage({Key? key}) : super(key: key);
@@ -25,7 +23,6 @@ class ControllerPage extends StatefulWidget {
 class _ControllerPageState extends State<ControllerPage>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   var auroraState = '停机';
-  var motorState = '送料';
 
   late AnimationController _actionController;
 
@@ -65,6 +62,9 @@ class _ControllerPageState extends State<ControllerPage>
               case AppBarAction.CMYKWConfig:
                 Navigator.of(context).pushNamed('/config');
                 break;
+              case AppBarAction.SendHistory:
+                Navigator.of(context).pushNamed('/sendHistory');
+                break;
             }
           },
           itemBuilder: (context) {
@@ -74,6 +74,12 @@ class _ControllerPageState extends State<ControllerPage>
                 icon: Icons.stacked_line_chart,
                 value: AppBarAction.CMYKWConfig,
                 text: '耗材配置',
+              ),
+              buildPopupMenuItem(
+                context: context,
+                icon: Icons.history,
+                value: AppBarAction.SendHistory,
+                text: '发送历史',
               ),
             ];
           },

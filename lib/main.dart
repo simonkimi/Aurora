@@ -1,5 +1,6 @@
 import 'package:aurora/data/database/database_helper.dart';
 import 'package:aurora/data/store/bluetooth_store.dart';
+import 'package:aurora/ui/page/ble_connect/ble_history.dart';
 import 'package:aurora/ui/page/cmykw_config/config_manager.dart';
 import 'package:aurora/ui/page/main/main_page.dart';
 import 'package:aurora/ui/page/state/state_page.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/state': (context) => const StatePage(),
         '/': (context) => MainPage(),
         '/config': (context) => ConfigManager(),
+        '/sendHistory': (context) => const BleSendHistory(),
       },
     );
   }

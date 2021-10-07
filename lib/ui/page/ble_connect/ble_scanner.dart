@@ -143,12 +143,11 @@ class _BleScannerState extends State<BleScanner> {
 
   Future<void> connectDevice(BluetoothDevice device) async {
     try {
+      await FlutterBlue.instance.stopScan();
       final cancelFunc = BotToast.showLoading();
       await bluetoothStore.connectFindDevice(device);
       cancelFunc();
       setState(() {});
-      FlutterBlue.instance
-          .startScan(timeout: const Duration(seconds: 1));
       Navigator.of(context).pop();
     } catch (e) {
       BotToast.showText(text: e.toString());
