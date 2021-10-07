@@ -1,54 +1,20 @@
-import 'dart:convert';
-
-import 'package:aurora/data/database/database.dart';
-import 'package:aurora/data/proto/gen/config.pbserver.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class ConfigQrCode extends StatelessWidget {
-  const ConfigQrCode({
+class QrGen extends StatelessWidget {
+  const QrGen({
     Key? key,
-    required this.entity,
+    required this.buffer,
   }) : super(key: key);
 
-  final ConfigTableData entity;
+  final String buffer;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(context),
-      body: Column(
-        children: [
-          Center(
-            child: qrCode(context),
-          ),
-        ],
-      ),
-    );
+    return Container();
   }
 
   Widget qrCode(BuildContext context) {
-    final pb = CMYKWConfigPB(
-      xy32: entity.xy32,
-      xy31: entity.xy31,
-      xy22: entity.xy22,
-      xy21: entity.xy21,
-      xy12: entity.xy12,
-      xy11: entity.xy11,
-      ts: entity.ts,
-      gKMin: entity.G_K_min,
-      gKw1: entity.G_kw1,
-      gKwM: entity.G_kwM,
-      gWMax: entity.G_W_max,
-      ka: entity.Ka,
-      kb1: entity.Kb1,
-      kb2: entity.Kb2,
-      kc: entity.Kc,
-      name: entity.name,
-    );
-
-    final buffer = base64Encode(pb.writeToBuffer());
-
     final size = MediaQuery.of(context).size.width;
 
     return QrImage(

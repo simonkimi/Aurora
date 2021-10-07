@@ -1,24 +1,18 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-
-import 'package:aurora/data/database/database.dart';
-import 'package:aurora/data/proto/gen/config.pbserver.dart';
-import 'package:aurora/ui/page/cmykw_config/config_maker.dart';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:rxdart/rxdart.dart';
 
-class ConfigScanner extends StatefulWidget {
-  const ConfigScanner({Key? key}) : super(key: key);
+class QrScanner extends StatefulWidget {
+  const QrScanner({Key? key}) : super(key: key);
 
   @override
-  _ConfigScannerState createState() => _ConfigScannerState();
+  _QrScannerState createState() => _QrScannerState();
 }
 
-class _ConfigScannerState extends State<ConfigScanner> {
+class _QrScannerState extends State<QrScanner> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   late QRViewController controller;
   late final StreamSubscription<Barcode> listener;
@@ -48,38 +42,12 @@ class _ConfigScannerState extends State<ConfigScanner> {
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
+
     listener = controller.scannedDataStream
         .debounceTime(const Duration(seconds: 2))
         .listen((scanData) {
-      final scan = scanData.code;
-      try {
-        final pb = CMYKWConfigPB.fromBuffer(base64Decode(scan));
-        final entity = ConfigTableCompanion.insert(
-          name: pb.name,
-          ts: pb.ts,
-          xy11: pb.xy11,
-          xy12: pb.xy12,
-          xy21: pb.xy21,
-          xy22: pb.xy22,
-          xy31: pb.xy31,
-          xy32: pb.xy32,
-          Kc: pb.kc,
-          Kb2: pb.kb2,
-          Kb1: pb.kb1,
-          Ka: pb.ka,
-          G_kw1: pb.gKw1,
-          G_K_min: pb.gKMin,
-          G_W_max: pb.gWMax,
-          G_kwM: pb.gKwM,
-        );
-        listener.cancel();
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => ConfigMaker(
-                  entity: entity,
-                )));
-      } catch (e) {
-        BotToast.showText(text: '二维码解析失败!');
-      }
+      listener.cancel();
+      Navigator.of(context).pop(scanData.code);
     });
   }
 
@@ -92,7 +60,6 @@ class _ConfigScannerState extends State<ConfigScanner> {
       controller.resumeCamera();
     }
   }
-
 
   @override
   void dispose() {
