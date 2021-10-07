@@ -1,6 +1,7 @@
 import 'package:aurora/data/database/database.dart';
 import 'package:aurora/data/database/database_helper.dart';
 import 'package:aurora/main.dart';
+import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -77,7 +78,7 @@ class ConfigMaker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context),
+      appBar: buildAppBar(context, title: '添加配置'),
       body: buildBody(),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.check),
@@ -271,27 +272,6 @@ class ConfigMaker extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  AppBar buildAppBar(BuildContext context) {
-    return AppBar(
-      title: const Text(
-        '添加配置',
-        style: TextStyle(fontSize: 18),
-      ),
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(
-          Icons.arrow_back_ios,
-          size: 18,
-        ),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
       ),
     );
   }

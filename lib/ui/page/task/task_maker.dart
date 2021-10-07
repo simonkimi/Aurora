@@ -1,5 +1,6 @@
 import 'package:aurora/data/database/database.dart';
 import 'package:aurora/data/proto/gen/task.pbserver.dart';
+import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/ui/components/color_selector.dart';
 import 'package:aurora/ui/components/select_tile.dart';
 import 'package:aurora/ui/page/task/store/task_maker_store.dart';
@@ -22,7 +23,7 @@ class TaskMaker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context),
+      appBar: buildAppBar(context, title: '新建任务'),
       body: buildBody(),
       floatingActionButton: buildFloatingActionButton(context),
     );
@@ -252,24 +253,6 @@ class TaskMaker extends StatelessWidget {
             Radius.circular(50),
           ),
         ),
-      ),
-    );
-  }
-
-  AppBar buildAppBar(BuildContext context) {
-    return AppBar(
-      title: const Text('新建任务', style: TextStyle(fontSize: 18)),
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: const Icon(
-          Icons.arrow_back_ios,
-          size: 18,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
       ),
     );
   }

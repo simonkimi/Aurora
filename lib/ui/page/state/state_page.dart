@@ -1,5 +1,6 @@
 import 'package:aurora/data/store/bluetooth_store.dart';
 import 'package:aurora/main.dart';
+import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/ui/components/dash_line.dart';
 import 'package:aurora/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class _StatePageState extends State<StatePage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: buildAppBar(),
+      appBar: buildAppBar(context, title: '状态'),
       body: Observer(builder: (_) => buildBody()),
     );
   }
@@ -89,18 +90,6 @@ class _StatePageState extends State<StatePage>
           );
         }
       },
-    );
-  }
-
-  AppBar buildAppBar() {
-    return AppBar(
-      title: const Text(
-        '状态',
-        style: TextStyle(fontSize: 18),
-      ),
-      centerTitle: true,
-      elevation: 0,
-      automaticallyImplyLeading: false,
     );
   }
 

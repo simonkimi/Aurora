@@ -4,6 +4,7 @@ import 'package:aurora/data/database/database.dart';
 import 'package:aurora/data/database/database_helper.dart';
 import 'package:aurora/data/proto/gen/config.pbserver.dart';
 import 'package:aurora/main.dart';
+import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/ui/components/select_tile.dart';
 import 'package:aurora/ui/page/cmykw_config/config_maker.dart';
 import 'package:aurora/ui/page/qr_code/qr_gen.dart';
@@ -19,7 +20,12 @@ class ConfigManager extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context),
+      appBar: buildAppBar(context, title: '耗材配置', actions: [
+        IconButton(
+          onPressed: () => onScanPress(context),
+          icon: const Icon(Icons.qr_code),
+        ),
+      ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)
@@ -42,33 +48,6 @@ class ConfigManager extends StatelessWidget {
         },
       );
     });
-  }
-
-  AppBar buildAppBar(BuildContext context) {
-    return AppBar(
-      title: const Text(
-        '耗材配置',
-        style: TextStyle(fontSize: 18),
-      ),
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(
-          Icons.arrow_back_ios,
-          size: 18,
-        ),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-      actions: [
-        IconButton(
-          onPressed: () => onScanPress(context),
-          icon: const Icon(Icons.qr_code),
-        ),
-      ],
-    );
   }
 
   Future<void> onScanPress(BuildContext context) async {

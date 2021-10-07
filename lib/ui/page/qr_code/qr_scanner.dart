@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:aurora/ui/components/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -19,7 +20,7 @@ class _QrScannerState extends State<QrScanner> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context),
+      appBar: buildAppBar(context, title: '扫描分享'),
       body: Stack(
         children: [
           QRView(
@@ -65,26 +66,5 @@ class _QrScannerState extends State<QrScanner> {
     super.dispose();
     controller.dispose();
     listener.cancel();
-  }
-
-  AppBar buildAppBar(BuildContext context) {
-    return AppBar(
-      title: const Text(
-        '扫描分享',
-        style: TextStyle(fontSize: 18),
-      ),
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(
-          Icons.arrow_back_ios,
-          size: 18,
-        ),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-    );
   }
 }

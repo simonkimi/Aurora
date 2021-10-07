@@ -1,4 +1,5 @@
 import 'package:aurora/main.dart';
+import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/ui/components/color_selector.dart';
 import 'package:aurora/utils/get_cmykw.dart';
 import 'package:aurora/utils/utils.dart';
@@ -49,7 +50,34 @@ class _ControllerPageState extends State<ControllerPage>
   // ignore: must_call_super
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(),
+      appBar: buildAppBar(context, title: '控制', actions: [
+        PopupMenuButton<AppBarAction>(
+          icon: const Icon(
+            Icons.more_vert_outlined,
+            color: Colors.white,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          onSelected: (value) async {
+            switch (value) {
+              case AppBarAction.CMYKWConfig:
+                Navigator.of(context).pushNamed('/config');
+                break;
+            }
+          },
+          itemBuilder: (context) {
+            return [
+              buildPopupMenuItem(
+                context: context,
+                icon: Icons.stacked_line_chart,
+                value: AppBarAction.CMYKWConfig,
+                text: '耗材配置',
+              ),
+            ];
+          },
+        ),
+      ]),
       body: Observer(builder: (_) => buildBody()),
       floatingActionButton: buildFloatingActionButton(context),
     );
@@ -541,7 +569,6 @@ class _ControllerPageState extends State<ControllerPage>
     );
   }
 
-
   Widget buildColorCard({
     required String title,
     required String value,
@@ -566,46 +593,6 @@ class _ControllerPageState extends State<ControllerPage>
           ),
         ),
       ),
-    );
-  }
-
-  AppBar buildAppBar() {
-    return AppBar(
-      title: const Text(
-        '控制',
-        style: TextStyle(fontSize: 18),
-      ),
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      elevation: 0,
-      actions: [
-        PopupMenuButton<AppBarAction>(
-          icon: const Icon(
-            Icons.more_vert_outlined,
-            color: Colors.white,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          onSelected: (value) async {
-            switch (value) {
-              case AppBarAction.CMYKWConfig:
-                Navigator.of(context).pushNamed('/config');
-                break;
-            }
-          },
-          itemBuilder: (context) {
-            return [
-              buildPopupMenuItem(
-                context: context,
-                icon: Icons.stacked_line_chart,
-                value: AppBarAction.CMYKWConfig,
-                text: '耗材配置',
-              ),
-            ];
-          },
-        ),
-      ],
     );
   }
 

@@ -4,6 +4,7 @@ import 'package:aurora/data/database/database.dart';
 import 'package:aurora/data/database/database_helper.dart';
 import 'package:aurora/data/proto/gen/task.pbserver.dart';
 import 'package:aurora/main.dart';
+import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/ui/components/select_tile.dart';
 import 'package:aurora/ui/page/qr_code/qr_gen.dart';
 import 'package:aurora/ui/page/qr_code/qr_scanner.dart';
@@ -21,7 +22,12 @@ class TaskPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context),
+      appBar: buildAppBar(context, title: '任务', actions: [
+        IconButton(
+          onPressed: () => onScanPress(context),
+          icon: const Icon(Icons.qr_code),
+        ),
+      ]),
       body: buildBody(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -191,20 +197,6 @@ class TaskPage extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  AppBar buildAppBar(BuildContext context) {
-    return AppBar(
-      title: const Text('任务', style: TextStyle(fontSize: 18)),
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      actions: [
-        IconButton(
-          onPressed: () => onScanPress(context),
-          icon: const Icon(Icons.qr_code),
-        ),
-      ],
     );
   }
 

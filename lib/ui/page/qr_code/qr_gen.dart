@@ -1,3 +1,4 @@
+import 'package:aurora/ui/components/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -12,7 +13,7 @@ class QrGen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context),
+      appBar: buildAppBar(context, title: '分享'),
       body: Center(
         child: buildQrCode(context),
       ),
@@ -29,27 +30,6 @@ class QrGen extends StatelessWidget {
       embeddedImage: const AssetImage('assets/img/logo_round.png'),
       embeddedImageStyle: QrEmbeddedImageStyle(
         size: Size(size / 10, size / 10),
-      ),
-    );
-  }
-
-  AppBar buildAppBar(BuildContext context) {
-    return AppBar(
-      title: const Text(
-        '分享',
-        style: TextStyle(fontSize: 18),
-      ),
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(
-          Icons.arrow_back_ios,
-          size: 18,
-        ),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
       ),
     );
   }

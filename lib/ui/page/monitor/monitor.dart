@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:aurora/main.dart';
+import 'package:aurora/ui/components/app_bar.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -18,7 +19,7 @@ class _MonitorPageState extends State<MonitorPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: buildAppBar(),
+      appBar: buildAppBar(context, title: '监控'),
       body: buildBody(),
     );
   }
@@ -138,18 +139,6 @@ class _MonitorPageState extends State<MonitorPage>
           },
         ),
       ),
-    );
-  }
-
-  AppBar buildAppBar() {
-    return AppBar(
-      title: const Text(
-        '监控',
-        style: TextStyle(fontSize: 18),
-      ),
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      elevation: 0,
     );
   }
 
