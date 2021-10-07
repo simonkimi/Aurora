@@ -1,5 +1,11 @@
 import 'dart:async';
+import 'dart:ui';
 
+import 'package:aurora/data/model/ble_ext.dart';
+import 'package:aurora/data/proto/gen/task.pbserver.dart';
+import 'package:aurora/main.dart';
+import 'package:aurora/ui/page/task/store/task_maker_store.dart';
+import 'package:aurora/utils/get_cmykw.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mobx/mobx.dart';
@@ -36,14 +42,17 @@ abstract class BluetoothStoreBase with Store {
   ConnectState state = ConnectState.Waiting;
 
   Future<void> sendData(List<int> data) async {
+    print('-' * 50);
+    print('数据: ${data.length}');
+    print(
+        '发送数据: ${data.map((e) => e.toRadixString(16)).map((e) => e.length == 1 ? '0$e' : e).join(' ')}');
+    print('发送数据: ${data.map((e) => e.toString()).join(' ')}');
+    print('-' * 50);
     if (connectedDevice != null && characteristic != null) {
       await characteristic!.write(data, withoutResponse: false);
-      print(
-          '发送数据: ${data.map((e) => e.toRadixString(16)).map((e) => e.length == 1 ? '0$e' : e).join(' ')}');
-      print('发送数据: ${data.map((e) => e.toString()).join(' ')}');
       return;
     }
-    throw DeviceNotConnectException();
+    BotToast.showText(text: '设备未连接');
   }
 
   Future<void> setBleListen() async {
@@ -52,11 +61,6 @@ abstract class BluetoothStoreBase with Store {
       print('收到数据: $event');
     });
   }
-
-
-  // Future<void>
-
-
 
   // 寻找并且连接设备
   @action
@@ -112,6 +116,57 @@ abstract class BluetoothStoreBase with Store {
       scanListener?.cancel();
       resultListener?.cancel();
     }
+  }
+
+  Future<void> sendIn() async {
+    await sendData(buildBluetooth(
+      direction: MotorDirection.Forward,
+      cmykw: mainStore.cmykw,
+    ));
+    mainStore.nowColor = mainStore.selectColor;
+  }
+
+  Future<void> sendStop() async {
+    await sendData(buildBluetooth(
+      direction: MotorDirection.Stop,
+      cmykw: CMYKW.zero(),
+    ));
+  }
+
+  Future<void> sendOut() async {
+    await sendData(buildBluetooth(
+      direction: MotorDirection.Reverse,
+      cmykw: const CMYKW(
+        c: 50,
+        m: 50,
+        y: 50,
+        k: 50,
+        w: 50,
+      ),
+    ));
+  }
+
+  Future<void> sendTask(TaskPb pb) async {
+    final colorSet = <Color>{};
+    for (final loop in pb.loop) {
+      colorSet.addAll(loop.colorList.map((e) => e.color));
+    }
+    final colorList = colorSet.toList(); // 调色板
+
+    final taskMessage = TaskMessage(
+      colorList: colorList
+          .map((e) => CMYKWUtil(mainStore.cmykwConfig).RGB_CMYG(e))
+          .toList(),
+      loop: pb.loop
+          .map((e) => TaskLoop(
+                colorList: e.colorList
+                    .map((e) => colorList.indexOf(e.color) + 1)
+                    .toList(),
+                loopTime: e.loopTime,
+              ))
+          .toList(),
+    );
+    await sendData(taskMessage.toBytes());
   }
 
   @action

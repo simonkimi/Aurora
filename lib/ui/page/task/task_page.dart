@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:aurora/data/database/database.dart';
 import 'package:aurora/data/database/database_helper.dart';
-import 'package:aurora/data/proto/gen/ble.pbserver.dart';
 import 'package:aurora/data/proto/gen/task.pbserver.dart';
 import 'package:aurora/main.dart';
 import 'package:aurora/ui/components/select_tile.dart';
 import 'package:aurora/ui/page/qr_code/qr_gen.dart';
+import 'package:aurora/ui/page/qr_code/qr_scanner.dart';
 import 'package:aurora/ui/page/task/task_maker.dart';
-import 'package:aurora/utils/get_cmykw.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 
 import 'store/task_maker_store.dart';
@@ -21,7 +21,7 @@ class TaskPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(),
+      appBar: buildAppBar(context),
       body: buildBody(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -71,8 +71,7 @@ class TaskPage extends StatelessWidget {
                   displayRadio: false);
               switch (selection) {
                 case TaskSelection.Send:
-                  // TODO: 发送
-                  genBlePb(pb);
+                  bluetoothStore.sendTask(pb);
                   break;
                 case TaskSelection.Share:
                   Navigator.of(context).push(MaterialPageRoute(
@@ -195,31 +194,32 @@ class TaskPage extends StatelessWidget {
     );
   }
 
-  AppBar buildAppBar() {
+  AppBar buildAppBar(BuildContext context) {
     return AppBar(
       title: const Text('任务', style: TextStyle(fontSize: 18)),
       centerTitle: true,
       automaticallyImplyLeading: false,
+      actions: [
+        IconButton(
+          onPressed: () => onScanPress(context),
+          icon: const Icon(Icons.qr_code),
+        ),
+      ],
     );
   }
 
-  TaskMessage genBlePb(TaskPb pb) {
-    final colorSet = <Color>{};
-    for (final loop in pb.loop) {
-      colorSet.addAll(loop.colorList.map((e) => e.color));
+  Future<void> onScanPress(BuildContext context) async {
+    final scan = await Navigator.of(context).push<String?>(
+        MaterialPageRoute(builder: (context) => const QrScanner()));
+    try {
+      if (scan != null) {
+        final pb = TaskPb.fromBuffer(base64Decode(scan));
+        final entity = TaskTableCompanion.insert(taskPb: pb.writeToBuffer());
+        DB().taskDao.insert(entity);
+        BotToast.showText(text: '导入完成');
+      }
+    } catch (e) {
+      BotToast.showText(text: '二维码扫描失败');
     }
-    final colorList = colorSet.toList();
-
-    final bleTask = TaskMessage(
-      palette: colorList.map(
-          (e) => CMYKWUtil(mainStore.cmykwConfig).RGB_CMYG(e).toPrinterColor()),
-      taskLoop: pb.loop.map((e) => TaskLoop(
-          loopTime: e.loopTime,
-          colorIndex: e.colorList.map((e) => colorList.indexOf(e.color)))),
-    );
-
-    print('生成数据长度: ${bleTask.writeToBuffer().length}');
-    print(bleTask.writeToJson());
-    return bleTask;
   }
 }

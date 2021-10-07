@@ -117,15 +117,15 @@ class _ControllerPageState extends State<ControllerPage>
       animatedIconData: AnimatedIcons.menu_close,
       items: [
         Bubble(
-          title: '开始',
+          title: '送料',
           iconColor: Colors.white,
           bubbleColor: Colors.blue,
-          icon: Icons.play_arrow,
+          icon: Icons.input,
           titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
           onPress: () async {
             try {
               _actionController.reverse();
-              // TODO await mainStore.sendStart();
+              await bluetoothStore.sendIn();
               setState(() {
                 auroraState = '运行';
               });
@@ -136,17 +136,17 @@ class _ControllerPageState extends State<ControllerPage>
           },
         ),
         Bubble(
-          title: '暂停',
+          title: '退料',
           iconColor: Colors.white,
           bubbleColor: Colors.blue,
-          icon: Icons.pause,
+          icon: Icons.open_in_new,
           titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
           onPress: () async {
             try {
               _actionController.reverse();
-              // TODO await mainStore.sendPause();
+              await bluetoothStore.sendOut();
               setState(() {
-                auroraState = '停止';
+                auroraState = '退料';
               });
               showMessage(context, '已发送');
             } on Exception catch (e) {
@@ -155,15 +155,15 @@ class _ControllerPageState extends State<ControllerPage>
           },
         ),
         Bubble(
-          icon: Icons.input,
+          icon: Icons.stop,
           iconColor: Colors.white,
           bubbleColor: Colors.blue,
           titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-          title: '送料',
+          title: '停止',
           onPress: () async {
             try {
               _actionController.reverse();
-              // TODO await mainStore.sendPush();
+              await bluetoothStore.sendStop();
               setState(() {
                 auroraState = '送料';
               });
@@ -173,56 +173,37 @@ class _ControllerPageState extends State<ControllerPage>
             }
           },
         ),
-        Bubble(
-          icon: Icons.open_in_new,
-          title: '回抽',
-          iconColor: Colors.white,
-          bubbleColor: Colors.blue,
-          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-          onPress: () async {
-            try {
-              _actionController.reverse();
-              // TODO await mainStore.sendPop();
-              setState(() {
-                auroraState = '回抽';
-              });
-              showMessage(context, '已发送');
-            } on Exception catch (e) {
-              showMessage(context, '出现错误: ${e.toString()}');
-            }
-          },
-        ),
-        Bubble(
-          icon: Icons.send,
-          title: '发送',
-          iconColor: Colors.white,
-          bubbleColor: Colors.blue,
-          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-          onPress: () async {
-            try {
-              _actionController.reverse();
-              // TODO await mainStore.sendColor();
-              showMessage(context, '已发送');
-            } on Exception catch (e) {
-              showMessage(context, '出现错误: ${e.toString()}');
-            }
-          },
-        ),
-        Bubble(
-          icon: Icons.widgets,
-          title: '输入',
-          iconColor: Colors.white,
-          bubbleColor: Colors.blue,
-          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-          onPress: () async {
-            try {
-              _actionController.reverse();
-              await showCmykwBuilder(context);
-            } on Exception catch (e) {
-              showMessage(context, '出现错误: ${e.toString()}');
-            }
-          },
-        ),
+        // Bubble(
+        //   icon: Icons.send,
+        //   title: '发送',
+        //   iconColor: Colors.white,
+        //   bubbleColor: Colors.blue,
+        //   titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+        //   onPress: () async {
+        //     try {
+        //       _actionController.reverse();
+        //       // await mainStore.sendColor();
+        //       showMessage(context, '已发送');
+        //     } on Exception catch (e) {
+        //       showMessage(context, '出现错误: ${e.toString()}');
+        //     }
+        //   },
+        // ),
+        // Bubble(
+        //   icon: Icons.widgets,
+        //   title: '输入',
+        //   iconColor: Colors.white,
+        //   bubbleColor: Colors.blue,
+        //   titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+        //   onPress: () async {
+        //     try {
+        //       _actionController.reverse();
+        //       await showCmykwBuilder(context);
+        //     } on Exception catch (e) {
+        //       showMessage(context, '出现错误: ${e.toString()}');
+        //     }
+        //   },
+        // ),
       ],
     );
   }

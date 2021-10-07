@@ -13,7 +13,7 @@ class MainStore = MainStoreBase with _$MainStore;
 
 abstract class MainStoreBase with Store {
   @observable
-  Color selectColor = Colors.blue;
+  Color selectColor = Colors.grey;
 
   @observable
   Color? nowColor;

@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:aurora/data/database/database.dart';
-import 'package:aurora/data/proto/gen/ble.pbserver.dart';
 import 'package:flutter/cupertino.dart';
 
 // ignore_for_file: non_constant_identifier_names
@@ -15,6 +14,13 @@ class CMYKW {
     required this.w,
   });
 
+  CMYKW.zero()
+      : c = 0,
+        m = 0,
+        y = 0,
+        k = 0,
+        w = 0;
+
   final int c;
   final int m;
   final int y;
@@ -25,8 +31,6 @@ class CMYKW {
   String toString() {
     return 'c:$c  m:$m  y:$y  k:$k  w:$w';
   }
-
-  PrinterColor toPrinterColor() => PrinterColor(c: c, m: m, y: y, k: k, w: w);
 }
 
 class CMYKWConfig {

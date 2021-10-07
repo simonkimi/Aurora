@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:rxdart/rxdart.dart';
 
 class QrScanner extends StatefulWidget {
   const QrScanner({Key? key}) : super(key: key);
@@ -44,8 +43,8 @@ class _QrScannerState extends State<QrScanner> {
     this.controller = controller;
 
     listener = controller.scannedDataStream
-        .debounceTime(const Duration(seconds: 2))
         .listen((scanData) {
+      print('扫描到二维码: ${scanData.code.length}');
       listener.cancel();
       Navigator.of(context).pop(scanData.code);
     });
