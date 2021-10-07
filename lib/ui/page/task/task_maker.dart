@@ -138,7 +138,7 @@ class TaskMaker extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 onChanged: (text) {
-                  store.loop[loopIndex].loop.value = int.parse(text);
+                  store.loop[loopIndex].loop.value = int.tryParse(text) ?? 1;
                 },
               ),
             );
@@ -240,7 +240,12 @@ class TaskMaker extends StatelessWidget {
           icon: const Icon(Icons.color_lens_outlined),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            if (store.loop.isNotEmpty) {
+              final pb = store.transformToPb();
+              Navigator.of(context).pop(pb);
+            }
+          },
           icon: const Icon(Icons.check),
         ),
       ],

@@ -57,18 +57,18 @@ abstract class TaskMakerStoreBase with Store {
             .toList());
   }
 
-  void transformToBytes() {
-    final colorSet = <Color>{};
-    for (final el in loop) {
-      colorSet.addAll(el.colorList);
-    }
-
-    final colorList = colorSet.toList(); // 要发送的调色板
-
-    final bleLoop = loop.map((e) => BleLoopTask(
-        loop: e.loop.value,
-        color: e.colorList.map((e) => colorList.indexOf(e)).toList()));  // 蓝牙数据
-  }
+  // void transformToBytes() {
+  //   final colorSet = <Color>{};
+  //   for (final el in loop) {
+  //     colorSet.addAll(el.colorList);
+  //   }
+  //
+  //   final colorList = colorSet.toList(); // 要发送的调色板
+  //
+  //   final bleLoop = loop.map((e) => BleLoopTask(
+  //       loop: e.loop.value,
+  //       color: e.colorList.map((e) => colorList.indexOf(e)).toList()));  // 蓝牙数据
+  // }
 }
 
 extension ColorTransform on ColorPb {

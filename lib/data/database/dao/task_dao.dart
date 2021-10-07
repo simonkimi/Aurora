@@ -10,4 +10,9 @@ class TaskDao extends DatabaseAccessor<MyDatabase> with _$TaskDaoMixin {
   TaskDao(MyDatabase attachedDatabase) : super(attachedDatabase);
 
   Stream<List<TaskTableData>> getAllStream() => select(taskTable).watch();
+
+  Future<void> insert(TaskTableCompanion entity) =>
+      into(taskTable).insert(entity);
+
+  Future<void> del(TaskTableData entity) => delete(taskTable).delete(entity);
 }
