@@ -1,6 +1,7 @@
 import 'package:aurora/main.dart';
 import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/ui/components/color_selector.dart';
+import 'package:aurora/ui/page/ble_connect/ble_scanner.dart';
 import 'package:aurora/utils/get_cmykw.dart';
 import 'package:aurora/utils/utils.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -123,7 +124,8 @@ class _ControllerPageState extends State<ControllerPage>
                   key: const ValueKey('scan'),
                   child: const Icon(Icons.search),
                   onPressed: () {
-                    bluetoothStore.findAndConnect();
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const BleScanner()));
                   },
                 ),
         );

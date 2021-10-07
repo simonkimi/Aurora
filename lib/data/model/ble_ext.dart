@@ -56,12 +56,12 @@ class TaskMessage {
   final List<TaskLoop> loop;
 
   List<int> toBytes() {
-    final buffer = <int>[];
+    final buffer = <int>['&'.codeUnitAt(0)];
 
     // 颜色数组
     for (final cmykw in colorList) {
       buffer.addAll([
-        '&'.codeUnitAt(0),
+        1, // 送料
         cmykw.c,
         cmykw.m,
         cmykw.y,
