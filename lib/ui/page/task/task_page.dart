@@ -2,10 +2,13 @@ import 'dart:convert';
 
 import 'package:aurora/data/database/database.dart';
 import 'package:aurora/data/database/database_helper.dart';
+import 'package:aurora/data/proto/gen/ble.pbserver.dart';
 import 'package:aurora/data/proto/gen/task.pbserver.dart';
 import 'package:aurora/ui/components/select_tile.dart';
 import 'package:aurora/ui/page/qr_code/qr_gen.dart';
 import 'package:aurora/ui/page/task/task_maker.dart';
+import 'package:aurora/utils/get_cmykw.dart';
+import 'package:aurora/main.dart';
 import 'package:flutter/material.dart';
 import 'store/task_maker_store.dart';
 
@@ -68,6 +71,7 @@ class TaskPage extends StatelessWidget {
               switch (selection) {
                 case TaskSelection.Send:
                   // TODO: 发送
+                  genBlePb(pb);
                   break;
                 case TaskSelection.Share:
                   Navigator.of(context).push(MaterialPageRoute(
@@ -141,25 +145,19 @@ class TaskPage extends StatelessWidget {
         const Icon(Icons.format_list_bulleted_rounded),
         const SizedBox(width: 10),
         Expanded(
-          child: SizedBox(
-            height: 30,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              separatorBuilder: (context, index) {
-                return const SizedBox(width: 10);
-              },
-              itemCount: pb.loop.length,
-              itemBuilder: (c, i) => _buildLoopItem(c, i, pb),
-            ),
+          child: Wrap(
+            runSpacing: 5,
+            spacing: 10,
+            children: pb.loop.map((e) => _buildLoopItem(e, pb)).toList(),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildLoopItem(BuildContext context, int index, TaskPb pb) {
-    final loop = pb.loop[index];
+  Widget _buildLoopItem(LooperPb loop, TaskPb pb) {
     return Container(
+      height: 30,
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         color: Colors.grey[200],
@@ -168,6 +166,7 @@ class TaskPage extends StatelessWidget {
         ),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           ...loop.colorList.map((e) {
             return Padding(
@@ -201,5 +200,25 @@ class TaskPage extends StatelessWidget {
       centerTitle: true,
       automaticallyImplyLeading: false,
     );
+  }
+
+  TaskMessage genBlePb(TaskPb pb) {
+    final colorSet = <Color>{};
+    for (final loop in pb.loop) {
+      colorSet.addAll(loop.colorList.map((e) => e.color));
+    }
+    final colorList = colorSet.toList();
+
+    final bleTask = TaskMessage(
+      palette: colorList.map(
+          (e) => CMYKWUtil(mainStore.cmykwConfig).RGB_CMYG(e).toPrinterColor()),
+      taskLoop: pb.loop.map((e) => TaskLoop(
+          loopTime: e.loopTime,
+          colorIndex: e.colorList.map((e) => colorList.indexOf(e.color)))),
+    );
+
+    print('生成数据长度: ${bleTask.writeToBuffer().length}');
+    print(bleTask.writeToJson());
+    return bleTask;
   }
 }

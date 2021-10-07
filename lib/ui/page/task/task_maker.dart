@@ -244,6 +244,7 @@ class TaskMaker extends StatelessWidget {
           onPressed: () {
             if (store.loop.isNotEmpty) {
               final pb = store.transformToPb();
+              print('生成PB, 大小${pb.writeToBuffer().length}');
               Navigator.of(context).pop(pb);
             }
           },

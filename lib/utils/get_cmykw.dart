@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:aurora/data/database/database.dart';
+import 'package:aurora/data/proto/gen/ble.pbserver.dart';
 import 'package:flutter/cupertino.dart';
 
 // ignore_for_file: non_constant_identifier_names
@@ -24,6 +25,8 @@ class CMYKW {
   String toString() {
     return 'c:$c  m:$m  y:$y  k:$k  w:$w';
   }
+
+  PrinterColor toPrinterColor() => PrinterColor(c: c, m: m, y: y, k: k, w: w);
 }
 
 class CMYKWConfig {

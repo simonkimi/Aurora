@@ -17,15 +17,6 @@ class LoopTask {
   final Rx<int> loop;
 }
 
-class BleLoopTask {
-  BleLoopTask({
-    required this.color,
-    required this.loop,
-  });
-
-  final List<int> color;
-  final int loop;
-}
 
 abstract class TaskMakerStoreBase with Store {
   TaskMakerStoreBase([TaskPb? taskPb])
