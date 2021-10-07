@@ -1,8 +1,6 @@
 import 'package:aurora/data/proto/gen/task.pbserver.dart';
 import 'package:aurora/utils/get_cmykw.dart';
 
-import '../constant.dart';
-
 extension TaskPbH on TaskPb {}
 
 enum MotorDirection { Stop, Forward, Reverse }
@@ -69,9 +67,6 @@ class TaskMessage {
         cmykw.y,
         cmykw.k,
         cmykw.w,
-        TEST_SPEED,
-        0x0d,
-        0x0a
       ]);
     }
 
@@ -84,10 +79,9 @@ class TaskMessage {
         loop.loopTime % 10,
         loop.loopTime ~/ 10 % 10,
         loop.loopTime ~/ 100 % 10,
-        0x0d,
-        0x0a,
       ]);
     }
+    buffer.addAll([0xd, 0xa]);
 
     return buffer;
   }

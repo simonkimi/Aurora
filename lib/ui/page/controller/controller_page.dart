@@ -354,9 +354,6 @@ class _ControllerPageState extends State<ControllerPage>
                     Text('设备状态 : $auroraState',
                         style:
                             const TextStyle(color: Colors.white, fontSize: 16)),
-                    Text('出料状态 : $motorState',
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 16)),
                     Row(
                       children: [
                         const Text(
