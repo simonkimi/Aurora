@@ -17,6 +17,16 @@ class LoopTask {
   final Rx<int> loop;
 }
 
+class BleLoopTask {
+  BleLoopTask({
+    required this.color,
+    required this.loop,
+  });
+
+  final List<int> color;
+  final int loop;
+}
+
 abstract class TaskMakerStoreBase with Store {
   TaskMakerStoreBase([TaskPb? taskPb])
       : palette = taskPb != null
@@ -36,6 +46,29 @@ abstract class TaskMakerStoreBase with Store {
   final RxList<LoopTask> loop;
 
   final editIndex = 0.obs;
+
+  TaskPb transformToPb() {
+    return TaskPb(
+        colorList: palette.map((e) => e.pb).toList(),
+        loop: loop
+            .map((e) => LooperPb(
+                colorList: e.colorList.map((e) => e.pb).toList(),
+                loopTime: e.loop.value))
+            .toList());
+  }
+
+  void transformToBytes() {
+    final colorSet = <Color>{};
+    for (final el in loop) {
+      colorSet.addAll(el.colorList);
+    }
+
+    final colorList = colorSet.toList(); // 要发送的调色板
+
+    final bleLoop = loop.map((e) => BleLoopTask(
+        loop: e.loop.value,
+        color: e.colorList.map((e) => colorList.indexOf(e)).toList()));  // 蓝牙数据
+  }
 }
 
 extension ColorTransform on ColorPb {

@@ -23,13 +23,17 @@ class TaskMaker extends StatelessWidget {
     return Scaffold(
       appBar: buildAppBar(context),
       body: buildBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          store.loop.add(LoopTask(colorList: RxList<Color>(), loop: RxInt(0)));
-          store.editIndex.value = store.loop.length - 1;
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: buildFloatingActionButton(),
+    );
+  }
+
+  FloatingActionButton buildFloatingActionButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        store.loop.add(LoopTask(colorList: RxList<Color>(), loop: RxInt(1)));
+        store.editIndex.value = store.loop.length - 1;
+      },
+      child: const Icon(Icons.add),
     );
   }
 
@@ -49,99 +53,7 @@ class TaskMaker extends StatelessWidget {
         return ListView(
           children: store.loop
               .asMap()
-              .map((key, loopE) {
-                return MapEntry(
-                  key,
-                  Card(
-                    child: Obx(() {
-                      return Container(
-                        color: key == store.editIndex.value
-                            ? Colors.grey[200]
-                            : null,
-                        child: InkWell(
-                          onTap: () {
-                            store.editIndex.value = key;
-                          },
-                          onLongPress: () {
-                            store.loop.removeAt(key);
-                            if (store.editIndex.value >= store.loop.length) {
-                              store.editIndex.value = store.loop.length - 1;
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(5),
-                            child: Column(
-                              children: [
-                                Text('循环 ${key + 1}'),
-                                const SizedBox(height: 3),
-                                SizedBox(
-                                  height: 30,
-                                  child: Obx(() {
-                                    return ListView.separated(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: loopE.colorList.length,
-                                      separatorBuilder:
-                                          (BuildContext context, int index) {
-                                        return const SizedBox(width: 10);
-                                      },
-                                      itemBuilder: (context, index) {
-                                        return InkWell(
-                                          onTap: () {
-                                            if (key == store.editIndex.value) {
-                                              loopE.colorList.removeAt(index);
-                                              vibrate(duration: 50);
-                                            } else {
-                                              store.editIndex.value = key;
-                                            }
-                                          },
-                                          child: AspectRatio(
-                                            aspectRatio: 1,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: loopE.colorList[index],
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                  Radius.circular(50),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  }),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    const Text('循环次数: '),
-                                    SizedBox(
-                                      width: 50,
-                                      child: TextFormField(
-                                        initialValue: '1',
-                                        decoration: const InputDecoration(
-                                          isDense: true,
-                                        ),
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter.digitsOnly
-                                        ],
-                                        onChanged: (text) {
-                                          store.loop[key].loop.value = int.parse(text);
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                );
-              })
+              .map((key, value) => MapEntry(key, buildLoopCard(key, value)))
               .values
               .toList(),
         );
@@ -155,59 +67,153 @@ class TaskMaker extends StatelessWidget {
       child: SizedBox(
         child: Card(
           child: Padding(
-            padding: const EdgeInsets.only(
-              top: 5,
-              right: 5,
-              left: 5,
-              bottom: 10,
-            ),
+            padding:
+                const EdgeInsets.only(top: 5, right: 5, left: 5, bottom: 10),
             child: Column(
               children: [
                 const Text('调色板'),
                 const SizedBox(height: 10),
                 SizedBox(
                   height: 50,
-                  child: Obx(() {
-                    return ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: store.palette.length,
-                      separatorBuilder: (BuildContext context, int index) {
-                        return const SizedBox(
-                          width: 10,
-                        );
-                      },
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            if (store.loop.isNotEmpty) {
-                              final color = store.palette[index];
-                              store.loop[store.editIndex.value].colorList
-                                  .add(color);
-                            }
-                          },
-                          onLongPress: () {
-                            store.palette.removeAt(index);
-                          },
-                          child: AspectRatio(
-                            aspectRatio: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: store.palette[index],
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(50)),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  }),
+                  child: Obx(() => buildPaletteColorList()),
                 ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildLoopCard(int loopIndex, LoopTask loopValue) {
+    return Card(
+      child: Obx(() {
+        return Container(
+          color: loopIndex == store.editIndex.value ? Colors.grey[200] : null,
+          child: InkWell(
+            onTap: () {
+              store.editIndex.value = loopIndex;
+            },
+            onLongPress: () {
+              store.loop.removeAt(loopIndex);
+              if (store.editIndex.value >= store.loop.length) {
+                store.editIndex.value = store.loop.length - 1;
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Column(
+                children: [
+                  Text('循环 ${loopIndex + 1}'),
+                  const SizedBox(height: 3),
+                  SizedBox(
+                    height: 30,
+                    child: Obx(() => buildLoopColorList(loopIndex, loopValue)),
+                  ),
+                  buildLoopTextField(loopIndex)
+                ],
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  Row buildLoopTextField(int loopIndex) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        const Icon(Icons.loop),
+        const SizedBox(width: 10),
+        Obx(() {
+          if (store.editIndex.value == loopIndex) {
+            return SizedBox(
+              width: 50,
+              child: TextFormField(
+                initialValue: store.loop[loopIndex].loop.value.toString(),
+                decoration: const InputDecoration(
+                  isDense: true,
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                onChanged: (text) {
+                  store.loop[loopIndex].loop.value = int.parse(text);
+                },
+              ),
+            );
+          } else {
+            return Text(store.loop[loopIndex].loop.value.toString());
+          }
+        }),
+      ],
+    );
+  }
+
+  ListView buildLoopColorList(int loopIndex, LoopTask loopValue) {
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemCount: loopValue.colorList.length,
+      separatorBuilder: (BuildContext context, int index) {
+        return const SizedBox(width: 10);
+      },
+      itemBuilder: (context, colorIndex) {
+        return InkWell(
+          onTap: () {
+            if (loopIndex == store.editIndex.value) {
+              loopValue.colorList.removeAt(colorIndex);
+              vibrate(duration: 50);
+            } else {
+              store.editIndex.value = loopIndex;
+            }
+          },
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Container(
+              decoration: BoxDecoration(
+                color: loopValue.colorList[colorIndex],
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(50),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  ListView buildPaletteColorList() {
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemCount: store.palette.length,
+      separatorBuilder: (BuildContext context, int index) {
+        return const SizedBox(
+          width: 10,
+        );
+      },
+      itemBuilder: (context, index) {
+        return InkWell(
+          onTap: () {
+            if (store.loop.isNotEmpty) {
+              final color = store.palette[index];
+              store.loop[store.editIndex.value].colorList.add(color);
+            }
+          },
+          onLongPress: () {
+            store.palette.removeAt(index);
+          },
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Container(
+              decoration: BoxDecoration(
+                color: store.palette[index],
+                borderRadius: const BorderRadius.all(Radius.circular(50)),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -232,6 +238,10 @@ class TaskMaker extends StatelessWidget {
             showColorTile(context);
           },
           icon: const Icon(Icons.color_lens_outlined),
+        ),
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.check),
         ),
       ],
     );
