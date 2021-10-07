@@ -24,17 +24,20 @@ class TaskMaker extends StatelessWidget {
     return Scaffold(
       appBar: buildAppBar(context),
       body: buildBody(),
-      floatingActionButton: buildFloatingActionButton(),
+      floatingActionButton: buildFloatingActionButton(context),
     );
   }
 
-  FloatingActionButton buildFloatingActionButton() {
+  FloatingActionButton buildFloatingActionButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        store.loop.add(LoopTask(colorList: RxList<Color>(), loop: RxInt(1)));
-        store.editIndex.value = store.loop.length - 1;
+        if (store.loop.isNotEmpty) {
+          final pb = store.transformToPb();
+          print('生成PB, 大小${pb.writeToBuffer().length}');
+          Navigator.of(context).pop(pb);
+        }
       },
-      child: const Icon(Icons.add),
+      child: const Icon(Icons.check),
     );
   }
 
@@ -52,11 +55,27 @@ class TaskMaker extends StatelessWidget {
     return Expanded(
       child: Obx(() {
         return ListView(
-          children: store.loop
-              .asMap()
-              .map((key, value) => MapEntry(key, buildLoopCard(key, value)))
-              .values
-              .toList(),
+          children: [
+            ...store.loop
+                .asMap()
+                .map((key, value) => MapEntry(key, buildLoopCard(key, value)))
+                .values
+                .toList(),
+            InkWell(
+              onTap: () {
+                store.loop.add(LoopTask(colorList: RxList<Color>(), loop: RxInt(1)));
+                store.editIndex.value = store.loop.length - 1;
+              },
+              child: const Card(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Center(
+                    child: Icon(Icons.add),
+                  ),
+                ),
+              ),
+            )
+          ],
         );
       }),
     );
@@ -87,38 +106,36 @@ class TaskMaker extends StatelessWidget {
   }
 
   Widget buildLoopCard(int loopIndex, LoopTask loopValue) {
-    return Card(
-      child: Obx(() {
-        return Container(
-          color: loopIndex == store.editIndex.value ? Colors.grey[200] : null,
-          child: InkWell(
-            onTap: () {
-              store.editIndex.value = loopIndex;
-            },
-            onLongPress: () {
-              store.loop.removeAt(loopIndex);
-              if (store.editIndex.value >= store.loop.length) {
-                store.editIndex.value = store.loop.length - 1;
-              }
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(5),
-              child: Column(
-                children: [
-                  Text('循环 ${loopIndex + 1}'),
-                  const SizedBox(height: 3),
-                  SizedBox(
-                    height: 30,
-                    child: Obx(() => buildLoopColorList(loopIndex, loopValue)),
-                  ),
-                  buildLoopTextField(loopIndex)
-                ],
-              ),
+    return Obx(() {
+      return Card(
+        color: loopIndex == store.editIndex.value ? Colors.grey[200] : null,
+        child: InkWell(
+          onTap: () {
+            store.editIndex.value = loopIndex;
+          },
+          onLongPress: () {
+            store.loop.removeAt(loopIndex);
+            if (store.editIndex.value >= store.loop.length) {
+              store.editIndex.value = store.loop.length - 1;
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(5),
+            child: Column(
+              children: [
+                Text('循环 ${loopIndex + 1}'),
+                const SizedBox(height: 3),
+                SizedBox(
+                  height: 30,
+                  child: Obx(() => buildLoopColorList(loopIndex, loopValue)),
+                ),
+                buildLoopTextField(loopIndex)
+              ],
             ),
           ),
-        );
-      }),
-    );
+        ),
+      );
+    });
   }
 
   Row buildLoopTextField(int loopIndex) {
@@ -187,13 +204,28 @@ class TaskMaker extends StatelessWidget {
   ListView buildPaletteColorList() {
     return ListView.separated(
       scrollDirection: Axis.horizontal,
-      itemCount: store.palette.length,
+      itemCount: store.palette.length + 1,
       separatorBuilder: (BuildContext context, int index) {
-        return const SizedBox(
-          width: 10,
-        );
+        return const SizedBox(width: 10);
       },
       itemBuilder: (context, index) {
+        if (index == store.palette.length) {
+          return InkWell(
+            onTap: () {
+              showColorTile(context);
+            },
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: const BorderRadius.all(Radius.circular(50)),
+                ),
+                child: const Icon(Icons.add),
+              ),
+            ),
+          );
+        }
         return InkWell(
           onTap: () {
             if (store.loop.isNotEmpty) {
@@ -204,17 +236,23 @@ class TaskMaker extends StatelessWidget {
           onLongPress: () {
             store.palette.removeAt(index);
           },
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: Container(
-              decoration: BoxDecoration(
-                color: store.palette[index],
-                borderRadius: const BorderRadius.all(Radius.circular(50)),
-              ),
-            ),
-          ),
+          child: buildColorCircular(store.palette[index]),
         );
       },
+    );
+  }
+
+  Widget buildColorCircular(Color color) {
+    return AspectRatio(
+      aspectRatio: 1,
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(50),
+          ),
+        ),
+      ),
     );
   }
 
@@ -233,24 +271,6 @@ class TaskMaker extends StatelessWidget {
           Navigator.of(context).pop();
         },
       ),
-      actions: [
-        IconButton(
-          onPressed: () {
-            showColorTile(context);
-          },
-          icon: const Icon(Icons.color_lens_outlined),
-        ),
-        IconButton(
-          onPressed: () {
-            if (store.loop.isNotEmpty) {
-              final pb = store.transformToPb();
-              print('生成PB, 大小${pb.writeToBuffer().length}');
-              Navigator.of(context).pop(pb);
-            }
-          },
-          icon: const Icon(Icons.check),
-        ),
-      ],
     );
   }
 

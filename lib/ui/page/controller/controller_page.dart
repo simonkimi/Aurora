@@ -555,17 +555,6 @@ class _ControllerPageState extends State<ControllerPage>
                         },
                       ),
                     ),
-                    Card(
-                      child: ListTile(
-                        leading: const CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: Icon(Icons.add),
-                        ),
-                        title: const Text('添加任务'),
-                        subtitle: const Text('将当前颜色添加至任务'),
-                        onTap: addToTask,
-                      ),
-                    ),
                   ],
                 )),
           ),
@@ -574,10 +563,6 @@ class _ControllerPageState extends State<ControllerPage>
     );
   }
 
-  void addToTask() {
-    // TODO ADDTASK
-    BotToast.showText(text: '添加成功!');
-  }
 
   Widget buildColorCard({
     required String title,
