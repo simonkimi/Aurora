@@ -15,6 +15,12 @@ class _BleScannerState extends State<BleScanner> {
   bool useFilter = true;
 
   @override
+  void initState() {
+    FlutterBlue.instance.startScan(timeout: const Duration(seconds: 10));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(context, title: '蓝牙扫描', actions: [
@@ -40,35 +46,29 @@ class _BleScannerState extends State<BleScanner> {
       stream: FlutterBlue.instance.isScanning,
       initialData: false,
       builder: (_, snapshot) {
-        return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          transitionBuilder: (Widget child, Animation<double> animation) {
-            return ScaleTransition(child: child, scale: animation);
-          },
-          child: snapshot.data!
-              ? FloatingActionButton(
-                  key: const ValueKey('stop'),
-                  onPressed: FlutterBlue.instance.stopScan,
-                  backgroundColor: Colors.red,
-                  child: const SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: CircularProgressIndicator(
-                      backgroundColor: Colors.red,
-                      valueColor: AlwaysStoppedAnimation(Colors.white),
-                      strokeWidth: 3,
-                    ),
+        return snapshot.data!
+            ? FloatingActionButton(
+                key: const ValueKey('stop'),
+                onPressed: FlutterBlue.instance.stopScan,
+                backgroundColor: Colors.red,
+                child: const SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(
+                    backgroundColor: Colors.red,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    strokeWidth: 3,
                   ),
-                )
-              : FloatingActionButton(
-                  key: const ValueKey('scan'),
-                  child: const Icon(Icons.search),
-                  onPressed: () {
-                    FlutterBlue.instance
-                        .startScan(timeout: const Duration(seconds: 10));
-                  },
                 ),
-        );
+              )
+            : FloatingActionButton(
+                key: const ValueKey('scan'),
+                child: const Icon(Icons.search),
+                onPressed: () {
+                  FlutterBlue.instance
+                      .startScan(timeout: const Duration(seconds: 10));
+                },
+              );
       },
     );
   }
@@ -76,35 +76,38 @@ class _BleScannerState extends State<BleScanner> {
   ListView buildBody() {
     return ListView(
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5),
-          child: Text(
-            '已连接',
-            style: TextStyle(
-              fontSize: 15,
-            ),
-          ),
-        ),
         FutureBuilder<List<BluetoothDevice>>(
           future: FlutterBlue.instance.connectedDevices,
           initialData: const [],
           builder: (context, snapshot) {
             return Column(
               mainAxisSize: MainAxisSize.min,
-              children: snapshot.data!.map((e) {
-                return Card(
-                  child: ListTile(
-                    leading: const CircleAvatar(
-                      child: Icon(Icons.bluetooth),
+              children: [
+                if (snapshot.data!.isNotEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    child: Text(
+                      '已连接',
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
                     ),
-                    title: Text(e.name.isEmpty ? 'Anonymous' : e.name),
-                    subtitle: Text(e.id.id),
-                    onTap: () async {
-                      connectDevice(e);
-                    },
                   ),
-                );
-              }).toList(),
+                ...snapshot.data!.map((e) {
+                  return Card(
+                    child: ListTile(
+                      leading: const CircleAvatar(
+                        child: Icon(Icons.bluetooth),
+                      ),
+                      title: Text(e.name.isEmpty ? 'Anonymous' : e.name),
+                      subtitle: Text(e.id.id),
+                      onTap: () async {
+                        connectDevice(e);
+                      },
+                    ),
+                  );
+                })
+              ],
             );
           },
         ),

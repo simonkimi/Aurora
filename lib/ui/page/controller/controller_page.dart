@@ -90,6 +90,41 @@ class _ControllerPageState extends State<ControllerPage>
     );
   }
 
+  Widget buildBody() {
+    return Container(
+      color: Colors.grey[200],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(height: 230, color: Colors.blue),
+              buildTopMessage(),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 130),
+                  buildRGBCMYGWCard()
+                ],
+              ),
+            ],
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Text(
+              '颜色选择',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
+          Expanded(
+            child: buildColorChoiceList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget buildFloatingActionButton(BuildContext context) {
     return Observer(
       builder: (_) {
@@ -362,215 +397,180 @@ class _ControllerPageState extends State<ControllerPage>
     }
   }
 
-  Widget buildBody() {
+  Widget buildColorChoiceList() {
     return Container(
-      color: Colors.grey[200],
+        padding: const EdgeInsets.all(5),
+        color: Colors.white,
+        child: ListView(
+          children: [
+            Card(
+              child: ListTile(
+                leading: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.pageview_outlined),
+                ),
+                title: const Text('自选颜色'),
+                subtitle: const Text('从调色板中选择一个颜色'),
+                onTap: () async {
+                  final color = await selectColorFromBoard(
+                      context, mainStore.selectColor);
+                  if (color != null) {
+                    mainStore.setColor(color);
+                  }
+                },
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.color_lens_outlined),
+                ),
+                title: const Text('精确颜色'),
+                subtitle: const Text('填入颜色RGB精确生成颜色'),
+                onTap: () async {
+                  final color =
+                      await selectColorByRGB(context, mainStore.selectColor);
+                  if (color != null) {
+                    mainStore.setColor(color);
+                  }
+                },
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.check),
+                ),
+                title: const Text('预设颜色'),
+                subtitle: const Text('选择一个系统预设的颜色'),
+                onTap: () async {
+                  final color = await selectColorFromMaterialPicker(
+                      context, mainStore.selectColor);
+                  if (color != null) {
+                    mainStore.setColor(color);
+                  }
+                },
+              ),
+            ),
+          ],
+        ));
+  }
+
+  Widget buildRGBCMYGWCard() {
+    return Padding(
+      padding: const EdgeInsets.all(5),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                buildColorCard(
+                    title: 'R',
+                    value: mainStore.selectColor.red.toString(),
+                    color: Colors.red),
+                buildColorCard(
+                    title: 'G',
+                    value: mainStore.selectColor.green.toString(),
+                    color: Colors.green),
+                buildColorCard(
+                    title: 'B',
+                    value: mainStore.selectColor.blue.toString(),
+                    color: Colors.blue),
+              ],
+            ),
+            Row(
+              children: [
+                buildColorCard(
+                  title: 'C',
+                  value: mainStore.cmykw.c.toString(),
+                  color: const Color(0xff22f5ff),
+                  subtitle: mainStore.cmykw.c.toP(),
+                ),
+                buildColorCard(
+                  title: 'M',
+                  value: mainStore.cmykw.m.toString(),
+                  color: const Color(0xffff2cd9),
+                  subtitle: mainStore.cmykw.m.toP(),
+                ),
+                buildColorCard(
+                  title: 'Y',
+                  value: mainStore.cmykw.y.toString(),
+                  color: const Color(0xffffff2c),
+                  subtitle: mainStore.cmykw.y.toP(),
+                ),
+                buildColorCard(
+                  title: 'K',
+                  value: mainStore.cmykw.k.toString(),
+                  color: const Color(0xff3a3a3a),
+                  subtitle: mainStore.cmykw.k.toP(),
+                ),
+                buildColorCard(
+                  title: 'W',
+                  value: mainStore.cmykw.w.toString(),
+                  color: const Color(0xff909399),
+                  subtitle: mainStore.cmykw.w.toP(),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Positioned buildTopMessage() {
+    return Positioned(
+      left: 45,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Stack(
-            clipBehavior: Clip.none,
+          Text(
+              '当前设备 : ' +
+                  (bluetoothStore.connectedDevice != null
+                      ? bluetoothStore.connectedDevice!.id.id
+                      : '未连接'),
+              style: const TextStyle(color: Colors.white, fontSize: 16)),
+          Text('设备状态 : $auroraState',
+              style: const TextStyle(color: Colors.white, fontSize: 16)),
+          Row(
             children: [
-              Container(
-                height: 230,
-                color: Colors.blue,
+              const Text(
+                '设定颜色: ',
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
-              Positioned(
-                left: 45,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                        '当前设备 : ' +
-                            (bluetoothStore.connectedDevice != null
-                                ? bluetoothStore.connectedDevice!.id.id
-                                : '未连接'),
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 16)),
-                    Text('设备状态 : $auroraState',
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 16)),
-                    Row(
-                      children: [
-                        const Text(
-                          '设定颜色: ',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Container(
-                            color: mainStore.selectColor,
-                            width: 100,
-                            child: const Text(''),
-                          ),
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Text(
-                          '当前颜色: ',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Container(
-                            color: mainStore.nowColor,
-                            width: 100,
-                            child: const Text(''),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Container(
+                  color: mainStore.selectColor,
+                  width: 100,
+                  child: const Text(''),
                 ),
-              ),
-              Positioned(
-                bottom: -45,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                        ),
-                        width: 400,
-                        height: 130,
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                buildColorCard(
-                                    title: 'R',
-                                    value: mainStore.selectColor.red.toString(),
-                                    color: Colors.red),
-                                buildColorCard(
-                                    title: 'G',
-                                    value:
-                                        mainStore.selectColor.green.toString(),
-                                    color: Colors.green),
-                                buildColorCard(
-                                    title: 'B',
-                                    value:
-                                        mainStore.selectColor.blue.toString(),
-                                    color: Colors.blue),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                buildColorCard(
-                                  title: 'C',
-                                  value: mainStore.cmykw.c.toString(),
-                                  color: const Color(0xff22f5ff),
-                                  subtitle: mainStore.cmykw.c.toP(),
-                                ),
-                                buildColorCard(
-                                  title: 'M',
-                                  value: mainStore.cmykw.m.toString(),
-                                  color: const Color(0xffff2cd9),
-                                  subtitle: mainStore.cmykw.m.toP(),
-                                ),
-                                buildColorCard(
-                                  title: 'Y',
-                                  value: mainStore.cmykw.y.toString(),
-                                  color: const Color(0xffffff2c),
-                                  subtitle: mainStore.cmykw.y.toP(),
-                                ),
-                                buildColorCard(
-                                  title: 'K',
-                                  value: mainStore.cmykw.k.toString(),
-                                  color: const Color(0xff3a3a3a),
-                                  subtitle: mainStore.cmykw.k.toP(),
-                                ),
-                                buildColorCard(
-                                  title: 'W',
-                                  value: mainStore.cmykw.w.toString(),
-                                  color: const Color(0xff909399),
-                                  subtitle: mainStore.cmykw.w.toP(),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
+              )
             ],
           ),
-          const SizedBox(height: 50),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Text(
-              '颜色选择',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ),
-          Expanded(
-            child: Container(
-                padding: const EdgeInsets.all(5),
-                color: Colors.white,
-                child: ListView(
-                  children: [
-                    Card(
-                      child: ListTile(
-                        leading: const CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: Icon(Icons.pageview_outlined),
-                        ),
-                        title: const Text('自选颜色'),
-                        subtitle: const Text('从调色板中选择一个颜色'),
-                        onTap: () async {
-                          final color = await selectColorFromBoard(
-                              context, mainStore.selectColor);
-                          if (color != null) {
-                            mainStore.setColor(color);
-                          }
-                        },
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: const CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: Icon(Icons.color_lens_outlined),
-                        ),
-                        title: const Text('精确颜色'),
-                        subtitle: const Text('填入颜色RGB精确生成颜色'),
-                        onTap: () async {
-                          final color = await selectColorByRGB(
-                              context, mainStore.selectColor);
-                          if (color != null) {
-                            mainStore.setColor(color);
-                          }
-                        },
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: const CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: Icon(Icons.check),
-                        ),
-                        title: const Text('预设颜色'),
-                        subtitle: const Text('选择一个系统预设的颜色'),
-                        onTap: () async {
-                          final color = await selectColorFromMaterialPicker(
-                              context, mainStore.selectColor);
-                          if (color != null) {
-                            mainStore.setColor(color);
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                )),
+          Row(
+            children: [
+              const Text(
+                '当前颜色: ',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Container(
+                  color: mainStore.nowColor,
+                  width: 100,
+                  child: const Text(''),
+                ),
+              )
+            ],
           ),
         ],
       ),

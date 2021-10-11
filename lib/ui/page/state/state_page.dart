@@ -35,22 +35,22 @@ class _StatePageState extends State<StatePage>
     super.initState();
     _checkController =
         AnimationController(duration: const Duration(seconds: 4), vsync: this);
-    _cController = AnimationController(
-        duration: const Duration(milliseconds: 200), vsync: this);
-    _mController = AnimationController(
-        duration: const Duration(milliseconds: 400), vsync: this);
-    _yController = AnimationController(
-        duration: const Duration(milliseconds: 600), vsync: this);
-    _kController = AnimationController(
-        duration: const Duration(milliseconds: 1000), vsync: this);
-    _wController = AnimationController(
-        duration: const Duration(milliseconds: 1200), vsync: this);
 
-    _cController.repeat();
-    _mController.repeat();
-    _yController.repeat();
-    _kController.repeat();
-    _wController.repeat();
+    _cController = AnimationController(
+        duration: const Duration(milliseconds: 200), vsync: this)
+      ..repeat();
+    _mController = AnimationController(
+        duration: const Duration(milliseconds: 400), vsync: this)
+      ..repeat();
+    _yController = AnimationController(
+        duration: const Duration(milliseconds: 600), vsync: this)
+      ..repeat();
+    _kController = AnimationController(
+        duration: const Duration(milliseconds: 1000), vsync: this)
+      ..repeat();
+    _wController = AnimationController(
+        duration: const Duration(milliseconds: 1200), vsync: this)
+      ..repeat();
   }
 
   @override
@@ -208,7 +208,7 @@ class _StatePageState extends State<StatePage>
               ),
               _buildCard(
                 color: const Color(0xff3a3a3a),
-                title: '入料电机 - L',
+                title: '入料电机 - K',
                 subTitle: '转速 ${mainStore.nowCmykw.k.to3()}',
                 controller: _kController,
               ),
