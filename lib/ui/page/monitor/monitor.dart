@@ -19,7 +19,7 @@ class _MonitorPageState extends State<MonitorPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: buildAppBar(context, title: '监控'),
+      appBar: buildAppBar(context, title: '监控', displayBack: false),
       body: buildBody(),
     );
   }
@@ -32,10 +32,36 @@ class _MonitorPageState extends State<MonitorPage>
 
   Widget buildBody() {
     return Observer(builder: (context) {
-      if (monitorStore.ip == null)
-        return const Center(
-          child: CircularProgressIndicator(),
+      if (monitorStore.isScanning) {
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              CircularProgressIndicator(),
+              SizedBox(height: 20),
+              Text('搜索设备中...')
+            ],
+          ),
         );
+      }
+
+      if (monitorStore.ip == null) {
+        return InkWell(
+          onTap: () {
+            monitorStore.findPiIp();
+          },
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Icon(Icons.not_listed_location, size: 50),
+                SizedBox(height: 10),
+                Text('没有找到设备, 点击重试'),
+              ],
+            ),
+          ),
+        );
+      }
 
       return Column(
         children: [

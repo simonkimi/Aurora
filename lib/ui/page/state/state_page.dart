@@ -68,7 +68,7 @@ class _StatePageState extends State<StatePage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: buildAppBar(context, title: '状态'),
+      appBar: buildAppBar(context, title: '状态', displayBack: false),
       body: Observer(builder: (_) => buildBody()),
     );
   }

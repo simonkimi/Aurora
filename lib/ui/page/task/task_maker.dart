@@ -5,6 +5,7 @@ import 'package:aurora/ui/components/color_selector.dart';
 import 'package:aurora/ui/components/select_tile.dart';
 import 'package:aurora/ui/page/task/store/task_maker_store.dart';
 import 'package:aurora/utils/utils.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -46,18 +47,23 @@ class TaskMaker extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
-        TextFormField(
-          initialValue: store.name,
-          decoration: const InputDecoration(
-            labelText: '名称'
-          ),
-          onChanged: (value) {
-            store.name = value;
-          },
-        ),
+        buildInputName(),
         buildPalette(),
         buildLoopList(),
       ],
+    );
+  }
+
+  Padding buildInputName() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: TextFormField(
+        initialValue: store.name,
+        decoration: const InputDecoration(labelText: '名称'),
+        onChanged: (value) {
+          store.name = value;
+        },
+      ),
     );
   }
 
@@ -71,23 +77,32 @@ class TaskMaker extends StatelessWidget {
                 .map((key, value) => MapEntry(key, buildLoopCard(key, value)))
                 .values
                 .toList(),
-            InkWell(
-              onTap: () {
-                store.loop.add(LoopTask(colorList: RxList<Color>(), loop: RxInt(1)));
-                store.editIndex.value = store.loop.length - 1;
-              },
-              child: const Card(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Center(
-                    child: Icon(Icons.add),
-                  ),
-                ),
-              ),
-            )
+            buildAddLoopBtn()
           ],
         );
       }),
+    );
+  }
+
+  InkWell buildAddLoopBtn() {
+    return InkWell(
+      onTap: () {
+        store.loop.add(LoopTask(colorList: RxList<Color>(), loop: RxInt(1)));
+        store.editIndex.value = store.loop.length - 1;
+        if (store.isMaxSize()) {
+          BotToast.showText(text: '已达到最大值');
+          store.loop.removeAt(store.loop.length - 1);
+          store.editIndex.value = store.loop.length - 1;
+        }
+      },
+      child: const Card(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Center(
+            child: Icon(Icons.add),
+          ),
+        ),
+      ),
     );
   }
 
@@ -238,13 +253,14 @@ class TaskMaker extends StatelessWidget {
         }
         return InkWell(
           onTap: () {
-            if (store.loop.isNotEmpty) {
-              final color = store.palette[index];
-              store.loop[store.editIndex.value].colorList.add(color);
+            final color = store.palette[index];
+            final msg = store.addPaletteColor(color);
+            if (msg != null) {
+              BotToast.showText(text: msg);
             }
           },
           onLongPress: () {
-            store.palette.removeAt(index);
+            store.removePaletteColor(index);
           },
           child: buildColorCircular(store.palette[index]),
         );

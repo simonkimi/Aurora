@@ -73,13 +73,13 @@ class TaskMessage {
 
     buffer.add('%'.codeUnitAt(0));
     // 颜色顺序
-    for (final loop in loop) {
+    for (final l in loop) {
       buffer.addAll([
-        ...loop.colorList,
+        ...l.colorList,
         '#'.codeUnitAt(0),
-        loop.loopTime ~/ 100 % 10,
-        loop.loopTime ~/ 10 % 10,
-        loop.loopTime % 10,
+        l.loopTime ~/ 100 % 10,
+        l.loopTime ~/ 10 % 10,
+        l.loopTime % 10,
       ]);
     }
     buffer.addAll([0xd, 0xa]);

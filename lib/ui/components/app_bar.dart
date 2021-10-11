@@ -4,6 +4,7 @@ AppBar buildAppBar(
   BuildContext context, {
   required String title,
   List<Widget>? actions,
+  bool displayBack = true,
 }) {
   return AppBar(
     title: Text(
@@ -13,15 +14,17 @@ AppBar buildAppBar(
     centerTitle: true,
     automaticallyImplyLeading: false,
     elevation: 0,
-    leading: IconButton(
-      icon: const Icon(
-        Icons.arrow_back_ios,
-        size: 18,
-      ),
-      onPressed: () {
-        Navigator.of(context).pop();
-      },
-    ),
+    leading: displayBack
+        ? IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              size: 18,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        : null,
     actions: actions,
   );
 }

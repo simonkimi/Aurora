@@ -50,6 +50,30 @@ abstract class TaskMakerStoreBase with Store {
                 loopTime: e.loop.value))
             .toList());
   }
+
+  bool isMaxSize() {
+    var size = 0;
+    for (final l in loop) {
+      size += l.colorList.length + 4;
+    }
+
+    return size >= 50;
+  }
+
+  String? addPaletteColor(Color color) {
+    if (loop.isNotEmpty) {
+      final colorList = loop[editIndex.value].colorList;
+      colorList.add(color);
+      if (isMaxSize()) {
+        colorList.removeAt(colorList.length - 1);
+        return '已达到最大值';
+      }
+    }
+  }
+
+  void removePaletteColor(int index) {
+    palette.removeAt(index);
+  }
 }
 
 extension ColorTransform on ColorPb {

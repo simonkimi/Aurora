@@ -48,7 +48,7 @@ class _ControllerPageState extends State<ControllerPage>
   // ignore: must_call_super
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context, title: '控制', actions: [
+      appBar: buildAppBar(context, title: '控制', displayBack: false, actions: [
         PopupMenuButton<AppBarAction>(
           icon: const Icon(
             Icons.more_vert_outlined,

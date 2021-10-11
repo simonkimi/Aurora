@@ -22,40 +22,22 @@ abstract class MonitorStoreBase with Store {
   @observable
   String? ip;
 
+  @observable
+  bool isScanning = false;
+
+
   final centerColor = mainStore.selectColor.obs;
   final colorDeltaE = <FlSpot>[].obs;
 
   Future<void> findPiIp() async {
+    isScanning = true;
     ip ??= await UdpClient().findPi();
     print('查找到ip: $ip');
     if (ip != null && listener == null) {
       loadLine();
     }
+    isScanning = false;
   }
-
-  // Stream<List<int>> loadImagesData() {
-  //   final stream = StreamController<List<int>>();
-  //   final uri = Uri.parse('http://$ip:8888/stream');
-  //   http.Client().send(http.Request('GET', uri)).then((response) {
-  //     final pipe = <int>[];
-  //     response.stream.listen((event) {
-  //       pipe.addAll(event);
-  //       final reg = RegExp(r'\-\-\-\-([\s\S]+?)\+\+\+\+');
-  //       while (true) {
-  //         final pipeString = String.fromCharCodes(pipe);
-  //         final matches = reg.allMatches(pipeString);
-  //         if (matches.isNotEmpty) {
-  //           stream.add(
-  //               pipe.sublist(matches.first.start + 4, matches.first.end - 4));
-  //           pipe.removeRange(matches.first.start, matches.first.end);
-  //         } else {
-  //           break;
-  //         }
-  //       }
-  //     });
-  //   });
-  //   return stream.stream.asBroadcastStream();
-  // }
 
   Stream<List<int>> loadImagesData() {
     final stream = StreamController<List<int>>();

@@ -22,31 +22,38 @@ class TaskPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context, title: '任务', actions: [
-        IconButton(
-          onPressed: () {
-            Navigator.of(context).pushNamed('/history');
-          },
-          icon: const Icon(Icons.history),
-        ),
-        IconButton(
-          onPressed: () => onScanPress(context),
-          icon: const Icon(Icons.qr_code),
-        ),
-      ]),
+      appBar: buildAppBar(context,
+          title: '任务',
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/history');
+              },
+              icon: const Icon(Icons.history),
+            ),
+            IconButton(
+              onPressed: () => onScanPress(context),
+              icon: const Icon(Icons.qr_code),
+            ),
+          ],
+          displayBack: false),
       body: buildBody(context),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final pb = await Navigator.of(context).push<TaskPb?>(
-              MaterialPageRoute(builder: (context) => TaskMaker()));
-          if (pb != null) {
-            DB()
-                .taskDao
-                .insert(TaskTableCompanion.insert(taskPb: pb.writeToBuffer()));
-          }
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: buildFloatingActionButton(context),
+    );
+  }
+
+  Widget buildFloatingActionButton(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () async {
+        final pb = await Navigator.of(context).push<TaskPb?>(
+            MaterialPageRoute(builder: (context) => TaskMaker()));
+        if (pb != null) {
+          DB()
+              .taskDao
+              .insert(TaskTableCompanion.insert(taskPb: pb.writeToBuffer()));
+        }
+      },
+      child: const Icon(Icons.add),
     );
   }
 
@@ -118,6 +125,7 @@ class TaskPage extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
+                  Text(pb.name),
                   buildPaletteList(pb),
                   const SizedBox(height: 10),
                   buildLoopList(pb),
