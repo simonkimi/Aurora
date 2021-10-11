@@ -75,52 +75,53 @@ class TaskPage extends StatelessWidget {
     return ListView(
       children: snapshot.data!.map((e) {
         final pb = TaskPb.fromBuffer(e.taskPb);
+
+        final dialog = () async {
+          final selection = await showSelectDialog<TaskSelection>(
+              context: context,
+              items: const [
+                SelectTileItem(title: '发送', value: TaskSelection.Send),
+                SelectTileItem(title: '编辑', value: TaskSelection.Edit),
+                SelectTileItem(title: '分享', value: TaskSelection.Share),
+                SelectTileItem(title: '删除', value: TaskSelection.Delete),
+              ],
+              title: '配置',
+              displayRadio: false);
+          switch (selection) {
+            case TaskSelection.Send:
+              try {
+                await bluetoothStore.sendTask(pb);
+                BotToast.showText(text: '已发送');
+              } catch (e) {
+                BotToast.showText(text: e.toString());
+              }
+              break;
+            case TaskSelection.Share:
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => QrGen(buffer: base64Encode(e.taskPb))));
+              break;
+            case TaskSelection.Delete:
+              DB().taskDao.remove(e);
+              break;
+            case TaskSelection.Edit:
+              final pb =
+                  await Navigator.of(context).push<TaskPb>(MaterialPageRoute(
+                      builder: (context) => TaskMaker(
+                            tableData: e,
+                          )));
+              if (pb != null) {
+                DB().taskDao.replace(e.copyWith(taskPb: pb.writeToBuffer()));
+              }
+              break;
+            case null:
+              break;
+          }
+        };
+
         return Card(
           child: InkWell(
-            onTap: () async {
-              final selection = await showSelectDialog<TaskSelection>(
-                  context: context,
-                  items: const [
-                    SelectTileItem(title: '发送', value: TaskSelection.Send),
-                    SelectTileItem(title: '编辑', value: TaskSelection.Edit),
-                    SelectTileItem(title: '分享', value: TaskSelection.Share),
-                    SelectTileItem(title: '删除', value: TaskSelection.Delete),
-                  ],
-                  title: '配置',
-                  displayRadio: false);
-              switch (selection) {
-                case TaskSelection.Send:
-                  try {
-                    await bluetoothStore.sendTask(pb);
-                    BotToast.showText(text: '已发送');
-                  } catch (e) {
-                    BotToast.showText(text: e.toString());
-                  }
-                  break;
-                case TaskSelection.Share:
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          QrGen(buffer: base64Encode(e.taskPb))));
-                  break;
-                case TaskSelection.Delete:
-                  DB().taskDao.remove(e);
-                  break;
-                case TaskSelection.Edit:
-                  final pb = await Navigator.of(context)
-                      .push<TaskPb>(MaterialPageRoute(
-                          builder: (context) => TaskMaker(
-                                tableData: e,
-                              )));
-                  if (pb != null) {
-                    DB()
-                        .taskDao
-                        .replace(e.copyWith(taskPb: pb.writeToBuffer()));
-                  }
-                  break;
-                case null:
-                  break;
-              }
-            },
+            onTap: dialog,
+            onLongPress: dialog,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(

@@ -8,6 +8,7 @@ import 'package:aurora/utils/utils.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 
 enum ColorPicker { Choice, Input, Default }
@@ -134,30 +135,41 @@ class TaskMaker extends StatelessWidget {
     return Obx(() {
       return Card(
         color: loopIndex == store.editIndex.value ? Colors.grey[200] : null,
-        child: InkWell(
-          onTap: () {
-            store.editIndex.value = loopIndex;
-          },
-          onLongPress: () {
-            store.loop.removeAt(loopIndex);
-            if (store.editIndex.value >= store.loop.length) {
-              store.editIndex.value = store.loop.length - 1;
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(5),
-            child: Column(
-              children: [
-                Text('循环 ${loopIndex + 1}'),
-                const SizedBox(height: 3),
-                SizedBox(
-                  height: 30,
-                  child: Obx(() => buildLoopColorList(loopIndex, loopValue)),
-                ),
-                buildLoopTextField(loopIndex)
-              ],
+        child: Slidable(
+          actionPane: const SlidableDrawerActionPane(),
+          child: InkWell(
+            onTap: () {
+              store.editIndex.value = loopIndex;
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Column(
+                children: [
+                  Text('循环 ${loopIndex + 1}'),
+                  const SizedBox(height: 3),
+                  SizedBox(
+                    height: 30,
+                    child: Obx(() => buildLoopColorList(loopIndex, loopValue)),
+                  ),
+                  buildLoopTextField(loopIndex)
+                ],
+              ),
             ),
           ),
+          secondaryActions: [
+            IconSlideAction(
+              caption: '删除',
+              color: Colors.red,
+              icon: Icons.delete,
+              onTap: () {
+                store.loop.removeAt(loopIndex);
+                vibrate(duration: 50);
+                if (store.editIndex.value >= store.loop.length) {
+                  store.editIndex.value = store.loop.length - 1;
+                }
+              },
+            ),
+          ],
         ),
       );
     });
@@ -261,6 +273,7 @@ class TaskMaker extends StatelessWidget {
           },
           onLongPress: () {
             store.removePaletteColor(index);
+            vibrate(duration: 50);
           },
           child: buildColorCircular(store.palette[index]),
         );
