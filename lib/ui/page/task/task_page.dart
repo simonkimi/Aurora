@@ -24,6 +24,12 @@ class TaskPage extends StatelessWidget {
     return Scaffold(
       appBar: buildAppBar(context, title: '任务', actions: [
         IconButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed('/history');
+          },
+          icon: const Icon(Icons.history),
+        ),
+        IconButton(
           onPressed: () => onScanPress(context),
           icon: const Icon(Icons.qr_code),
         ),
@@ -80,7 +86,7 @@ class TaskPage extends StatelessWidget {
                   try {
                     await bluetoothStore.sendTask(pb);
                     BotToast.showText(text: '已发送');
-                  } catch(e) {
+                  } catch (e) {
                     BotToast.showText(text: e.toString());
                   }
                   break;

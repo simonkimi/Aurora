@@ -47,7 +47,10 @@ abstract class BluetoothStoreBase with Store {
   @observable
   ConnectState state = ConnectState.Waiting;
 
+  @observable
+  bool isSend = true;
   final sendHistory = ObservableList<SendHistory>();
+  final receiveHistory = ObservableList<SendHistory>();
 
   Future<void> sendData(List<int> data) async {
     print('-' * 50);
@@ -68,6 +71,7 @@ abstract class BluetoothStoreBase with Store {
     await characteristic!.setNotifyValue(true);
     characteristic!.value.listen((event) {
       print('收到数据: $event');
+      receiveHistory.add(SendHistory(event));
     });
   }
 

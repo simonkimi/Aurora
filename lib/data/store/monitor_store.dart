@@ -33,24 +33,59 @@ abstract class MonitorStoreBase with Store {
     }
   }
 
+  // Stream<List<int>> loadImagesData() {
+  //   final stream = StreamController<List<int>>();
+  //   final uri = Uri.parse('http://$ip:8888/stream');
+  //   http.Client().send(http.Request('GET', uri)).then((response) {
+  //     final pipe = <int>[];
+  //     response.stream.listen((event) {
+  //       pipe.addAll(event);
+  //       final reg = RegExp(r'\-\-\-\-([\s\S]+?)\+\+\+\+');
+  //       while (true) {
+  //         final pipeString = String.fromCharCodes(pipe);
+  //         final matches = reg.allMatches(pipeString);
+  //         if (matches.isNotEmpty) {
+  //           stream.add(
+  //               pipe.sublist(matches.first.start + 4, matches.first.end - 4));
+  //           pipe.removeRange(matches.first.start, matches.first.end);
+  //         } else {
+  //           break;
+  //         }
+  //       }
+  //     });
+  //   });
+  //   return stream.stream.asBroadcastStream();
+  // }
+
   Stream<List<int>> loadImagesData() {
     final stream = StreamController<List<int>>();
     final uri = Uri.parse('http://$ip:8888/stream');
+
+    final codeLine = '-'.codeUnitAt(0);
+    final codePlus = '+'.codeUnitAt(0);
+
     http.Client().send(http.Request('GET', uri)).then((response) {
       final pipe = <int>[];
+
+      bool breakOuter(List<int> pipe) {
+        for (var i = 0; i < pipe.length; i++) {
+          if (pipe[i] == codePlus) {
+            if (i + 4 < pipe.length &&
+                pipe.sublist(i, i + 4).every((e) => e == codePlus)) {
+              final start = pipe.indexOf(codeLine);
+              stream.add(pipe.sublist(start + 4, i));
+              pipe.removeRange(start, i + 4);
+              return false;
+            }
+          }
+        }
+        return true;
+      }
+
       response.stream.listen((event) {
         pipe.addAll(event);
-        final reg = RegExp(r'\-\-\-\-([\s\S]+?)\+\+\+\+');
         while (true) {
-          final pipeString = String.fromCharCodes(pipe);
-          final matches = reg.allMatches(pipeString);
-          if (matches.isNotEmpty) {
-            stream.add(
-                pipe.sublist(matches.first.start + 4, matches.first.end - 4));
-            pipe.removeRange(matches.first.start, matches.first.end);
-          } else {
-            break;
-          }
+          if (breakOuter(pipe)) break;
         }
       });
     });

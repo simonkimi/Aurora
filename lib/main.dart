@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         '/state': (context) => const StatePage(),
         '/': (context) => MainPage(),
         '/config': (context) => ConfigManager(),
-        '/sendHistory': (context) => const BleSendHistory(),
+        '/history': (context) => const BleHistory(),
       },
     );
   }

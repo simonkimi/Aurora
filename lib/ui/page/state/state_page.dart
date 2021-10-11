@@ -33,8 +33,8 @@ class _StatePageState extends State<StatePage>
 
   @override
   void dispose() {
-    super.dispose();
     _checkController.dispose();
+    super.dispose();
   }
 
   @override

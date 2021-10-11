@@ -24,6 +24,7 @@ List<int> buildBluetooth({
   int testSpeed = 100,
 }) {
   return [
+    '*'.codeUnitAt(0),
     direction.value,
     cmykw.c,
     cmykw.m,
@@ -61,7 +62,7 @@ class TaskMessage {
     // 颜色数组
     for (final cmykw in colorList) {
       buffer.addAll([
-        1, // 送料
+        MotorDirection.Forward.value, // 送料
         cmykw.c,
         cmykw.m,
         cmykw.y,
@@ -70,15 +71,15 @@ class TaskMessage {
       ]);
     }
 
+    buffer.add('%'.codeUnitAt(0));
     // 颜色顺序
     for (final loop in loop) {
       buffer.addAll([
-        '%'.codeUnitAt(0),
         ...loop.colorList,
         '#'.codeUnitAt(0),
-        loop.loopTime % 10,
-        loop.loopTime ~/ 10 % 10,
         loop.loopTime ~/ 100 % 10,
+        loop.loopTime ~/ 10 % 10,
+        loop.loopTime % 10,
       ]);
     }
     buffer.addAll([0xd, 0xa]);

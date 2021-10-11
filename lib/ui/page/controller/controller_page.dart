@@ -63,7 +63,7 @@ class _ControllerPageState extends State<ControllerPage>
                 Navigator.of(context).pushNamed('/config');
                 break;
               case AppBarAction.SendHistory:
-                Navigator.of(context).pushNamed('/sendHistory');
+                Navigator.of(context).pushNamed('/history');
                 break;
             }
           },
