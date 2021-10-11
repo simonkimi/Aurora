@@ -35,8 +35,8 @@ class MyApp extends StatelessWidget {
       builder: BotToastInit(),
       initialRoute: '/',
       routes: {
-        '/state': (context) => const StatePage(),
         '/': (context) => MainPage(),
+        '/state': (context) => const StatePage(),
         '/config': (context) => ConfigManager(),
         '/history': (context) => const BleHistory(),
       },

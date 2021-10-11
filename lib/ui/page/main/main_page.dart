@@ -14,6 +14,8 @@ class _MainPageState extends State<MainPage> {
   var _currentPage = 0;
   var _lastQuitTime = DateTime.now();
 
+  final controller = PageController();
+
   final _page = [
     const StatePage(key: ValueKey('State')),
     const ControllerPage(key: ValueKey('Controller')),
@@ -34,9 +36,14 @@ class _MainPageState extends State<MainPage> {
             return true;
           }
         },
-        child: AnimatedSwitcher(
-          child: _page[_currentPage],
-          duration: const Duration(milliseconds: 300),
+        child: PageView(
+          children: _page,
+          controller: controller,
+          onPageChanged: (index) {
+            setState(() {
+              _currentPage = index;
+            });
+          },
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -45,6 +52,7 @@ class _MainPageState extends State<MainPage> {
         onTap: (value) {
           setState(() {
             _currentPage = value;
+            controller.jumpToPage(value);
           });
         },
         items: const [
