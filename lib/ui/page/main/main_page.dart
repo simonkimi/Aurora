@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:aurora/ui/page/controller/controller_page.dart';
 import 'package:aurora/ui/page/monitor/monitor.dart';
 import 'package:aurora/ui/page/state/state_page.dart';
 import 'package:aurora/ui/page/task/task_page.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+
+import '../../../main.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -13,8 +17,22 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   var _currentPage = 0;
   var _lastQuitTime = DateTime.now();
+  var _isOverLayDisplay = false;
+  var _isDragStart = false;
 
   final controller = PageController();
+
+  late Offset _overlayOffset;
+  late OverlayEntry overlayEntry;
+
+  @override
+  void initState() {
+    super.initState();
+    _overlayOffset = const Offset(0, 100);
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      overlayEntry = buildOverlay();
+    });
+  }
 
   final _page = [
     const StatePage(key: ValueKey('State')),
@@ -40,6 +58,7 @@ class _MainPageState extends State<MainPage> {
           children: _page,
           controller: controller,
           onPageChanged: (index) {
+            onPageChange(index);
             setState(() {
               _currentPage = index;
             });
@@ -50,6 +69,7 @@ class _MainPageState extends State<MainPage> {
         currentIndex: _currentPage,
         type: BottomNavigationBarType.fixed,
         onTap: (value) {
+          // onPageChange(_currentPage, value);
           setState(() {
             _currentPage = value;
             controller.jumpToPage(value);
@@ -82,6 +102,99 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void onPageChange(int target) {
+    if (!_isOverLayDisplay &&
+        target != _page.length - 1 &&
+        monitorStore.ip != null) {
+      print('Insert OverLay');
+      Overlay.of(context)!.insert(overlayEntry);
+      _isOverLayDisplay = true;
+    } else if (_isOverLayDisplay && target == _page.length - 1) {
+      print('Remove OverLay');
+      overlayEntry.remove();
+      _isOverLayDisplay = false;
+    }
+  }
+
+  OverlayEntry buildOverlay() {
+    return OverlayEntry(
+      builder: (context) {
+        final child = SizedBox(
+          width: MediaQuery.of(context).size.width / 3,
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            child: StreamBuilder<List<int>>(
+              stream: monitorStore.videoStream,
+              builder: (context, snapshot) {
+                if (snapshot.data == null) {
+                  return const AspectRatio(
+                    aspectRatio: 320 / 240,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+                return Image.memory(
+                  Uint8List.fromList(snapshot.data!),
+                  gaplessPlayback: true,
+                );
+              },
+            ),
+          ),
+        );
+
+        return Positioned(
+          left: _overlayOffset.dx,
+          top: _overlayOffset.dy,
+          child: Draggable(
+            child: _isDragStart ? const SizedBox() : child,
+            feedback: SizedBox(
+              width: MediaQuery.of(context).size.width / 3,
+              child: Card(
+                child: AspectRatio(
+                  aspectRatio: 320 / 240,
+                  child: Container(
+                    color: Colors.grey[200],
+                    child: const Icon(Icons.api, size: 40),
+                  ),
+                ),
+              ),
+            ),
+            onDragEnd: (detail) {
+              setState(() {
+                // _overlayOffset = detail.offset;
+
+                final size = MediaQuery.of(context).size;
+
+                final width = size.width / 3;
+                final height = width / (320 / 240);
+
+                var dx = detail.offset.dx;
+                if (dx < 0) dx = 0;
+                if (dx > size.width - width) dx = size.width - width;
+
+                var dy = detail.offset.dy;
+                if (dy < 0) dy = 0;
+                if (dy > size.height - height) dy = size.height - height;
+
+                setState(() {
+                  _overlayOffset = Offset(dx, dy);
+                });
+
+                _isDragStart = false;
+              });
+            },
+            onDragStarted: () {
+              setState(() {
+                _isDragStart = true;
+              });
+            },
+          ),
+        );
+      },
     );
   }
 }

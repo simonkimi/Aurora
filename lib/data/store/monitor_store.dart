@@ -25,15 +25,24 @@ abstract class MonitorStoreBase with Store {
   @observable
   bool isScanning = false;
 
-
   final centerColor = mainStore.selectColor.obs;
   final colorDeltaE = <FlSpot>[].obs;
+
+  StreamSubscription<List<int>>? videoListener;
+
+  final _videoStreamController = StreamController<List<int>>.broadcast();
+
+  Stream<List<int>> get videoStream =>
+      _videoStreamController.stream;
 
   Future<void> findPiIp() async {
     isScanning = true;
     ip ??= await UdpClient().findPi();
     print('查找到ip: $ip');
     if (ip != null && listener == null) {
+      videoListener = loadImagesData().listen((event) {
+        _videoStreamController.add(event);
+      });
       loadLine();
     }
     isScanning = false;
@@ -109,5 +118,7 @@ abstract class MonitorStoreBase with Store {
 
   void dispose() {
     listener?.cancel();
+    videoListener?.cancel();
+    _videoStreamController.close();
   }
 }

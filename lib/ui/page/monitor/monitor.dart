@@ -148,7 +148,7 @@ class _MonitorPageState extends State<MonitorPage>
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: StreamBuilder<List<int>>(
-          stream: monitorStore.loadImagesData(),
+          stream: monitorStore.videoStream,
           builder: (context, snapshot) {
             if (snapshot.data == null) {
               return const AspectRatio(
