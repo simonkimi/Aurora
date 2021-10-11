@@ -27,12 +27,16 @@ class _QrScannerState extends State<QrScanner> {
             key: qrKey,
             onQRViewCreated: _onQRViewCreated,
           ),
-          SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: FittedBox(
-              child: Lottie.asset('assets/lottie/scanner.json'),
-              fit: BoxFit.fill,
+          Center(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width / 2,
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: FittedBox(
+                  child: Lottie.asset('assets/lottie/scanner.json'),
+                  fit: BoxFit.fill,
+                ),
+              ),
             ),
           )
         ],
