@@ -143,6 +143,7 @@ class TaskPb extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'TaskPb', createEmptyInstance: create)
     ..pc<LooperPb>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'loop', $pb.PbFieldType.PM, subBuilder: LooperPb.create)
     ..pc<ColorPb>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'colorList', $pb.PbFieldType.PM, protoName: 'colorList', subBuilder: ColorPb.create)
+    ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
     ..hasRequiredFields = false
   ;
 
@@ -150,6 +151,7 @@ class TaskPb extends $pb.GeneratedMessage {
   factory TaskPb({
     $core.Iterable<LooperPb>? loop,
     $core.Iterable<ColorPb>? colorList,
+    $core.String? name,
   }) {
     final _result = create();
     if (loop != null) {
@@ -157,6 +159,9 @@ class TaskPb extends $pb.GeneratedMessage {
     }
     if (colorList != null) {
       _result.colorList.addAll(colorList);
+    }
+    if (name != null) {
+      _result.name = name;
     }
     return _result;
   }
@@ -186,5 +191,14 @@ class TaskPb extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(2)
   $core.List<ColorPb> get colorList => $_getList(1);
+
+  @$pb.TagNumber(3)
+  $core.String get name => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set name($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasName() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearName() => clearField(3);
 }
 

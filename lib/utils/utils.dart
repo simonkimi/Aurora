@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:aurora/main.dart';
 import 'package:vibration/vibration.dart';
@@ -47,6 +48,10 @@ extension StreamHelper<T> on Stream<T> {
     });
     return con.stream;
   }
+}
+
+extension ColorHelper on Color {
+  bool isDark() => red * 0.299 + green * 0.578 + blue * 0.114 <= 192;
 }
 
 Future<void> vibrate({

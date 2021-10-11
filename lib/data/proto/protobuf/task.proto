@@ -13,6 +13,7 @@ message LooperPb {
 }
 
 message TaskPb {
+  string name = 3;
   repeated LooperPb loop = 1;
   repeated ColorPb colorList = 2;
 }

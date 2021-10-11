@@ -28,8 +28,8 @@ class _ControllerPageState extends State<ControllerPage>
 
   @override
   void dispose() {
-    super.dispose();
     _actionController.dispose();
+    super.dispose();
   }
 
   @override

@@ -35,10 +35,11 @@ final $typed_data.Uint8List looperPbDescriptor = $convert.base64Decode('CghMb29w
 const TaskPb$json = const {
   '1': 'TaskPb',
   '2': const [
+    const {'1': 'name', '3': 3, '4': 1, '5': 9, '10': 'name'},
     const {'1': 'loop', '3': 1, '4': 3, '5': 11, '6': '.LooperPb', '10': 'loop'},
     const {'1': 'colorList', '3': 2, '4': 3, '5': 11, '6': '.ColorPb', '10': 'colorList'},
   ],
 };
 
 /// Descriptor for `TaskPb`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List taskPbDescriptor = $convert.base64Decode('CgZUYXNrUGISHQoEbG9vcBgBIAMoCzIJLkxvb3BlclBiUgRsb29wEiYKCWNvbG9yTGlzdBgCIAMoCzIILkNvbG9yUGJSCWNvbG9yTGlzdA==');
+final $typed_data.Uint8List taskPbDescriptor = $convert.base64Decode('CgZUYXNrUGISEgoEbmFtZRgDIAEoCVIEbmFtZRIdCgRsb29wGAEgAygLMgkuTG9vcGVyUGJSBGxvb3ASJgoJY29sb3JMaXN0GAIgAygLMgguQ29sb3JQYlIJY29sb3JMaXN0');

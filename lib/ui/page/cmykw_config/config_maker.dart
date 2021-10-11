@@ -11,33 +11,34 @@ class ConfigMaker extends StatelessWidget {
     Key? key,
     this.entity,
   })  : nameController = TextEditingController(text: entity?.name.value ?? ''),
-        tsController = TextEditingController(text: entity?.ts.toString() ?? ''),
+        tsController =
+            TextEditingController(text: entity?.ts.value.toString() ?? ''),
         gkwMController =
-            TextEditingController(text: entity?.G_kwM.toString() ?? ''),
+            TextEditingController(text: entity?.G_kwM.value.toString() ?? ''),
         gwMaxController =
-            TextEditingController(text: entity?.G_W_max.toString() ?? ''),
+            TextEditingController(text: entity?.G_W_max.value.toString() ?? ''),
         gkMinMController =
-            TextEditingController(text: entity?.G_K_min.toString() ?? ''),
+            TextEditingController(text: entity?.G_K_min.value.toString() ?? ''),
         gkw1Controller =
-            TextEditingController(text: entity?.G_kw1.toString() ?? ''),
-        kaController = TextEditingController(text: entity?.Ka.toString() ?? ''),
+            TextEditingController(text: entity?.G_kw1.value.toString() ?? ''),
+        kaController = TextEditingController(text: entity?.Ka.value.toString() ?? ''),
         kb1Controller =
-            TextEditingController(text: entity?.Kb1.toString() ?? ''),
+            TextEditingController(text: entity?.Kb1.value.toString() ?? ''),
         kb2Controller =
-            TextEditingController(text: entity?.Kb2.toString() ?? ''),
-        kcController = TextEditingController(text: entity?.Kc.toString() ?? ''),
+            TextEditingController(text: entity?.Kb2.value.toString() ?? ''),
+        kcController = TextEditingController(text: entity?.Kc.value.toString() ?? ''),
         xy11Controller =
-            TextEditingController(text: entity?.xy11.toString() ?? ''),
+            TextEditingController(text: entity?.xy11.value.toString() ?? ''),
         xy12Controller =
-            TextEditingController(text: entity?.xy12.toString() ?? ''),
+            TextEditingController(text: entity?.xy12.value.toString() ?? ''),
         xy21Controller =
-            TextEditingController(text: entity?.xy21.toString() ?? ''),
+            TextEditingController(text: entity?.xy21.value.toString() ?? ''),
         xy22Controller =
-            TextEditingController(text: entity?.xy22.toString() ?? ''),
+            TextEditingController(text: entity?.xy22.value.toString() ?? ''),
         xy31Controller =
-            TextEditingController(text: entity?.xy31.toString() ?? ''),
+            TextEditingController(text: entity?.xy31.value.toString() ?? ''),
         xy32Controller =
-            TextEditingController(text: entity?.xy32.toString() ?? ''),
+            TextEditingController(text: entity?.xy32.value.toString() ?? ''),
         super(key: key);
 
   final ConfigTableCompanion? entity;
@@ -109,8 +110,7 @@ class ConfigMaker extends StatelessWidget {
               xy32: xy32Controller.text.toDouble(),
             );
             await DB().configDao.addConfig(next);
-            if (autoSelect)
-              mainStore.setCmykwConfig(next);
+            if (autoSelect) mainStore.setCmykwConfig(next);
             Navigator.of(context).pop();
           }
         },

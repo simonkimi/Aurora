@@ -46,6 +46,15 @@ class TaskMaker extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
+        TextFormField(
+          initialValue: store.name,
+          decoration: const InputDecoration(
+            labelText: '名称'
+          ),
+          onChanged: (value) {
+            store.name = value;
+          },
+        ),
         buildPalette(),
         buildLoopList(),
       ],
