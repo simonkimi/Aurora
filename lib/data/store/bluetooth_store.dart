@@ -8,6 +8,7 @@ import 'package:aurora/ui/page/task/store/task_maker_store.dart';
 import 'package:aurora/utils/get_cmykw.dart';
 import 'package:aurora/utils/utils.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mobx/mobx.dart';
 
@@ -79,15 +80,16 @@ abstract class BluetoothStoreBase with Store {
     await sendData(buildBluetooth(
       direction: MotorDirection.Forward,
       cmykw: mainStore.cmykw,
+      color: mainStore.selectColor,
     ));
     mainStore.nowColor = mainStore.selectColor;
   }
 
   Future<void> sendStop() async {
     await sendData(buildBluetooth(
-      direction: MotorDirection.Stop,
-      cmykw: CMYKW.zero(),
-    ));
+        direction: MotorDirection.Stop,
+        cmykw: CMYKW.zero(),
+        color: Colors.black));
   }
 
   Future<void> sendOut() async {
@@ -100,6 +102,7 @@ abstract class BluetoothStoreBase with Store {
         k: 50,
         w: 50,
       ),
+      color: Colors.black,
     ));
   }
 
@@ -111,7 +114,8 @@ abstract class BluetoothStoreBase with Store {
     final colorList = colorSet.toList(); // 调色板
 
     final taskMessage = TaskMessage(
-      colorList: colorList
+      colorList: colorList,
+      cmykwList: colorList
           .map((e) => CMYKWUtil(mainStore.cmykwConfig).RGB_CMYG(e))
           .toList(),
       loop: pb.loop

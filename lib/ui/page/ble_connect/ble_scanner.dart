@@ -82,6 +82,7 @@ class _BleScannerState extends State<BleScanner> {
           builder: (context, snapshot) {
             return Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (snapshot.data!.isNotEmpty)
                   const Padding(
@@ -99,6 +100,7 @@ class _BleScannerState extends State<BleScanner> {
                       leading: const CircleAvatar(
                         child: Icon(Icons.bluetooth),
                       ),
+
                       title: Text(e.name.isEmpty ? 'Anonymous' : e.name),
                       subtitle: Text(e.id.id),
                       onTap: () async {

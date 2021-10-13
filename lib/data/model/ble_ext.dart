@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:aurora/data/proto/gen/task.pbserver.dart';
 import 'package:aurora/utils/get_cmykw.dart';
 
@@ -21,6 +23,7 @@ extension MotorDirectionValue on MotorDirection {
 List<int> buildBluetooth({
   required MotorDirection direction,
   required CMYKW cmykw,
+  required Color color,
   int testSpeed = 100,
 }) {
   return [
@@ -32,6 +35,10 @@ List<int> buildBluetooth({
     cmykw.k,
     cmykw.w,
     testSpeed,
+    '+'.codeUnitAt(0),
+    color.red,
+    color.green,
+    color.blue,
     0x0d,
     0x0a
   ];
@@ -50,17 +57,19 @@ class TaskLoop {
 class TaskMessage {
   TaskMessage({
     required this.colorList,
+    required this.cmykwList,
     required this.loop,
   });
 
-  final List<CMYKW> colorList;
+  final List<Color> colorList;
+  final List<CMYKW> cmykwList;
   final List<TaskLoop> loop;
 
   List<int> toBytes() {
     final buffer = <int>['&'.codeUnitAt(0)];
 
     // 颜色数组
-    for (final cmykw in colorList) {
+    for (final cmykw in cmykwList) {
       buffer.addAll([
         MotorDirection.Forward.value, // 送料
         cmykw.c,
@@ -82,8 +91,14 @@ class TaskMessage {
         l.loopTime % 10,
       ]);
     }
-    buffer.addAll([0xd, 0xa]);
 
+    // 颜色对应
+    buffer.add('+'.codeUnitAt(0));
+    for (final color in colorList) {
+      buffer.addAll([color.red, color.green, color.blue]);
+    }
+
+    buffer.addAll([0xd, 0xa]);
     return buffer;
   }
 }
