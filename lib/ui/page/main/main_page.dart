@@ -20,19 +20,19 @@ class _MainPageState extends State<MainPage> {
   var _isOverLayDisplay = false;
   var _isDragStart = false;
 
-  final controller = PageController();
+  final _controller = PageController();
 
   late Offset _overlayOffset;
-  late OverlayEntry overlayEntry;
+  late OverlayEntry _overlayEntry;
 
-  final overlayGlobalKey = GlobalKey();
+  final _overlayGlobalKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _overlayOffset = const Offset(0, 100);
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      overlayEntry = buildOverlay();
+      _overlayEntry = buildOverlay();
     });
   }
 
@@ -58,7 +58,7 @@ class _MainPageState extends State<MainPage> {
         },
         child: PageView(
           children: _page,
-          controller: controller,
+          controller: _controller,
           onPageChanged: (index) {
             onPageChange(index);
             setState(() {
@@ -74,7 +74,7 @@ class _MainPageState extends State<MainPage> {
           // onPageChange(_currentPage, value);
           setState(() {
             _currentPage = value;
-            controller.jumpToPage(value);
+            _controller.jumpToPage(value);
           });
         },
         items: const [
@@ -112,11 +112,11 @@ class _MainPageState extends State<MainPage> {
         target != _page.length - 1 &&
         monitorStore.ip != null) {
       print('Insert OverLay');
-      Overlay.of(context)!.insert(overlayEntry);
+      Overlay.of(context)!.insert(_overlayEntry);
       _isOverLayDisplay = true;
     } else if (_isOverLayDisplay && target == _page.length - 1) {
       print('Remove OverLay');
-      overlayEntry.remove();
+      _overlayEntry.remove();
       _isOverLayDisplay = false;
     }
   }
@@ -125,7 +125,7 @@ class _MainPageState extends State<MainPage> {
     return OverlayEntry(
       builder: (context) {
         final child = SizedBox(
-          key: overlayGlobalKey,
+          key: _overlayGlobalKey,
           width: MediaQuery.of(context).size.width / 3,
           child: Card(
             clipBehavior: Clip.antiAlias,
