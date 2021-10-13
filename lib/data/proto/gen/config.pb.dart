@@ -27,6 +27,7 @@ class CMYKWConfigPB extends $pb.GeneratedMessage {
     ..a<$core.double>(14, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'xy31', $pb.PbFieldType.OD)
     ..a<$core.double>(15, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'xy32', $pb.PbFieldType.OD)
     ..aOS(16, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
+    ..a<$core.double>(17, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'platformSpeed', $pb.PbFieldType.OD, protoName: 'platformSpeed')
     ..hasRequiredFields = false
   ;
 
@@ -48,6 +49,7 @@ class CMYKWConfigPB extends $pb.GeneratedMessage {
     $core.double? xy31,
     $core.double? xy32,
     $core.String? name,
+    $core.double? platformSpeed,
   }) {
     final _result = create();
     if (gKwM != null) {
@@ -97,6 +99,9 @@ class CMYKWConfigPB extends $pb.GeneratedMessage {
     }
     if (name != null) {
       _result.name = name;
+    }
+    if (platformSpeed != null) {
+      _result.platformSpeed = platformSpeed;
     }
     return _result;
   }
@@ -264,5 +269,14 @@ class CMYKWConfigPB extends $pb.GeneratedMessage {
   $core.bool hasName() => $_has(15);
   @$pb.TagNumber(16)
   void clearName() => clearField(16);
+
+  @$pb.TagNumber(17)
+  $core.double get platformSpeed => $_getN(16);
+  @$pb.TagNumber(17)
+  set platformSpeed($core.double v) { $_setDouble(16, v); }
+  @$pb.TagNumber(17)
+  $core.bool hasPlatformSpeed() => $_has(16);
+  @$pb.TagNumber(17)
+  void clearPlatformSpeed() => clearField(17);
 }
 

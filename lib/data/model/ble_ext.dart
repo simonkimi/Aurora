@@ -1,6 +1,6 @@
 import 'dart:ui';
-
 import 'package:aurora/data/proto/gen/task.pbserver.dart';
+import 'package:aurora/main.dart';
 import 'package:aurora/utils/get_cmykw.dart';
 
 extension TaskPbH on TaskPb {}
@@ -24,7 +24,6 @@ List<int> buildBluetooth({
   required MotorDirection direction,
   required CMYKW cmykw,
   required Color color,
-  int testSpeed = 100,
 }) {
   return [
     '*'.codeUnitAt(0),
@@ -34,7 +33,7 @@ List<int> buildBluetooth({
     cmykw.y,
     cmykw.k,
     cmykw.w,
-    testSpeed,
+    mainStore.cmykwConfig.platformSpeed.toInt(),
     '+'.codeUnitAt(0),
     color.red,
     color.green,

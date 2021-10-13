@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:aurora/data/database/database.dart';
+import 'package:aurora/data/proto/gen/config.pbserver.dart';
 import 'package:flutter/cupertino.dart';
 
 // ignore_for_file: non_constant_identifier_names
@@ -33,88 +33,28 @@ class CMYKW {
   }
 }
 
-class CMYKWConfig {
-  CMYKWConfig({
-    this.G_K_min = 66.0,
-    this.G_kw1 = 73.0,
-    this.G_kwM = 130.0,
-    this.G_W_max = 204.0,
-    this.Ka = 1507.0,
-    this.Kb1 = 70.65,
-    this.Kb2 = -5.63,
-    this.Kc = 6.61,
-    this.ts = 200,
-    this.XY_cmy = const [
-      [-0.295519, 0.093337],
-      [0.316407, 0.323877],
-      [0.408362, -0.637566]
-    ],
-  });
-
-  CMYKWConfig.database(ConfigTableData entity)
-      : G_kwM = entity.G_kwM,
-        G_W_max = entity.G_W_max,
-        G_K_min = entity.G_K_min,
-        G_kw1 = entity.G_kw1,
-        Ka = entity.Ka,
-        Kb1 = entity.Kb1,
-        Kb2 = entity.Kb2,
-        Kc = entity.Kc,
-        ts = entity.ts,
-        XY_cmy = [
-          [entity.xy11, entity.xy12],
-          [entity.xy21, entity.xy22],
-          [entity.xy31, entity.xy32],
-        ];
-
-  double G_kwM; //最灰色值
-  double G_W_max; //最白色值
-  double G_K_min; //最黑色值
-  double G_kw1; //黑阶分界值
-  double Ka; //拟合参数a
-  double Kb1; //拟合参数b1
-  double Kb2; //拟合参数b2
-  double Kc; //拟合参数c
-  double ts;
-
-  List<List<double>> XY_cmy;
-
-  bool isSame(ConfigTableData entity) {
-    return entity.G_K_min == G_K_min &&
-        entity.G_kw1 == G_kw1 &&
-        entity.G_kwM == G_kwM &&
-        entity.G_W_max == G_W_max &&
-        entity.Ka == Ka &&
-        entity.Kb1 == Kb1 &&
-        entity.Kb2 == Kb2 &&
-        entity.Kc == Kc &&
-        entity.ts == ts &&
-        XY_cmy[0][0] == entity.xy11 &&
-        XY_cmy[0][1] == entity.xy12 &&
-        XY_cmy[1][0] == entity.xy21 &&
-        XY_cmy[1][1] == entity.xy22 &&
-        XY_cmy[2][0] == entity.xy31 &&
-        XY_cmy[2][1] == entity.xy32;
-  }
-}
-
 class CMYKWUtil {
-  CMYKWUtil(CMYKWConfig? config)
-      : G_W_max = config?.G_W_max ?? 204.0,
-        G_kwM = config?.G_kwM ?? 130.0,
-        G_K_min = config?.G_K_min ?? 66.0,
-        G_kw1 = config?.G_kw1 ?? 73.0,
-        Ka = config?.Ka ?? 1507.0,
-        Kb1 = config?.Kb1 ?? 70.65,
-        Kb2 = config?.Kb2 ?? -5.63,
-        Kc = config?.Kc ?? 6.61,
+  CMYKWUtil(CMYKWConfigPB? config)
+      : G_W_max = config?.gWMax ?? 204.0,
+        G_kwM = config?.gKwM ?? 130.0,
+        G_K_min = config?.gKMin ?? 66.0,
+        G_kw1 = config?.gKw1 ?? 73.0,
+        Ka = config?.ka ?? 1507.0,
+        Kb1 = config?.kb1 ?? 70.65,
+        Kb2 = config?.kb2 ?? -5.63,
+        Kc = config?.kc ?? 6.61,
         ts = config?.ts ?? 200,
-        XY_cmy = config?.XY_cmy ??
-            const [
-              [-0.295519, 0.093337],
-              [0.316407, 0.323877],
-              [0.408362, -0.637566]
-            ];
+        XY_cmy = config != null
+            ? [
+                [config.xy11, config.xy12],
+                [config.xy21, config.xy22],
+                [config.xy31, config.xy32],
+              ]
+            : const [
+                [-0.295519, 0.093337],
+                [0.316407, 0.323877],
+                [0.408362, -0.637566]
+              ];
 
   double G_kwM; //最灰色值
   double G_W_max; //最白色值

@@ -55,50 +55,14 @@ class ConfigManager extends StatelessWidget {
         MaterialPageRoute(builder: (context) => const QrScanner()));
     if (scan != null) {
       final pb = CMYKWConfigPB.fromBuffer(base64Decode(scan));
-      final entity = ConfigTableCompanion.insert(
-        name: pb.name,
-        ts: pb.ts,
-        xy11: pb.xy11,
-        xy12: pb.xy12,
-        xy21: pb.xy21,
-        xy22: pb.xy22,
-        xy31: pb.xy31,
-        xy32: pb.xy32,
-        Kc: pb.kc,
-        Kb2: pb.kb2,
-        Kb1: pb.kb1,
-        Ka: pb.ka,
-        G_kw1: pb.gKw1,
-        G_K_min: pb.gKMin,
-        G_W_max: pb.gWMax,
-        G_kwM: pb.gKwM,
-      );
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ConfigMaker(
-                entity: entity,
+                entity: pb,
               )));
     }
   }
 
-  void onGenQrPress(BuildContext context, ConfigTableData entity) {
-    final pb = CMYKWConfigPB(
-      xy32: entity.xy32,
-      xy31: entity.xy31,
-      xy22: entity.xy22,
-      xy21: entity.xy21,
-      xy12: entity.xy12,
-      xy11: entity.xy11,
-      ts: entity.ts,
-      gKMin: entity.G_K_min,
-      gKw1: entity.G_kw1,
-      gKwM: entity.G_kwM,
-      gWMax: entity.G_W_max,
-      ka: entity.Ka,
-      kb1: entity.Kb1,
-      kb2: entity.Kb2,
-      kc: entity.Kc,
-      name: entity.name,
-    );
+  void onGenQrPress(BuildContext context, CMYKWConfigPB pb) {
     final buffer = base64Encode(pb.writeToBuffer());
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => QrGen(buffer: buffer)));
@@ -109,6 +73,7 @@ class ConfigManager extends StatelessWidget {
     mainStore.cmykwConfig;
     return ListView(
       children: snapshot.data!.map((e) {
+        final pb = CMYKWConfigPB.fromBuffer(e.pb);
         return Card(
           child: InkWell(
             onLongPress: () async {
@@ -126,127 +91,134 @@ class ConfigManager extends StatelessWidget {
               if (dialog != null) {
                 switch (dialog) {
                   case ConfigItemAction.USE:
-                    mainStore.setCmykwConfig(e);
+                    mainStore.setCmykwConfig(pb);
                     break;
                   case ConfigItemAction.EDIT:
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>
-                            ConfigMaker(entity: e.toCompanion(true))));
+                        builder: (context) => ConfigMaker(entity: pb)));
                     break;
                   case ConfigItemAction.SHARE:
-                    onGenQrPress(context, e);
+                    onGenQrPress(context, pb);
                     break;
                   case ConfigItemAction.DELETE:
                     if (snapshot.data!.length == 1) {
                       BotToast.showText(text: '请至少保留一个配置');
                       return;
                     }
-                    print('删除配置');
-                    await DB().configDao.deleteConfig(e.name);
+                    await DB().configDao.remove(e);
+                    if (mainStore.cmykwConfig.name == e.name) {
+                      mainStore.cmykwConfig = CMYKWConfigPB.fromBuffer(
+                          (await DB().configDao.getAll()).first.pb);
+                    }
                     setState(() {});
                     break;
                 }
               }
             },
             onTap: () {
-              mainStore.setCmykwConfig(e);
+              mainStore.setCmykwConfig(pb);
             },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        e.name,
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 150),
-                        child: mainStore.cmykwConfig.isSame(e)
-                            ? Container(
-                                child: const Icon(
-                                  Icons.check,
-                                  color: Colors.white,
-                                ),
-                                decoration: const BoxDecoration(
-                                  color: Colors.green,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50)),
-                                ),
-                              )
-                            : const SizedBox(),
-                      )
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('最灰色值: ${e.G_kwM}'),
-                                  Text('最黑色值: ${e.G_K_min}'),
-                                  Text('拟合参数a: ${e.Ka}'),
-                                  Text('拟合参数b2: ${e.Kb2}'),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('最白色值: ${e.G_W_max}'),
-                                  Text('黑阶分界值: ${e.G_kw1}'),
-                                  Text('拟合参数b1: ${e.Kb1}'),
-                                  Text('拟合参数c: ${e.Kc}'),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Column(
-                        children: [
-                          const Text('颜色配置矩阵'),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Column(
-                                children: [
-                                  Text('${e.xy11}, '),
-                                  Text('${e.xy21}, '),
-                                  Text('${e.xy31}, '),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  Text(e.xy12.toString()),
-                                  Text(e.xy22.toString()),
-                                  Text(e.xy32.toString()),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
+            child: buildCard(pb),
           ),
         );
       }).toList(),
+    );
+  }
+
+  Widget buildCard(CMYKWConfigPB pb) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                pb.name,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 150),
+                child: mainStore.cmykwConfig == pb
+                    ? Container(
+                        child: const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                        ),
+                        decoration: const BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                        ),
+                      )
+                    : const SizedBox(),
+              )
+            ],
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 2,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('转速基准: ${pb.ts}'),
+                          Text('最灰色值: ${pb.gKwM}'),
+                          Text('最黑色值: ${pb.gKMin}'),
+                          Text('拟合参数a: ${pb.ka}'),
+                          Text('拟合参数b2: ${pb.kb2}'),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('测试平台: ${pb.platformSpeed}'),
+                          Text('最白色值: ${pb.gWMax}'),
+                          Text('黑阶分界值: ${pb.gKw1}'),
+                          Text('拟合参数b1: ${pb.kb1}'),
+                          Text('拟合参数c: ${pb.kc}'),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Column(
+                children: [
+                  const Text('颜色配置矩阵'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Text('${pb.xy11}, '),
+                          Text('${pb.xy21}, '),
+                          Text('${pb.xy31}, '),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Text(pb.xy12.toString()),
+                          Text(pb.xy22.toString()),
+                          Text(pb.xy32.toString()),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 }

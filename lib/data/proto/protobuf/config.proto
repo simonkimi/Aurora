@@ -20,4 +20,6 @@ message CMYKWConfigPB {
   double xy32 = 15;
 
   string name = 16;
+
+  double platformSpeed = 17;
 }

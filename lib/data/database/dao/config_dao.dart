@@ -21,5 +21,8 @@ class ConfigDao extends DatabaseAccessor<MyDatabase> with _$ConfigDaoMixin {
   Future<void> deleteConfig(String name) =>
       (delete(configTable)..where((tbl) => tbl.name.equals(name))).go();
 
+  Future<void> remove(ConfigTableData entity) =>
+      delete(configTable).delete(entity);
+
   Stream<List<ConfigTableData>> getAllStream() => select(configTable).watch();
 }

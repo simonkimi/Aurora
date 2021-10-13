@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:aurora/data/database/database.dart';
 import 'package:aurora/data/database/database_helper.dart';
+import 'package:aurora/data/proto/gen/config.pbserver.dart';
 import 'package:aurora/utils/get_cmykw.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
@@ -25,7 +25,7 @@ abstract class MainStoreBase with Store {
   var nowCmykw = const CMYKW(c: 0, m: 0, y: 0, k: 0, w: 0);
 
   @observable
-  var cmykwConfig = CMYKWConfig();
+  var cmykwConfig = CMYKWConfigPB();
 
   @action
   Future<void> init() async {
@@ -36,14 +36,18 @@ abstract class MainStoreBase with Store {
 
     final configName = pref.getString('cmykwConfig');
 
+    final defaultConfig = (await DB().configDao.getAll()).first;
+
     if (configName == null) {
-      await setCmykwConfig((await DB().configDao.getAll()).first);
+      await setCmykwConfig(CMYKWConfigPB.fromBuffer(defaultConfig.pb));
     } else {
       final entity = await DB().configDao.get(configName);
-      await setCmykwConfig(entity ?? (await DB().configDao.getAll()).first);
+      if (entity == null) {
+        await setCmykwConfig(CMYKWConfigPB.fromBuffer(defaultConfig.pb));
+      } else {
+        await setCmykwConfig(CMYKWConfigPB.fromBuffer(entity.pb));
+      }
     }
-
-    cmykw = CMYKWUtil(cmykwConfig).RGB_CMYG(selectColor);
 
     Stream.periodic(const Duration(seconds: 2)).listen((event) async {
       final pref = await SharedPreferences.getInstance();
@@ -52,9 +56,9 @@ abstract class MainStoreBase with Store {
   }
 
   @action
-  Future<void> setCmykwConfig(ConfigTableData entity) async {
-    cmykwConfig = CMYKWConfig.database(entity);
-    cmykw = CMYKWUtil(cmykwConfig).RGB_CMYG(selectColor);
+  Future<void> setCmykwConfig(CMYKWConfigPB entity) async {
+    cmykwConfig = entity;
+    cmykw = CMYKWUtil(entity).RGB_CMYG(selectColor);
     final pref = await SharedPreferences.getInstance();
     pref.setString('cmykwConfig', entity.name);
   }

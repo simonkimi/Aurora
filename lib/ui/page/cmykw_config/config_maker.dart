@@ -1,5 +1,6 @@
 import 'package:aurora/data/database/database.dart';
 import 'package:aurora/data/database/database_helper.dart';
+import 'package:aurora/data/proto/gen/config.pbserver.dart';
 import 'package:aurora/main.dart';
 import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/utils/utils.dart';
@@ -10,38 +11,39 @@ class ConfigMaker extends StatelessWidget {
   ConfigMaker({
     Key? key,
     this.entity,
-  })  : nameController = TextEditingController(text: entity?.name.value ?? ''),
-        tsController =
-            TextEditingController(text: entity?.ts.value.toString() ?? ''),
+  })  : nameController = TextEditingController(text: entity?.name ?? ''),
+        tsController = TextEditingController(text: entity?.ts.toString() ?? ''),
         gkwMController =
-            TextEditingController(text: entity?.G_kwM.value.toString() ?? ''),
+            TextEditingController(text: entity?.gKwM.toString() ?? ''),
         gwMaxController =
-            TextEditingController(text: entity?.G_W_max.value.toString() ?? ''),
+            TextEditingController(text: entity?.gWMax.toString() ?? ''),
         gkMinMController =
-            TextEditingController(text: entity?.G_K_min.value.toString() ?? ''),
+            TextEditingController(text: entity?.gKMin.toString() ?? ''),
         gkw1Controller =
-            TextEditingController(text: entity?.G_kw1.value.toString() ?? ''),
-        kaController = TextEditingController(text: entity?.Ka.value.toString() ?? ''),
+            TextEditingController(text: entity?.gKwM.toString() ?? ''),
+        kaController = TextEditingController(text: entity?.ka.toString() ?? ''),
         kb1Controller =
-            TextEditingController(text: entity?.Kb1.value.toString() ?? ''),
+            TextEditingController(text: entity?.kb1.toString() ?? ''),
         kb2Controller =
-            TextEditingController(text: entity?.Kb2.value.toString() ?? ''),
-        kcController = TextEditingController(text: entity?.Kc.value.toString() ?? ''),
+            TextEditingController(text: entity?.kb2.toString() ?? ''),
+        kcController = TextEditingController(text: entity?.kc.toString() ?? ''),
         xy11Controller =
-            TextEditingController(text: entity?.xy11.value.toString() ?? ''),
+            TextEditingController(text: entity?.xy11.toString() ?? ''),
         xy12Controller =
-            TextEditingController(text: entity?.xy12.value.toString() ?? ''),
+            TextEditingController(text: entity?.xy12.toString() ?? ''),
         xy21Controller =
-            TextEditingController(text: entity?.xy21.value.toString() ?? ''),
+            TextEditingController(text: entity?.xy21.toString() ?? ''),
         xy22Controller =
-            TextEditingController(text: entity?.xy22.value.toString() ?? ''),
+            TextEditingController(text: entity?.xy22.toString() ?? ''),
         xy31Controller =
-            TextEditingController(text: entity?.xy31.value.toString() ?? ''),
+            TextEditingController(text: entity?.xy31.toString() ?? ''),
         xy32Controller =
-            TextEditingController(text: entity?.xy32.value.toString() ?? ''),
+            TextEditingController(text: entity?.xy32.toString() ?? ''),
+        platformSpeedController =
+            TextEditingController(text: entity?.platformSpeed.toString() ?? ''),
         super(key: key);
 
-  final ConfigTableCompanion? entity;
+  final CMYKWConfigPB? entity;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -76,6 +78,8 @@ class ConfigMaker extends StatelessWidget {
 
   final TextEditingController xy32Controller;
 
+  final TextEditingController platformSpeedController;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,21 +90,22 @@ class ConfigMaker extends StatelessWidget {
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
             var autoSelect = false;
-            final entity = await DB().configDao.get(nameController.text);
+
             if (entity != null) {
-              await DB().configDao.deleteConfig(nameController.text);
+              await DB().configDao.deleteConfig(entity!.name);
               autoSelect = true;
             }
-            final next = ConfigTableCompanion.insert(
+
+            final pb = CMYKWConfigPB(
               name: nameController.text,
-              G_K_min: gkMinMController.text.toDouble(),
-              G_kw1: gkw1Controller.text.toDouble(),
-              G_kwM: gkwMController.text.toDouble(),
-              G_W_max: gwMaxController.text.toDouble(),
-              Ka: kaController.text.toDouble(),
-              Kb1: kb1Controller.text.toDouble(),
-              Kb2: kb2Controller.text.toDouble(),
-              Kc: kcController.text.toDouble(),
+              gKMin: gkMinMController.text.toDouble(),
+              gKw1: gkw1Controller.text.toDouble(),
+              gKwM: gkwMController.text.toDouble(),
+              gWMax: gwMaxController.text.toDouble(),
+              ka: kaController.text.toDouble(),
+              kb1: kb1Controller.text.toDouble(),
+              kb2: kb2Controller.text.toDouble(),
+              kc: kcController.text.toDouble(),
               ts: tsController.text.toDouble(),
               xy11: xy11Controller.text.toDouble(),
               xy12: xy12Controller.text.toDouble(),
@@ -108,9 +113,16 @@ class ConfigMaker extends StatelessWidget {
               xy22: xy22Controller.text.toDouble(),
               xy31: xy31Controller.text.toDouble(),
               xy32: xy32Controller.text.toDouble(),
+              platformSpeed: platformSpeedController.text.toDouble(),
             );
+
+            final next = ConfigTableCompanion.insert(
+              name: nameController.text,
+              pb: pb.writeToBuffer(),
+            );
+
             await DB().configDao.addConfig(next);
-            if (autoSelect) mainStore.setCmykwConfig(next);
+            if (autoSelect) mainStore.setCmykwConfig(pb);
             Navigator.of(context).pop();
           }
         },
@@ -136,6 +148,13 @@ class ConfigMaker extends StatelessWidget {
           TextFormField(
             controller: tsController,
             decoration: const InputDecoration(labelText: '转速基准'),
+            keyboardType: TextInputType.number,
+            inputFormatters: formatter,
+            validator: validator,
+          ),
+          TextFormField(
+            controller: platformSpeedController,
+            decoration: const InputDecoration(labelText: '测试平台速度'),
             keyboardType: TextInputType.number,
             inputFormatters: formatter,
             validator: validator,
