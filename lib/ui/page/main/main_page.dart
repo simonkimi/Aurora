@@ -25,6 +25,8 @@ class _MainPageState extends State<MainPage> {
   late Offset _overlayOffset;
   late OverlayEntry overlayEntry;
 
+  final overlayGlobalKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -123,6 +125,7 @@ class _MainPageState extends State<MainPage> {
     return OverlayEntry(
       builder: (context) {
         final child = SizedBox(
+          key: overlayGlobalKey,
           width: MediaQuery.of(context).size.width / 3,
           child: Card(
             clipBehavior: Clip.antiAlias,
@@ -151,22 +154,9 @@ class _MainPageState extends State<MainPage> {
           top: _overlayOffset.dy,
           child: Draggable(
             child: _isDragStart ? const SizedBox() : child,
-            feedback: SizedBox(
-              width: MediaQuery.of(context).size.width / 3,
-              child: Card(
-                child: AspectRatio(
-                  aspectRatio: 320 / 240,
-                  child: Container(
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.api, size: 40),
-                  ),
-                ),
-              ),
-            ),
+            feedback: child,
             onDragEnd: (detail) {
               setState(() {
-                // _overlayOffset = detail.offset;
-
                 final size = MediaQuery.of(context).size;
 
                 final width = size.width / 3;
