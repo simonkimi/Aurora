@@ -2,6 +2,7 @@ import 'package:aurora/main.dart';
 import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/ui/page/ble_connect/hex_player.dart';
 import 'package:aurora/utils/utils.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -16,6 +17,7 @@ class BleHistory extends StatelessWidget {
           return IconButton(
             onPressed: () {
               bluetoothStore.isSend = !bluetoothStore.isSend;
+              BotToast.showText(text: bluetoothStore.isSend ? '发送数据' : '接收数据');
             },
             icon: Icon(bluetoothStore.isSend
                 ? Icons.call_made_outlined

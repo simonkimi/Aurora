@@ -431,6 +431,7 @@ class _ControllerPageState extends State<ControllerPage>
                 onTap: () async {
                   final color =
                       await selectColorByRGB(context, mainStore.selectColor);
+                  print(color);
                   if (color != null) {
                     mainStore.setColor(color);
                   }

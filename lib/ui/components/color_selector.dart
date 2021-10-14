@@ -102,78 +102,127 @@ Future<Color?> selectColorByRGB(BuildContext context,
   gController.text = currentColor.green.toString();
   bController.text = currentColor.blue.toString();
 
-  showDialog(
+  var previewColor = currentColor;
+  void genPreviewColor() {
+    var r = int.tryParse(rController.text) ?? 0;
+    if (r < 0 || r > 0xFF) r = 0;
+    var g = int.tryParse(gController.text) ?? 0;
+    if (g < 0 || g > 0xFF) g = 0;
+    var b = int.tryParse(bController.text) ?? 0;
+    if (b < 0 || b > 0xFF) b = 0;
+    previewColor = Color.fromARGB(0xFF, r, g, b);
+  }
+
+  return await showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('设置颜色'),
-          content: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: ListBody(
-                children: [
-                  TextFormField(
-                    controller: rController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'R',
-                    ),
-                    validator: validator,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                  ),
-                  TextFormField(
-                    controller: gController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'G',
-                    ),
-                    validator: validator,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                  ),
-                  TextFormField(
-                    controller: bController,
-                    decoration: const InputDecoration(
-                      labelText: 'B',
-                    ),
-                    validator: validator,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                  ),
-                ],
+        return StatefulBuilder(builder: (context, setState) {
+          Widget buildTextForm({
+            required TextEditingController controller,
+            required String labelText,
+          }) {
+            return TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                labelText: labelText,
               ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+              validator: validator,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+              onChanged: (value) {
+                setState(() {
+                  genPreviewColor();
+                });
               },
-              child: const Text('取消'),
+            );
+          }
+
+          return Dialog(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        '设置颜色',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Container(
+                        width: 100,
+                        height: 30,
+                        decoration: BoxDecoration(
+                            color: previewColor,
+                            borderRadius: BorderRadius.circular(5)),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Form(
+                    key: _formKey,
+                    child: ListBody(
+                      children: [
+                        buildTextForm(
+                          controller: rController,
+                          labelText: 'R',
+                        ),
+                        buildTextForm(
+                          controller: gController,
+                          labelText: 'G',
+                        ),
+                        buildTextForm(
+                          controller: bController,
+                          labelText: 'B',
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('取消'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            Navigator.of(context).pop(Color.fromARGB(
+                              0xFF,
+                              int.parse(rController.value.text),
+                              int.parse(gController.value.text),
+                              int.parse(bController.value.text),
+                            ));
+                          }
+                        },
+                        child: const Text('确定'),
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all(Colors.white),
+                          backgroundColor: MaterialStateProperty.all(
+                              Theme.of(context).primaryColor),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
             ),
-            TextButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  Navigator.of(context).pop(Color.fromARGB(
-                    0xFF,
-                    int.parse(rController.value.text),
-                    int.parse(gController.value.text),
-                    int.parse(bController.value.text),
-                  ));
-                }
-              },
-              child: const Text('确定'),
-              style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all(Colors.white),
-                backgroundColor:
-                    MaterialStateProperty.all(Theme.of(context).primaryColor),
-              ),
-            )
-          ],
-        );
+          );
+        });
       });
 }
