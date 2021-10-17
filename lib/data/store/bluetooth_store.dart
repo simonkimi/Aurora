@@ -152,8 +152,9 @@ abstract class BluetoothStoreBase with Store {
 
   Future<void> connectFindDevice(BluetoothDevice device) async {
     final devicesList = await FlutterBlue.instance.connectedDevices;
-    if (!devicesList.contains(device))
+    if (!devicesList.contains(device)) {
       await device.connect(timeout: const Duration(seconds: 10));
+    }
     final services = await device.discoverServices();
     BluetoothCharacteristic? currentCharacteristic;
     for (final service in services) {

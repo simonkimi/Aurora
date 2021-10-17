@@ -34,8 +34,9 @@ Future<Color?> selectColorFromBoard(BuildContext context,
             },
             child: const Text('确定'),
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.blue),
-                foregroundColor: MaterialStateProperty.all(Colors.white)),
+              backgroundColor: MaterialStateProperty.all(Colors.blue),
+              foregroundColor: MaterialStateProperty.all(Colors.white),
+            ),
           ),
         ],
       );

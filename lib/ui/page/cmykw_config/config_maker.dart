@@ -20,7 +20,7 @@ class ConfigMaker extends StatelessWidget {
         gkMinMController =
             TextEditingController(text: entity?.gKMin.toString() ?? ''),
         gkw1Controller =
-            TextEditingController(text: entity?.gKwM.toString() ?? ''),
+            TextEditingController(text: entity?.gKw1.toString() ?? ''),
         kaController = TextEditingController(text: entity?.ka.toString() ?? ''),
         kb1Controller =
             TextEditingController(text: entity?.kb1.toString() ?? ''),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:aurora/main.dart';
 import 'package:aurora/ui/components/app_bar.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -100,7 +102,6 @@ class _BleScannerState extends State<BleScanner> {
                       leading: const CircleAvatar(
                         child: Icon(Icons.bluetooth),
                       ),
-
                       title: Text(e.name.isEmpty ? 'Anonymous' : e.name),
                       subtitle: Text(e.id.id),
                       onTap: () async {
@@ -151,12 +152,19 @@ class _BleScannerState extends State<BleScanner> {
     try {
       await FlutterBlue.instance.stopScan();
       await bluetoothStore.connectFindDevice(device);
-      cancelFunc();
+
+      Timer? timer;
+      timer = Timer(const Duration(seconds: 10), () {
+        cancelFunc();
+        timer?.cancel();
+      });
+
       setState(() {});
       Navigator.of(context).pop();
+    } on TimeoutException {
+      BotToast.showText(text: '连接超时');
     } catch (e) {
-      cancelFunc();
       BotToast.showText(text: '连接设备失败');
-    }
+    } finally {}
   }
 }
