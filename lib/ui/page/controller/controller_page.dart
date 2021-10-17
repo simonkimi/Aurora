@@ -1,3 +1,4 @@
+import 'package:aurora/data/store/main_store.dart';
 import 'package:aurora/main.dart';
 import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/ui/components/color_selector.dart';
@@ -11,7 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
-enum AppBarAction { CMYKWConfig, SendHistory }
+enum AppBarAction { CMYKWConfig, SendHistory, AuroraVersion }
 
 class ControllerPage extends StatefulWidget {
   const ControllerPage({Key? key}) : super(key: key);
@@ -65,6 +66,12 @@ class _ControllerPageState extends State<ControllerPage>
               case AppBarAction.SendHistory:
                 Navigator.of(context).pushNamed('/history');
                 break;
+              case AppBarAction.AuroraVersion:
+                if (mainStore.version == MessageVersion.V1)
+                  mainStore.version = MessageVersion.V3;
+                else
+                  mainStore.version = MessageVersion.V1;
+                break;
             }
           },
           itemBuilder: (context) {
@@ -80,6 +87,12 @@ class _ControllerPageState extends State<ControllerPage>
                 icon: Icons.history,
                 value: AppBarAction.SendHistory,
                 text: '发送历史',
+              ),
+              buildPopupMenuItem(
+                context: context,
+                icon: Icons.alt_route,
+                value: AppBarAction.AuroraVersion,
+                text: '切换版本',
               ),
             ];
           },
@@ -103,10 +116,7 @@ class _ControllerPageState extends State<ControllerPage>
               buildTopMessage(),
               Column(
                 mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 130),
-                  buildRGBCMYGWCard()
-                ],
+                children: [const SizedBox(height: 130), buildRGBCMYGWCard()],
               ),
             ],
           ),
@@ -260,21 +270,21 @@ class _ControllerPageState extends State<ControllerPage>
         //     }
         //   },
         // ),
-        // Bubble(
-        //   icon: Icons.widgets,
-        //   title: '输入',
-        //   iconColor: Colors.white,
-        //   bubbleColor: Colors.blue,
-        //   titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-        //   onPress: () async {
-        //     try {
-        //       _actionController.reverse();
-        //       await showCmykwBuilder(context);
-        //     } on Exception catch (e) {
-        //       showMessage(context, '出现错误: ${e.toString()}');
-        //     }
-        //   },
-        // ),
+        Bubble(
+          icon: Icons.widgets,
+          title: '输入',
+          iconColor: Colors.white,
+          bubbleColor: Colors.blue,
+          titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+          onPress: () async {
+            try {
+              _actionController.reverse();
+              await showCmykwBuilder(context);
+            } on Exception catch (e) {
+              showMessage(context, '出现错误: ${e.toString()}');
+            }
+          },
+        ),
       ],
     );
   }
@@ -288,7 +298,7 @@ class _ControllerPageState extends State<ControllerPage>
 
     final String? Function(String?) validator = (String? value) {
       final number = int.tryParse(value ?? '') ?? 0;
-      if (0 <= number && number <= 200) return null;
+      if (0 <= number && number <= mainStore.cmykwConfig.ts) return null;
       return '数值错误';
     };
 
@@ -392,7 +402,7 @@ class _ControllerPageState extends State<ControllerPage>
           );
         });
     if (result != null) {
-      // await mainStore.sendCmykw(result);
+      await bluetoothStore.sendCmykw(result);
       showMessage(context, '已发送');
     }
   }
@@ -535,9 +545,11 @@ class _ControllerPageState extends State<ControllerPage>
         children: [
           Text(
               '当前设备 : ' +
-                  (bluetoothStore.connectedDevice != null
-                      ? bluetoothStore.connectedDevice!.id.id
-                      : '未连接'),
+                  (bluetoothStore.connectedDevice == null
+                      ? '未连接'
+                      : mainStore.version == MessageVersion.V3
+                          ? 'Aurora V3'
+                          : 'Aurora V1'),
               style: const TextStyle(color: Colors.white, fontSize: 16)),
           Text('设备状态 : $auroraState',
               style: const TextStyle(color: Colors.white, fontSize: 16)),

@@ -11,6 +11,8 @@ part 'main_store.g.dart';
 
 class MainStore = MainStoreBase with _$MainStore;
 
+enum MessageVersion { V1, V3 }
+
 abstract class MainStoreBase with Store {
   @observable
   Color selectColor = Colors.grey;
@@ -26,6 +28,9 @@ abstract class MainStoreBase with Store {
 
   @observable
   var cmykwConfig = CMYKWConfigPB();
+
+  @observable
+  var version = MessageVersion.V3;
 
   @action
   Future<void> init() async {
@@ -67,5 +72,10 @@ abstract class MainStoreBase with Store {
   Future<void> setColor(Color color) async {
     selectColor = Color(color.value | 0xFF000000);
     cmykw = CMYKWUtil(cmykwConfig).RGB_CMYG(color);
+  }
+
+  @action
+  void sendColor() {
+    nowColor = selectColor;
   }
 }

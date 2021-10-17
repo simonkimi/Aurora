@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mobx/mobx.dart';
 
+import 'main_store.dart';
+
 part 'bluetooth_store.g.dart';
 
 class DeviceNotConnectException with Exception {}
@@ -77,22 +79,76 @@ abstract class BluetoothStoreBase with Store {
   }
 
   Future<void> sendIn() async {
+    if (mainStore.version == MessageVersion.V3) {
+      await _sendV3In();
+    } else {
+      await _sendV1Start();
+    }
+  }
+
+  Future<void> sendStop() async {
+    if (mainStore.version == MessageVersion.V3) {
+      await _sendV3Stop();
+    } else {
+      await _sendV1Pause();
+    }
+  }
+
+  Future<void> sendOut() async {
+    if (mainStore.version == MessageVersion.V3) {
+      await _sendV3Out();
+    } else {
+      await _sendV1Pop();
+    }
+  }
+
+  Future<void> sendCmykw(CMYKW cmykw) async {
+    if (mainStore.version == MessageVersion.V3) {
+      await _sendV3Cmykw(cmykw);
+    } else {
+      await _sendV1Cmykw(cmykw);
+    }
+  }
+
+  Future<void> _sendV3In() async {
     await sendData(buildBluetooth(
       direction: MotorDirection.Forward,
       cmykw: mainStore.cmykw,
       color: mainStore.selectColor,
     ));
-    mainStore.nowColor = mainStore.selectColor;
+    mainStore.sendColor();
   }
 
-  Future<void> sendStop() async {
+  Future<void> _sendV3Stop() async {
     await sendData(buildBluetooth(
         direction: MotorDirection.Stop,
         cmykw: CMYKW.zero(),
         color: Colors.black));
   }
 
-  Future<void> sendOut() async {
+  Future<void> _sendV3Cmykw(CMYKW cmykw) async {
+    await sendData(buildBluetooth(
+        direction: MotorDirection.Forward, cmykw: cmykw, color: Colors.white));
+  }
+
+  Future<void> _sendV1Cmykw(CMYKW cmykw) async {
+    final data = <int>[
+      cmykw.c,
+      cmykw.y,
+      cmykw.m,
+      cmykw.k,
+      cmykw.w,
+      0x40,
+      0x40,
+      0xFF,
+      0x1,
+      0x0d,
+      0x0a
+    ];
+    await sendData(data);
+  }
+
+  Future<void> _sendV3Out() async {
     await sendData(buildBluetooth(
       direction: MotorDirection.Reverse,
       cmykw: const CMYKW(
@@ -130,6 +186,36 @@ abstract class BluetoothStoreBase with Store {
     await sendData(taskMessage.toBytes());
   }
 
+  Future<void> _sendV1Pause() async {
+    final data = [0, 0, 0, 0, 0, 0x40, 0x40, 0xFF, 0x0, 0x0d, 0x0a];
+    await sendData(data);
+  }
+
+  Future<void> _sendV1Start() async {
+    final cmykw = mainStore.cmykw;
+    final data = [
+      cmykw.c,
+      cmykw.y,
+      cmykw.m,
+      cmykw.k,
+      cmykw.w,
+      0x40,
+      0x40,
+      0xFF,
+      0x1,
+      0x0d,
+      0x0a
+    ];
+    mainStore.sendColor();
+    await sendData(data);
+  }
+
+  @action
+  Future<void> _sendV1Pop() async {
+    final data = [0, 0, 0, 0, 0, 0x40, 0x40, 0x0, 0xFF, 0x0d, 0x0a];
+    await sendData(data);
+  }
+
   @computed
   String get stateString {
     switch (state) {
@@ -156,23 +242,24 @@ abstract class BluetoothStoreBase with Store {
       await device.connect(timeout: const Duration(seconds: 10));
     }
     final services = await device.discoverServices();
-    BluetoothCharacteristic? currentCharacteristic;
-    for (final service in services) {
-      for (final c in service.characteristics) {
-        if (c.properties.write &&
-            c.properties.read &&
-            c.properties.writeWithoutResponse &&
-            c.descriptors.isNotEmpty) {
-          currentCharacteristic = c;
-        }
-      }
-    }
+    final currentCharacteristic = findCharacteristic(services);
     if (currentCharacteristic != null) {
       characteristic = currentCharacteristic;
       connectedDevice = device;
       state = ConnectState.Connected;
     } else {
       await device.disconnect();
+      throw Exception('没有找到合适的特征值');
+    }
+  }
+
+  BluetoothCharacteristic? findCharacteristic(List<BluetoothService> services) {
+    for (final service in services) {
+      for (final c in service.characteristics) {
+        if (c.uuid.toString().startsWith('0000ffe1')) {
+          return c;
+        }
+      }
     }
   }
 }

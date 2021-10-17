@@ -149,22 +149,27 @@ class _BleScannerState extends State<BleScanner> {
 
   Future<void> connectDevice(BluetoothDevice device) async {
     final cancelFunc = BotToast.showLoading();
+    Timer? timer;
     try {
       await FlutterBlue.instance.stopScan();
-      await bluetoothStore.connectFindDevice(device);
-
-      Timer? timer;
       timer = Timer(const Duration(seconds: 10), () {
+        print('取消加载框');
         cancelFunc();
         timer?.cancel();
       });
-
+      await bluetoothStore.connectFindDevice(device);
+      cancelFunc();
       setState(() {});
       Navigator.of(context).pop();
     } on TimeoutException {
+      print('连接超时');
       BotToast.showText(text: '连接超时');
     } catch (e) {
+      print('连接设备失败');
       BotToast.showText(text: '连接设备失败');
-    } finally {}
+    } finally {
+      timer?.cancel();
+      cancelFunc();
+    }
   }
 }
