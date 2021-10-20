@@ -12,7 +12,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
-enum AppBarAction { CMYKWConfig, SendHistory, AuroraVersion }
+enum AppBarAction {
+  CMYKWConfig,
+  SendHistory,
+  AuroraVersion,
+  HslGradient,
+}
 
 class ControllerPage extends StatefulWidget {
   const ControllerPage({Key? key}) : super(key: key);
@@ -72,6 +77,9 @@ class _ControllerPageState extends State<ControllerPage>
                 else
                   mainStore.version = MessageVersion.V1;
                 break;
+              case AppBarAction.HslGradient:
+                Navigator.of(context).pushNamed('/hsl');
+                break;
             }
           },
           itemBuilder: (context) {
@@ -93,6 +101,12 @@ class _ControllerPageState extends State<ControllerPage>
                 icon: Icons.alt_route,
                 value: AppBarAction.AuroraVersion,
                 text: '切换版本',
+              ),
+              buildPopupMenuItem(
+                context: context,
+                icon: Icons.color_lens_outlined,
+                value: AppBarAction.HslGradient,
+                text: '渐变色',
               ),
             ];
           },

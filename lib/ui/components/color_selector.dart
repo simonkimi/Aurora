@@ -1,6 +1,9 @@
+import 'package:aurora/ui/components/select_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+
+enum ColorPickerStyle { Choice, Input, Default }
 
 Future<Color?> selectColorFromBoard(BuildContext context,
     [Color? defaultColor]) async {
@@ -226,4 +229,31 @@ Future<Color?> selectColorByRGB(BuildContext context,
           );
         });
       });
+}
+
+Future<Color?> showSelectColor(BuildContext context, [Color? defaultColor]) async {
+  final selector = await showSelectDialog<ColorPickerStyle>(
+    context: context,
+    displayRadio: false,
+    items: [
+      const SelectTileItem(title: '自选颜色', value: ColorPickerStyle.Choice),
+      const SelectTileItem(title: '精确颜色', value: ColorPickerStyle.Input),
+      const SelectTileItem(title: '预设颜色', value: ColorPickerStyle.Default),
+    ],
+    title: '方式',
+  );
+  if (selector == null) return null;
+  Color? choiceColor;
+  switch (selector) {
+    case ColorPickerStyle.Choice:
+      choiceColor = await selectColorFromBoard(context, defaultColor);
+      break;
+    case ColorPickerStyle.Input:
+      choiceColor = await selectColorByRGB(context, defaultColor);
+      break;
+    case ColorPickerStyle.Default:
+      choiceColor = await selectColorFromMaterialPicker(context, defaultColor);
+      break;
+  }
+  return choiceColor;
 }

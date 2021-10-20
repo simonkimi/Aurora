@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+
 const TEST_SPEED = 50;
 const TEST_SEND = [
   38,
@@ -79,4 +81,8 @@ const TEST_SEND = [
   5,
   13,
   10
+];
+
+final floatFormatter = [
+  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.{0,1}\d*$'))
 ];

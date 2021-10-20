@@ -2,7 +2,6 @@ import 'package:aurora/data/database/database.dart';
 import 'package:aurora/data/proto/gen/task.pbserver.dart';
 import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/ui/components/color_selector.dart';
-import 'package:aurora/ui/components/select_tile.dart';
 import 'package:aurora/ui/page/task/store/task_maker_store.dart';
 import 'package:aurora/utils/utils.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -296,29 +295,7 @@ class TaskMaker extends StatelessWidget {
   }
 
   Future<void> showColorTile(BuildContext context) async {
-    final selector = await showSelectDialog<ColorPicker>(
-      context: context,
-      displayRadio: false,
-      items: [
-        const SelectTileItem(title: '自选颜色', value: ColorPicker.Choice),
-        const SelectTileItem(title: '精确颜色', value: ColorPicker.Input),
-        const SelectTileItem(title: '预设颜色', value: ColorPicker.Default),
-      ],
-      title: '方式',
-    );
-    if (selector == null) return;
-    Color? choiceColor;
-    switch (selector) {
-      case ColorPicker.Choice:
-        choiceColor = await selectColorFromBoard(context);
-        break;
-      case ColorPicker.Input:
-        choiceColor = await selectColorByRGB(context);
-        break;
-      case ColorPicker.Default:
-        choiceColor = await selectColorFromMaterialPicker(context);
-        break;
-    }
+    final choiceColor = await showSelectColor(context);
     if (choiceColor == null) return;
     store.palette.add(choiceColor);
   }

@@ -55,13 +55,16 @@ abstract class BluetoothStoreBase with Store {
   final sendHistory = ObservableList<SendHistory>();
   final receiveHistory = ObservableList<SendHistory>();
 
+  @computed
+  bool get isConnected => characteristic != null && connectedDevice != null;
+
   Future<void> sendData(List<int> data) async {
     print('-' * 50);
     print('数据: ${data.length}');
     print('发送数据: ${to16String(data)}');
     print('发送数据: ${to10String(data)}');
     print('-' * 50);
-    if (connectedDevice != null && characteristic != null) {
+    if (isConnected) {
       await characteristic!.write(data, withoutResponse: false);
       sendHistory.add(SendHistory(data));
       return;
@@ -102,9 +105,9 @@ abstract class BluetoothStoreBase with Store {
     }
   }
 
-  Future<void> sendCmykw(CMYKW cmykw) async {
+  Future<void> sendCmykw(CMYKW cmykw, [Color? rgb]) async {
     if (mainStore.version == MessageVersion.V3) {
-      await _sendV3Cmykw(cmykw);
+      await _sendV3Cmykw(cmykw, rgb);
     } else {
       await _sendV1Cmykw(cmykw);
     }
@@ -126,9 +129,12 @@ abstract class BluetoothStoreBase with Store {
         color: Colors.black));
   }
 
-  Future<void> _sendV3Cmykw(CMYKW cmykw) async {
+  Future<void> _sendV3Cmykw(CMYKW cmykw, [Color? rgb]) async {
     await sendData(buildBluetooth(
-        direction: MotorDirection.Forward, cmykw: cmykw, color: Colors.white));
+      direction: MotorDirection.Forward,
+      cmykw: cmykw,
+      color: rgb ?? Colors.white,
+    ));
   }
 
   Future<void> _sendV1Cmykw(CMYKW cmykw) async {

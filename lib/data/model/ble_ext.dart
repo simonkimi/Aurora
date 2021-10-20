@@ -66,9 +66,10 @@ class TaskMessage {
 
   List<int> toBytes() {
     final buffer = <int>['&'.codeUnitAt(0)];
-
     // 颜色数组
-    for (final cmykw in cmykwList) {
+    for (var i = 0; i < colorList.length; i++) {
+      final cmykw = cmykwList[i];
+      final color = colorList[i];
       buffer.addAll([
         MotorDirection.Forward.value, // 送料
         cmykw.c,
@@ -76,6 +77,10 @@ class TaskMessage {
         cmykw.y,
         cmykw.k,
         cmykw.w,
+        '+'.codeUnitAt(0),
+        color.red,
+        color.green,
+        color.blue,
       ]);
     }
 
@@ -101,3 +106,5 @@ class TaskMessage {
     return buffer;
   }
 }
+
+class BleReceive {}

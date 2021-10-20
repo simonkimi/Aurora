@@ -14,3 +14,4 @@ class Bus {
 
   void fire(dynamic event) => _eventBus.fire(event);
 }
+
