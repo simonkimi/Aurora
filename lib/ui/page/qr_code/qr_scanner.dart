@@ -47,8 +47,7 @@ class _QrScannerState extends State<QrScanner> {
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
 
-    listener = controller.scannedDataStream
-        .listen((scanData) {
+    listener = controller.scannedDataStream.listen((scanData) {
       print('扫描到二维码: ${scanData.code.length}');
       listener.cancel();
       Navigator.of(context).pop(scanData.code);

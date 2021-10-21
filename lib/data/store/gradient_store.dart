@@ -57,25 +57,35 @@ abstract class GradientStoreBase with Store {
   void startSend() {
     if (bluetoothStore.isConnected) {
       isLock = true;
-      timerListener = Stream.periodic(Duration(seconds: timer)).listen((event) {
-        final color = colorList[currentStep];
-        final cmykw = CMYKWUtil(mainStore.cmykwConfig).RGB_CMYG(color);
-        mainStore.nowColor = color;
-        bluetoothStore.sendCmykw(cmykw, color);
-        if (currentStep + 1 >= colorList.length) {
-          stopSend();
-          return;
-        }
-        currentStep += 1;
-      });
+      timerListener =
+          Stream.periodic(Duration(seconds: timer)).listen(_sendColor);
+      _sendColor(null);
     } else {
       BotToast.showText(text: '设备未连接');
     }
   }
 
+  void _sendColor(_) {
+    final color = colorList[currentStep];
+    final cmykw = CMYKWUtil(mainStore.cmykwConfig).RGB_CMYG(color);
+    mainStore.nowColor = color;
+    bluetoothStore.sendCmykw(cmykw, color);
+    if (currentStep + 1 >= colorList.length) {
+      stopSend();
+      return;
+    }
+    currentStep += 1;
+  }
+
+  void stopAndBreak() {
+    stopSend();
+    bluetoothStore.sendStop();
+  }
+
   void stopSend() {
     isLock = false;
     timerListener?.cancel();
+    timerListener = null;
   }
 
   @action
@@ -126,23 +136,23 @@ abstract class GradientStoreBase with Store {
       final tg = hk;
       final tb = hk - v_1_3;
 
-      final rgb1 = [tr, tg, tb].map((tc) => tc < 0
-          ? tc + 1.0
-          : tc > 1
-              ? tc - 1.0
-              : tc);
+      final rgb = [tr, tg, tb]
+          .map((tc) => tc < 0
+              ? tc + 1.0
+              : tc > 1
+                  ? tc - 1.0
+                  : tc)
+          .map((tc) => tc < v_1_6
+              ? p + ((q - p) * 6 * tc)
+              : v_1_6 <= tc && tc < 0.5
+                  ? q
+                  : 0.5 <= tc && tc < v_2_3
+                      ? p + ((q - p) * 6 * (v_2_3 - tc))
+                      : p)
+          .map((e) => (e * 255).floor())
+          .toList();
 
-      final rgb2 = rgb1.map((tc) => tc < v_1_6
-          ? p + ((q - p) * 6 * tc)
-          : v_1_6 <= tc && tc < 0.5
-              ? q
-              : 0.5 <= tc && tc < v_2_3
-                  ? p + ((q - p) * 6 * (v_2_3 - tc))
-                  : p);
-
-      final rgb3 = rgb2.map((e) => (e * 255).floor()).toList();
-
-      return Color.fromARGB(0xff, rgb3[0], rgb3[1], rgb3[2]);
+      return Color.fromARGB(0xff, rgb[0], rgb[1], rgb[2]);
     } else {
       return Color.fromARGB(0xff, l.round(), l.round(), l.round());
     }

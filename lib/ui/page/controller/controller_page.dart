@@ -268,22 +268,6 @@ class _ControllerPageState extends State<ControllerPage>
             }
           },
         ),
-        // Bubble(
-        //   icon: Icons.send,
-        //   title: '发送',
-        //   iconColor: Colors.white,
-        //   bubbleColor: Colors.blue,
-        //   titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-        //   onPress: () async {
-        //     try {
-        //       _actionController.reverse();
-        //       // await mainStore.sendColor();
-        //       showMessage(context, '已发送');
-        //     } on Exception catch (e) {
-        //       showMessage(context, '出现错误: ${e.toString()}');
-        //     }
-        //   },
-        // ),
         Bubble(
           icon: Icons.widgets,
           title: '输入',

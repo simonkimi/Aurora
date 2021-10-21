@@ -9,10 +9,10 @@ class DashedLine extends StatelessWidget {
     this.color = Colors.black,
   });
 
-  final Axis axis; // 方向
-  final double width; //宽度
-  final double height; //高度
-  final int count; // 个数，密度
+  final Axis axis;
+  final double width;
+  final double height;
+  final int count;
   final Color color;
 
   @override

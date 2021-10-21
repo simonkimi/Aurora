@@ -193,7 +193,7 @@ class HslGradient extends StatelessWidget {
                 TextButton(
                     onPressed: gradientStore.isLock
                         ? () {
-                            gradientStore.stopSend();
+                            gradientStore.stopAndBreak();
                           }
                         : null,
                     child: const Text('停止')),
