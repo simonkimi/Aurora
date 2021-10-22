@@ -2,6 +2,7 @@ import 'package:aurora/data/constant.dart';
 import 'package:aurora/main.dart';
 import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/ui/components/color_selector.dart';
+import 'package:aurora/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -23,48 +24,9 @@ class HslGradient extends StatelessWidget {
                   child: Column(
                     children: [
                       const Text('RGB'),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('开始:'),
-                          const SizedBox(width: 10),
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: gradientStore.startRgb,
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: InkWell(
-                              onTap: () async {
-                                final color = await showSelectColor(
-                                    context, gradientStore.startRgb);
-                                if (color != null) {
-                                  gradientStore.startRgb = color;
-                                }
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          const Text('结束:'),
-                          const SizedBox(width: 10),
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                                color: gradientStore.endRgb,
-                                borderRadius: BorderRadius.circular(50)),
-                            child: InkWell(
-                              onTap: () async {
-                                final color = await showSelectColor(
-                                    context, gradientStore.endRgb);
-                                if (color != null) {
-                                  gradientStore.endRgb = color;
-                                }
-                              },
-                            ),
-                          ),
-                        ],
+                      SizedBox(
+                        height: 50,
+                        child: buildPaletteColorList(),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -335,6 +297,60 @@ class HslGradient extends StatelessWidget {
               ],
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  ListView buildPaletteColorList() {
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemCount: gradientStore.rgbList.length + 1,
+      separatorBuilder: (BuildContext context, int index) {
+        return const SizedBox(width: 10);
+      },
+      itemBuilder: (context, index) {
+        if (index == gradientStore.rgbList.length) {
+          return InkWell(
+            onTap: () {
+              showSelectColor(context).then((value) {
+                if (value != null) {
+                  gradientStore.addRgb(value);
+                }
+              });
+            },
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: const BorderRadius.all(Radius.circular(50)),
+                ),
+                child: const Icon(Icons.add),
+              ),
+            ),
+          );
+        }
+        return InkWell(
+          onLongPress: () {
+            gradientStore.removeRgb(index);
+            vibrate(duration: 50);
+          },
+          child: buildColorCircular(gradientStore.rgbList[index]),
+        );
+      },
+    );
+  }
+
+  Widget buildColorCircular(Color color) {
+    return AspectRatio(
+      aspectRatio: 1,
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(50),
+          ),
         ),
       ),
     );

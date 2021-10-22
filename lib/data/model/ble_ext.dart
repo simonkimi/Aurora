@@ -77,7 +77,6 @@ class TaskMessage {
         cmykw.y,
         cmykw.k,
         cmykw.w,
-        '+'.codeUnitAt(0),
         color.red,
         color.green,
         color.blue,
@@ -94,12 +93,6 @@ class TaskMessage {
         l.loopTime ~/ 10 % 10,
         l.loopTime % 10,
       ]);
-    }
-
-    // 颜色对应
-    buffer.add('+'.codeUnitAt(0));
-    for (final color in colorList) {
-      buffer.addAll([color.red, color.green, color.blue]);
     }
 
     buffer.addAll([0xd, 0xa]);

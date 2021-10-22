@@ -14,11 +14,8 @@ abstract class GradientStoreBase with Store {
     genHlsColorList();
   }
 
-  @observable
-  Color startRgb = Colors.blue;
-
-  @observable
-  Color endRgb = Colors.red;
+  ObservableList<Color> rgbList =
+      ObservableList.of([Colors.blue, Colors.cyan, Colors.green]);
 
   @observable
   double startH = 0.0;
@@ -53,6 +50,14 @@ abstract class GradientStoreBase with Store {
   bool isLock = false;
 
   StreamSubscription? timerListener;
+
+  void addRgb(Color color) {
+    rgbList.add(color);
+  }
+
+  void removeRgb(int index) {
+    rgbList.removeAt(index);
+  }
 
   void startSend() {
     if (bluetoothStore.isConnected) {
@@ -90,33 +95,45 @@ abstract class GradientStoreBase with Store {
 
   @action
   void genHlsColorList() {
-    currentStep = 0;
-    colorList.clear();
-    colorList.addAll(List.generate(step, (index) {
-      final h = genStep(startH, endH, index);
-      final s = genStep(startS, endS, index);
-      final l = genStep(startL, endL, index);
-      return hsl2rgb(h: h, s: s, l: l);
-    }));
+    if (step > 0) {
+      currentStep = 0;
+      colorList.clear();
+      colorList.addAll(List.generate(step, (index) {
+        final h = genStep(startH, endH, step, index);
+        final s = genStep(startS, endS, step, index);
+        final l = genStep(startL, endL, step, index);
+        return hsl2rgb(h: h, s: s, l: l);
+      }));
+    }
   }
 
   @action
   void genRgbColorList() {
-    currentStep = 0;
-    colorList.clear();
-    colorList.addAll(List.generate(step, (index) {
-      final r = genStep(startRgb.red.toDouble(), endRgb.red.toDouble(), index)
-          .floor();
-      final g =
-          genStep(startRgb.green.toDouble(), endRgb.green.toDouble(), index)
+    if (rgbList.isNotEmpty && step > rgbList.length) {
+      currentStep = 0;
+      colorList.clear();
+      final eachStep = step ~/ (rgbList.length - 1);
+      for (var i = 0; i < rgbList.length - 1; i++) {
+        colorList.addAll(List.generate(eachStep, (index) {
+          final startRgb = rgbList[i];
+          final endRgb = rgbList[i + 1];
+
+          final r = genStep(startRgb.red.toDouble(), endRgb.red.toDouble(),
+                  eachStep, index)
               .floor();
-      final b = genStep(startRgb.blue.toDouble(), endRgb.blue.toDouble(), index)
-          .floor();
-      return Color.fromARGB(0xff, r, g, b);
-    }));
+          final g = genStep(startRgb.green.toDouble(), endRgb.green.toDouble(),
+                  eachStep, index)
+              .floor();
+          final b = genStep(startRgb.blue.toDouble(), endRgb.blue.toDouble(),
+                  eachStep, index)
+              .floor();
+          return Color.fromARGB(0xff, r, g, b);
+        }));
+      }
+    }
   }
 
-  double genStep(double start, double end, int n) =>
+  double genStep(double start, double end, int step, int n) =>
       start + (end - start) / step * n;
 
   Color hsl2rgb({
