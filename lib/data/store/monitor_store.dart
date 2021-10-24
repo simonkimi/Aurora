@@ -95,7 +95,7 @@ abstract class MonitorStoreBase with Store {
           final g = color[1];
           final b = color[2];
           centerColor.value = Color.fromARGB(0xFF, r, g, b);
-          final targetColor = mainStore.selectColor;
+          final targetColor = mainStore.nowColor ?? mainStore.selectColor;
           while (colorDeltaE.length > limitCount) {
             colorDeltaE.removeAt(0);
           }

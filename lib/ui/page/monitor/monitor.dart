@@ -63,7 +63,7 @@ class _MonitorPageState extends State<MonitorPage>
         );
       }
 
-      return Column(
+      return ListView(
         children: [
           buildColor(),
           buildVideo(),
