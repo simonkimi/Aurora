@@ -100,4 +100,6 @@ class TaskMessage {
   }
 }
 
-class BleReceive {}
+class BleReceive {
+
+}

@@ -18,6 +18,7 @@ dependencies:
   http: any
   flutter_mobx: ^2.0.0
   get: ^4.3.8
+  rxdart: any
 
   # 持久化
   shared_preferences: ^2.0.5

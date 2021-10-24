@@ -79,3 +79,26 @@ String to16String(List<int> data) => data
     .join(' ');
 
 String to10String(List<int> data) => data.map((e) => e.toString()).join(' ');
+
+extension ListH<T> on List<T> {
+  int? indexOfList(List<T> sub) {
+    if (sub.isEmpty) return null;
+    for (var i = 0; i < length; i++) {
+      if (() {
+        for (var j = 0; j < sub.length; j++) {
+          if (i + j < length) {
+            if (this[i + j] != sub[j]) {
+              return false;
+            }
+          } else {
+            return false;
+          }
+        }
+        return true;
+      }()) {
+        return i;
+      }
+    }
+    return null;
+  }
+}

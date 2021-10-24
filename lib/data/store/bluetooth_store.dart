@@ -5,12 +5,14 @@ import 'package:aurora/data/model/ble_ext.dart';
 import 'package:aurora/data/proto/gen/task.pbserver.dart';
 import 'package:aurora/main.dart';
 import 'package:aurora/ui/page/task/store/task_maker_store.dart';
+import 'package:aurora/utils/event_bus.dart';
 import 'package:aurora/utils/get_cmykw.dart';
 import 'package:aurora/utils/utils.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mobx/mobx.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'main_store.dart';
 
@@ -58,6 +60,25 @@ abstract class BluetoothStoreBase with Store {
   @computed
   bool get isConnected => characteristic != null && connectedDevice != null;
 
+  StreamSubscription? receiveListener;
+
+  StreamSubscription? bleListener;
+
+  final receiveBuffer = StreamController<List<int>>.broadcast();
+  final buffer = <int>[];
+
+  void receiveData(List<int> msg) {
+    buffer.addAll(msg);
+    final flag = [1, 2, 3, 4, 5];
+    final index = buffer.indexOfList(flag);
+    if (index != null && index + flag.length + 8 < buffer.length) {
+      final receive =
+          buffer.sublist(index + flag.length, index + flag.length + 8);
+      receiveBuffer.add(receive);
+      buffer.clear();
+    }
+  }
+
   Future<void> sendData(List<int> data) async {
     print('-' * 50);
     print('数据: ${data.length}');
@@ -75,9 +96,15 @@ abstract class BluetoothStoreBase with Store {
 
   Future<void> setBleListen() async {
     await characteristic!.setNotifyValue(true);
-    characteristic!.value.listen((event) {
-      print('收到数据: $event');
+    bleListener?.cancel();
+    receiveListener?.cancel();
+    bleListener = characteristic!.value.listen(receiveData);
+    receiveListener = receiveBuffer.stream
+        .throttleTime(const Duration(seconds: 1))
+        .listen((event) {
       receiveHistory.add(SendHistory(event));
+      print('收到数据: ${to16String(event)}');
+      Bus().fire(EventBleSpeed(event));
     });
   }
 
@@ -253,6 +280,7 @@ abstract class BluetoothStoreBase with Store {
       characteristic = currentCharacteristic;
       connectedDevice = device;
       state = ConnectState.Connected;
+      setBleListen();
     } else {
       await device.disconnect();
       throw Exception('没有找到合适的特征值');

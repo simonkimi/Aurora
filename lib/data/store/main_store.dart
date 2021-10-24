@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:aurora/data/database/database_helper.dart';
 import 'package:aurora/data/proto/gen/config.pbserver.dart';
+import 'package:aurora/utils/event_bus.dart';
 import 'package:aurora/utils/get_cmykw.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
@@ -57,6 +58,12 @@ abstract class MainStoreBase with Store {
     Stream.periodic(const Duration(seconds: 2)).listen((event) async {
       final pref = await SharedPreferences.getInstance();
       pref.setInt('color', selectColor.value);
+    });
+
+    Bus().on<EventBleSpeed>().listen((EventBleSpeed event) {
+      nowColor = Color.fromARGB(0xff, event.r, event.g, event.b);
+      nowCmykw =
+          CMYKW(c: event.c, m: event.m, y: event.y, k: event.k, w: event.w);
     });
   }
 

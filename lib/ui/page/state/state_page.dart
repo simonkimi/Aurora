@@ -1,8 +1,11 @@
+import 'dart:async';
+import 'dart:math';
 import 'package:aurora/data/store/bluetooth_store.dart';
 import 'package:aurora/main.dart';
 import 'package:aurora/ui/components/app_bar.dart';
 import 'package:aurora/ui/components/dash_line.dart';
 import 'package:aurora/ui/page/ble_connect/ble_scanner.dart';
+import 'package:aurora/utils/event_bus.dart';
 import 'package:aurora/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -21,6 +24,8 @@ class _StatePageState extends State<StatePage>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late AnimationController _checkController;
 
+  late StreamSubscription bleMessage;
+
   late AnimationController _cController;
   late AnimationController _mController;
   late AnimationController _yController;
@@ -37,20 +42,32 @@ class _StatePageState extends State<StatePage>
         AnimationController(duration: const Duration(seconds: 4), vsync: this);
 
     _cController = AnimationController(
-        duration: const Duration(milliseconds: 200), vsync: this)
-      ..repeat();
+        duration: const Duration(milliseconds: 200), vsync: this);
     _mController = AnimationController(
-        duration: const Duration(milliseconds: 400), vsync: this)
-      ..repeat();
+        duration: const Duration(milliseconds: 400), vsync: this);
     _yController = AnimationController(
-        duration: const Duration(milliseconds: 600), vsync: this)
-      ..repeat();
+        duration: const Duration(milliseconds: 600), vsync: this);
     _kController = AnimationController(
-        duration: const Duration(milliseconds: 1000), vsync: this)
-      ..repeat();
+        duration: const Duration(milliseconds: 1000), vsync: this);
     _wController = AnimationController(
-        duration: const Duration(milliseconds: 1200), vsync: this)
-      ..repeat();
+        duration: const Duration(milliseconds: 1200), vsync: this);
+
+    bleMessage = Bus().on<EventBleSpeed>().listen((EventBleSpeed event) {
+      setSpeed(_cController, event.c);
+      setSpeed(_mController, event.m);
+      setSpeed(_yController, event.y);
+      setSpeed(_kController, event.k);
+      setSpeed(_wController, event.w);
+    });
+  }
+
+  void setSpeed(AnimationController controller, int speed) {
+    if (speed == 0) {
+      controller.stop();
+    } else {
+      controller.duration = Duration(milliseconds: (200 + 2000 - log(speed) * (2000 / log(200))).floor());
+      controller.repeat();
+    }
   }
 
   @override
@@ -61,6 +78,7 @@ class _StatePageState extends State<StatePage>
     _yController.dispose();
     _kController.dispose();
     _wController.dispose();
+    bleMessage.cancel();
     super.dispose();
   }
 

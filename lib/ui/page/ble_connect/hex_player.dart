@@ -64,7 +64,7 @@ class HexPlayer extends StatelessWidget {
           const SizedBox(height: 5),
           ...List.generate((data.length - start - 1) ~/ step + 1,
                   (index) => step * index + start)
-              .map((e) => data[e].toRadixString(16))
+              .map((e) =>  e < data.length ? data[e].toRadixString(16): '  ')
               .map((e) => e.length == 1 ? '0$e' : e)
               .map((e) => Text(e.toString()))
         ],
@@ -85,7 +85,7 @@ class HexPlayer extends StatelessWidget {
           const SizedBox(height: 5),
           ...List.generate((data.length - start - 1) ~/ step + 1,
                   (index) => step * index + start)
-              .map((e) => chr[e])
+              .map((e) => e < data.length ? chr[e]: '  ')
               .map((e) => Text(e.toString()))
         ],
       ),
