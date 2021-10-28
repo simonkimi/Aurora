@@ -50,6 +50,9 @@ abstract class BluetoothStoreBase with Store {
   BluetoothCharacteristic? characteristic;
 
   @observable
+  String? deviceMac;
+
+  @observable
   ConnectState state = ConnectState.Waiting;
 
   @observable
@@ -85,13 +88,27 @@ abstract class BluetoothStoreBase with Store {
     print('发送数据: ${to16String(data)}');
     print('发送数据: ${to10String(data)}');
     print('-' * 50);
-    if (isConnected) {
-      await characteristic!.write(data, withoutResponse: false);
-      sendHistory.add(SendHistory(data));
-      return;
+    for (var i = 0; i < 5; i++) {
+      try {
+        if (isConnected) {
+          await characteristic!.write(data, withoutResponse: false);
+          sendHistory.add(SendHistory(data));
+          return;
+        }
+      } catch (e) {
+        BotToast.showText(text: '发送失败, 尝试重新连接');
+        await reconnect();
+      }
     }
     BotToast.showText(text: '设备未连接');
     throw Exception('设备未连接');
+  }
+
+  Future<void> reconnect() async {
+    if (connectedDevice != null) {
+      await connectedDevice!.disconnect();
+      await connectFindDevice(connectedDevice!);
+    }
   }
 
   Future<void> setBleListen() async {
@@ -277,6 +294,7 @@ abstract class BluetoothStoreBase with Store {
     final services = await device.discoverServices();
     final currentCharacteristic = findCharacteristic(services);
     if (currentCharacteristic != null) {
+      deviceMac = device.id.id;
       characteristic = currentCharacteristic;
       connectedDevice = device;
       state = ConnectState.Connected;
